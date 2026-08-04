@@ -30,7 +30,7 @@ Each module is one section on the landing. Tiles live inside a module.
 The MVP tile map, locked. Any "toggle" tile is ONE tile with a UI toggle between two implementation paths inside the Playground.
 
 **Agents (7 tiles)**
-1. Foundry Chat Agent — first Live tile. Baseline hosted chat agent, streaming, no memory, no tools.
+1. Foundry Chat Agent — first Live tile. Baseline hosted chat agent, streaming, no memory, no tools. Built on `gpt-5-mini` (T-006 originally specced `gpt-4o-mini`, which retired in 2026 and can no longer be deployed).
 2. Function-Calling Agent — chatbot with tool calls; async pattern.
 3. RAG Agent with Grounding & Memory — retrieval + grounded citations + memory across turns.
 4. MCP Agent (Hosted + Own) — **toggle**: same task via Microsoft-hosted MCP vs. own MCP server.
