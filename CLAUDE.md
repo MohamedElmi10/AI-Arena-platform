@@ -14,9 +14,10 @@ Public portfolio platform showcasing Mohamed's Azure AI skills. **Portfolio-prim
 1. **Read `docs/CONTEXT.md` first.** It's the shared language for this project.
 2. **Skim open ADRs.** If your plan contradicts one, surface it — do not silently overwrite.
 3. **Pick a ticket.** Open `tickets/` and take the highest-priority ticket whose `Blocked by:` list contains only tickets already in `tickets/done/`. If the user named a ticket, use that.
-4. **Work the ticket.** Follow its Acceptance list. Update `Notes` as you learn. Keep changes small — **one ticket = one commit / PR**.
-5. **Close it.** Move the ticket file to `tickets/done/` (git mv). Commit message: `T-XXX: <ticket title>`. If any Acceptance item is unresolved, leave the ticket open and surface why in `Notes`.
-6. **Do not open a second ticket in the same session** unless the user explicitly asks.
+4. **Branch per ticket.** Before touching any code, create a branch off `main` named `t-XXX-<slug>` matching the ticket filename (e.g. `t-003-tile-components`). All work for the ticket lives on that branch.
+5. **Work the ticket.** Follow its Acceptance list. Update `Notes` as you learn. Keep changes small — one ticket = one branch. When the work is done, stage the ticket-file move to `tickets/done/` (`git mv`) but leave it uncommitted. If any Acceptance item is unresolved, leave the ticket where it is and surface why in `Notes`.
+6. **Claude NEVER commits, merges, or pushes — that's Mohamed's job.** Claude prepares the branch with every change left uncommitted (working tree or staged). Mohamed reviews the diff, commits, merges to `main`, and pushes. Claude does not run `git commit`, `git merge`, `git push`, or `git commit --amend` under any circumstances. (This rule exists because an amend of an already-pushed commit once forced a non-fast-forward push; keeping history in Mohamed's hands prevents that.)
+7. **Do not open a second ticket in the same session** unless the user explicitly asks.
 
 ## Coding conventions
 
