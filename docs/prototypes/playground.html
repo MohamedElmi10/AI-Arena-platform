@@ -1,0 +1,413 @@
+<!--
+  PROTOTYPE — throwaway. Answers: "What information architecture does the Playground use?"
+  Landing aesthetic is locked (Editorial · Colored). All three variants share that aesthetic;
+  they differ only in HOW the Guide and Chat sit next to each other.
+  Switch via ?variant=A|B|C or ← → arrow keys.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Arena — playground prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-editorial { font-family: 'Fraunces', Georgia, serif; }
+
+    /* Paper texture background */
+    .paper {
+      background-color: #faf7f2;
+      background-image:
+        radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+      background-size: 22px 22px, 33px 33px;
+      background-position: 0 0, 11px 11px;
+    }
+
+    /* Terracotta accent — this tile is in the Agents module */
+    :root {
+      --accent:       #c2410c;
+      --accent-fg:    #9a3412;
+      --accent-pale:  #fed7aa;
+      --accent-tint:  #fff7ed;
+    }
+    .c-accent    { color: var(--accent); }
+    .c-accent-fg { color: var(--accent-fg); }
+    .bg-accent   { background: var(--accent); }
+    .bg-pale     { background: var(--accent-pale); }
+    .bg-tint     { background: var(--accent-tint); }
+    .b-accent    { border-color: var(--accent); }
+
+    @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.55} }
+    .pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .variant-fade { animation: fadeIn 0.35s ease; }
+    .cursor-blink::after { content:'▊'; animation: blink 0.9s step-end infinite; margin-left: 2px; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .msg-user { background: var(--accent); color:#fff; }
+    .msg-agent { background:#fff; border:1px solid #e5e5e5; }
+
+    /* Chapter pill matching landing B */
+    .chapter-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      font-weight: 600;
+      background: var(--accent-pale);
+      color: var(--accent-fg);
+    }
+
+    /* Suggested-prompt hover reveal (matches landing B's tile hover) */
+    .suggested { transition: background 0.2s ease, transform 0.2s ease; }
+    .suggested:hover { background: var(--accent-tint); transform: translateX(3px); }
+  </style>
+</head>
+<body class="bg-white text-neutral-900">
+
+<div id="app"></div>
+
+<!-- Floating variant switcher -->
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 text-white rounded-full shadow-xl flex items-center gap-1 p-1 pl-2 pr-2">
+  <button onclick="cycleVariant(-1)" class="w-8 h-8 rounded-full hover:bg-neutral-700 flex items-center justify-center" aria-label="Previous variant">←</button>
+  <span id="variantLabel" class="px-3 text-sm font-mono"></span>
+  <button onclick="cycleVariant(1)" class="w-8 h-8 rounded-full hover:bg-neutral-700 flex items-center justify-center" aria-label="Next variant">→</button>
+</div>
+
+<script>
+  // ---------- Tile / Guide content ----------
+  const tile = {
+    module: { name: 'Agents', chapter: '01' },
+    title: 'Foundry Chat Agent',
+    tag: 'streaming',
+    tagline: 'A simple Foundry-hosted chat agent that streams responses token-by-token.',
+    guide: {
+      about: 'This is the baseline agent — no memory across turns, no tools, no retrieval. Just a hosted chat agent behind the Foundry Responses API. Every other tile in Agents is a variation on this pattern.',
+      tryThis: [
+        'Give me an elevator pitch for AI Arena.',
+        'Explain the difference between an agent and a chatbot.',
+        'What is Azure AI Foundry, in one sentence?',
+      ],
+      expect: [
+        'Response streams character-by-character.',
+        'Neutral tone tuned for portfolio demos.',
+        'No tool calls, no citations — those live in other tiles.',
+      ],
+      hood: [
+        'Azure AI Foundry hosts the agent.',
+        'Next.js API route acts as a thin proxy (Azure keys stay server-side).',
+        'Streaming via the Responses API (event: response.output_text.delta).',
+      ],
+    },
+  };
+
+  const cannedResponse = "AI Arena is my working portfolio — every tile is a live Azure AI agent or gen-AI demo I built while studying for AI-102 and AI-103. This tile is the baseline: a Foundry-hosted chat agent with streaming, no memory, no tools. The rest of the tiles will come online as I build them.";
+
+  const variants = {
+    A: { name: 'Split — Guide + Chat', render: renderSplit },
+    B: { name: 'Chapter — Book layout', render: renderChapter },
+    C: { name: 'Dashboard — Live stats', render: renderDashboard },
+  };
+
+  // ---------- Routing ----------
+  function getVariant() {
+    const p = new URLSearchParams(location.search).get('variant');
+    return variants[p] ? p : 'A';
+  }
+  function setVariant(v) {
+    const url = new URL(location.href);
+    url.searchParams.set('variant', v);
+    history.replaceState(null, '', url);
+    render();
+  }
+  function cycleVariant(dir) {
+    const keys = Object.keys(variants);
+    const idx = keys.indexOf(getVariant());
+    setVariant(keys[(idx + dir + keys.length) % keys.length]);
+  }
+  document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
+    if (e.key === 'ArrowLeft') cycleVariant(-1);
+    if (e.key === 'ArrowRight') cycleVariant(1);
+  });
+
+  // ---------- Master render ----------
+  function render() {
+    const v = getVariant();
+    document.getElementById('variantLabel').textContent = `${v} — ${variants[v].name}`;
+    const app = document.getElementById('app');
+    app.innerHTML = variants[v].render();
+    app.classList.remove('variant-fade'); void app.offsetWidth; app.classList.add('variant-fade');
+    wireChat();
+    wireSuggestedPrompts();
+  }
+
+  // ---------- Chat wiring ----------
+  function wireChat() {
+    const form = document.getElementById('chatForm');
+    if (!form) return;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+      addUserMessage(text);
+      streamAgentReply();
+    });
+  }
+  function wireSuggestedPrompts() {
+    document.querySelectorAll('[data-prompt]').forEach(el => {
+      el.addEventListener('click', () => {
+        const input = document.getElementById('chatInput');
+        if (input) { input.value = el.dataset.prompt; input.focus(); }
+      });
+    });
+  }
+  function messagesEl() { return document.getElementById('chatMessages'); }
+  function addUserMessage(text) {
+    const el = document.createElement('div');
+    el.className = 'flex justify-end';
+    el.innerHTML = `<div class="msg-user px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[75%] text-sm">${escapeHtml(text)}</div>`;
+    messagesEl().appendChild(el);
+    scrollChat();
+  }
+  async function streamAgentReply() {
+    const wrap = document.createElement('div');
+    wrap.className = 'flex justify-start';
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-agent px-4 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] text-sm cursor-blink font-editorial leading-relaxed';
+    wrap.appendChild(bubble);
+    messagesEl().appendChild(wrap);
+    scrollChat();
+
+    const start = performance.now();
+    let tokens = 0;
+    const statsTokens = document.getElementById('statTokens');
+    const statsLatency = document.getElementById('statLatency');
+    const statsStatus = document.getElementById('statStatus');
+    if (statsStatus) { statsStatus.textContent = 'streaming'; statsStatus.className = 'mt-0.5 c-accent font-semibold'; }
+
+    for (const ch of cannedResponse) {
+      bubble.textContent += ch;
+      tokens += 1;
+      if (statsTokens) statsTokens.textContent = tokens;
+      if (statsLatency) statsLatency.textContent = Math.round(performance.now() - start) + 'ms';
+      scrollChat();
+      await new Promise(r => setTimeout(r, 12 + Math.random() * 22));
+    }
+    bubble.classList.remove('cursor-blink');
+    if (statsStatus) { statsStatus.textContent = 'idle'; statsStatus.className = 'mt-0.5 text-emerald-600 font-semibold'; }
+  }
+  function scrollChat() {
+    const m = messagesEl();
+    if (m) m.scrollTop = m.scrollHeight;
+  }
+  function escapeHtml(s) { return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // ---------- Shared components (all Editorial · Colored) ----------
+  function breadcrumbBar() {
+    return `
+      <div class="border-b border-neutral-200 bg-white/70 backdrop-blur sticky top-0 z-30">
+        <div class="max-w-6xl mx-auto px-6 py-3 flex items-center justify-between text-sm">
+          <div class="flex items-center gap-2 font-mono text-neutral-500">
+            <a href="landing.html?variant=B" class="hover:text-neutral-900">← AI Arena</a>
+            <span class="text-neutral-300">/</span>
+            <span>Chapter ${tile.module.chapter} · ${tile.module.name}</span>
+            <span class="text-neutral-300">/</span>
+            <span class="text-neutral-900">${tile.title}</span>
+          </div>
+          <span class="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest font-semibold c-accent">
+            <span class="w-1.5 h-1.5 rounded-full bg-accent pulse-dot"></span> Live
+          </span>
+        </div>
+      </div>
+    `;
+  }
+
+  function chapterPill() {
+    return `<div class="chapter-pill">Chapter ${tile.module.chapter} · ${tile.module.name}</div>`;
+  }
+
+  function titleBlock(size = 'text-5xl') {
+    return `
+      ${chapterPill()}
+      <h1 class="font-editorial ${size} font-bold mt-3 c-accent-fg leading-tight">${tile.title}</h1>
+      <p class="font-editorial text-lg italic text-neutral-700 mt-2">${tile.tagline}</p>
+      <div class="w-16 h-1 mt-4 bg-accent"></div>
+    `;
+  }
+
+  function guideBlock() {
+    return `
+      <div class="space-y-6">
+        <div>
+          <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-1">About this demo</div>
+          <p class="font-editorial text-base leading-relaxed text-neutral-700">${tile.guide.about}</p>
+        </div>
+        <div>
+          <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-2">Try this — tap to insert</div>
+          <div class="space-y-1.5">
+            ${tile.guide.tryThis.map(x => `
+              <button data-prompt="${escapeHtml(x)}"
+                      class="suggested w-full text-left text-sm text-neutral-700 border border-neutral-200 rounded px-3 py-2 font-editorial italic">
+                "${x}"
+              </button>
+            `).join('')}
+          </div>
+        </div>
+        <div>
+          <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-2">What to expect</div>
+          <ul class="list-disc list-outside ml-5 space-y-1.5 text-sm text-neutral-700">
+            ${tile.guide.expect.map(x => `<li>${x}</li>`).join('')}
+          </ul>
+        </div>
+        <details class="text-sm">
+          <summary class="cursor-pointer text-[10px] uppercase tracking-[0.25em] c-accent font-semibold">Under the hood</summary>
+          <ul class="mt-2 list-disc list-outside ml-5 space-y-1.5 text-neutral-600">
+            ${tile.guide.hood.map(x => `<li>${x}</li>`).join('')}
+          </ul>
+        </details>
+      </div>
+    `;
+  }
+
+  function chatSurface(heightClass = 'h-[500px]') {
+    return `
+      <div class="border-2 b-accent rounded-md bg-white flex flex-col ${heightClass}">
+        <div class="border-b border-neutral-200 bg-tint px-4 py-2 flex items-center justify-between text-xs font-mono">
+          <span class="c-accent-fg">chat · ${tile.title}</span>
+          <span class="text-neutral-500">${tile.tag}</span>
+        </div>
+        <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-3">
+          <div class="flex justify-start">
+            <div class="msg-agent px-4 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] text-sm font-editorial italic text-neutral-500">
+              Hello. Ask me anything, or tap a suggested prompt from the guide.
+            </div>
+          </div>
+        </div>
+        <form id="chatForm" class="border-t border-neutral-200 p-3 flex gap-2 bg-neutral-50">
+          <input id="chatInput" type="text" placeholder="Type a message…" autocomplete="off"
+                 class="flex-1 px-3 py-2 rounded-md border border-neutral-300 focus:outline-none focus:b-accent focus:ring-1 focus:ring-orange-400 text-sm" />
+          <button type="submit" class="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-md hover:opacity-90">Send</button>
+        </form>
+      </div>
+    `;
+  }
+
+  // =============================================================
+  // Variant A — Split (Guide left, Chat right)
+  // =============================================================
+  function renderSplit() {
+    return `
+      ${breadcrumbBar()}
+      <div class="paper min-h-screen">
+        <div class="max-w-6xl mx-auto px-6 py-10">
+          <div class="mb-10">${titleBlock('text-5xl')}</div>
+          <div class="grid grid-cols-12 gap-8">
+            <aside class="col-span-12 md:col-span-5">${guideBlock()}</aside>
+            <div class="col-span-12 md:col-span-7">${chatSurface('h-[560px]')}</div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // =============================================================
+  // Variant B — Chapter (book layout)
+  // =============================================================
+  function renderChapter() {
+    return `
+      ${breadcrumbBar()}
+      <div class="paper min-h-screen">
+        <div class="max-w-4xl mx-auto px-6 py-16">
+          <div class="border-b-2 border-neutral-900 pb-8 mb-10">${titleBlock('text-6xl')}</div>
+
+          <div class="grid grid-cols-12 gap-8 mb-10">
+            <div class="col-span-12 md:col-span-8">
+              <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-2">About this demo</div>
+              <p class="font-editorial text-lg leading-relaxed text-neutral-700">${tile.guide.about}</p>
+            </div>
+            <aside class="col-span-12 md:col-span-4 bg-tint border-l-2 b-accent p-4 rounded-r">
+              <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-2">Try this</div>
+              <div class="space-y-1.5 mb-4">
+                ${tile.guide.tryThis.map(x => `
+                  <button data-prompt="${escapeHtml(x)}" class="suggested w-full text-left text-xs text-neutral-700 border border-neutral-200 rounded px-2 py-1.5 font-editorial italic bg-white">
+                    "${x}"
+                  </button>
+                `).join('')}
+              </div>
+              <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-2">Expect</div>
+              <ul class="list-disc list-outside ml-5 space-y-1 text-xs text-neutral-700">
+                ${tile.guide.expect.map(x => `<li>${x}</li>`).join('')}
+              </ul>
+            </aside>
+          </div>
+
+          <div class="mb-6">
+            <div class="text-xs uppercase tracking-[0.3em] c-accent font-semibold mb-3">§ Try it</div>
+            ${chatSurface('h-[480px]')}
+          </div>
+
+          <details class="mt-10 pt-6 border-t border-neutral-200">
+            <summary class="cursor-pointer font-editorial text-lg font-semibold c-accent-fg">Under the hood</summary>
+            <ul class="mt-4 list-disc list-outside ml-6 space-y-2 text-neutral-700">
+              ${tile.guide.hood.map(x => `<li>${x}</li>`).join('')}
+            </ul>
+          </details>
+        </div>
+      </div>
+    `;
+  }
+
+  // =============================================================
+  // Variant C — Dashboard (live stats, technical feel, still Editorial · Colored)
+  // =============================================================
+  function renderDashboard() {
+    return `
+      ${breadcrumbBar()}
+      <div class="paper min-h-screen">
+        <div class="max-w-7xl mx-auto px-6 py-8">
+          <div class="mb-6 flex items-end justify-between flex-wrap gap-4">
+            <div>${titleBlock('text-4xl')}</div>
+            <div class="flex gap-3 font-mono text-xs">
+              <div class="bg-white border b-accent rounded px-3 py-2">
+                <div class="c-accent uppercase tracking-widest text-[9px]">Model</div>
+                <div class="text-neutral-900 mt-0.5">gpt-4o-mini</div>
+              </div>
+              <div class="bg-white border b-accent rounded px-3 py-2">
+                <div class="c-accent uppercase tracking-widest text-[9px]">Tokens</div>
+                <div id="statTokens" class="text-neutral-900 mt-0.5">0</div>
+              </div>
+              <div class="bg-white border b-accent rounded px-3 py-2">
+                <div class="c-accent uppercase tracking-widest text-[9px]">Latency</div>
+                <div id="statLatency" class="text-neutral-900 mt-0.5">—</div>
+              </div>
+              <div class="bg-white border b-accent rounded px-3 py-2">
+                <div class="c-accent uppercase tracking-widest text-[9px]">Status</div>
+                <div id="statStatus" class="mt-0.5 text-emerald-600 font-semibold">idle</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-12 gap-6">
+            <div class="col-span-12 lg:col-span-8">${chatSurface('h-[600px]')}</div>
+            <aside class="col-span-12 lg:col-span-4 bg-white border b-accent rounded-md p-5">
+              ${guideBlock()}
+            </aside>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  render();
+</script>
+</body>
+</html>

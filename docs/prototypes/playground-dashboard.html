@@ -1,0 +1,194 @@
+<!-- PROTOTYPE — Playground layout: Dashboard (live stats, technical feel). Editorial · Colored. -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Arena — Playground · Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-editorial { font-family: 'Fraunces', Georgia, serif; }
+    .paper {
+      background-color: #faf7f2;
+      background-image:
+        radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+      background-size: 22px 22px, 33px 33px;
+      background-position: 0 0, 11px 11px;
+    }
+    :root { --accent:#c2410c; --accent-fg:#9a3412; --accent-pale:#fed7aa; --accent-tint:#fff7ed; }
+    .c-accent{color:var(--accent)} .c-accent-fg{color:var(--accent-fg)}
+    .bg-accent{background:var(--accent)} .bg-pale{background:var(--accent-pale)} .bg-tint{background:var(--accent-tint)}
+    .b-accent{border-color:var(--accent)}
+    @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:0.55} }
+    .pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+    .cursor-blink::after { content:'▊'; animation: blink 0.9s step-end infinite; margin-left: 2px; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .msg-user { background: var(--accent); color:#fff; }
+    .msg-agent { background:#fff; border:1px solid #e5e5e5; }
+    .chapter-pill { display:inline-block; padding:3px 10px; border-radius:4px; font-size:11px;
+      letter-spacing:0.25em; text-transform:uppercase; font-weight:600;
+      background:var(--accent-pale); color:var(--accent-fg); }
+    .suggested { transition: background 0.2s ease, transform 0.2s ease; }
+    .suggested:hover { background: var(--accent-tint); transform: translateX(3px); }
+  </style>
+</head>
+<body class="bg-white text-neutral-900">
+
+<!-- Breadcrumb -->
+<div class="border-b border-neutral-200 bg-white/70 backdrop-blur sticky top-0 z-30">
+  <div class="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between text-sm">
+    <div class="flex items-center gap-2 font-mono text-neutral-500">
+      <a href="landing.html?variant=B" class="hover:text-neutral-900">← AI Arena</a>
+      <span class="text-neutral-300">/</span>
+      <span>Chapter 01 · Agents</span>
+      <span class="text-neutral-300">/</span>
+      <span class="text-neutral-900">Foundry Chat Agent</span>
+    </div>
+    <span class="inline-flex items-center gap-1.5 text-xs uppercase tracking-widest font-semibold c-accent">
+      <span class="w-1.5 h-1.5 rounded-full bg-accent pulse-dot"></span> Live
+    </span>
+  </div>
+</div>
+
+<div class="paper min-h-screen">
+  <div class="max-w-7xl mx-auto px-6 py-8">
+    <!-- Title + live stats -->
+    <div class="mb-6 flex items-end justify-between flex-wrap gap-4">
+      <div>
+        <div class="chapter-pill">Chapter 01 · Agents</div>
+        <h1 class="font-editorial text-4xl font-bold mt-3 c-accent-fg leading-tight">Foundry Chat Agent</h1>
+        <p class="font-editorial text-lg italic text-neutral-700 mt-2">A simple Foundry-hosted chat agent that streams responses token-by-token.</p>
+        <div class="w-16 h-1 mt-4 bg-accent"></div>
+      </div>
+      <div class="flex gap-3 font-mono text-xs">
+        <div class="bg-white border b-accent rounded px-3 py-2">
+          <div class="c-accent uppercase tracking-widest text-[9px]">Model</div>
+          <div class="text-neutral-900 mt-0.5">gpt-4o-mini</div>
+        </div>
+        <div class="bg-white border b-accent rounded px-3 py-2">
+          <div class="c-accent uppercase tracking-widest text-[9px]">Tokens</div>
+          <div id="statTokens" class="text-neutral-900 mt-0.5">0</div>
+        </div>
+        <div class="bg-white border b-accent rounded px-3 py-2">
+          <div class="c-accent uppercase tracking-widest text-[9px]">Latency</div>
+          <div id="statLatency" class="text-neutral-900 mt-0.5">—</div>
+        </div>
+        <div class="bg-white border b-accent rounded px-3 py-2">
+          <div class="c-accent uppercase tracking-widest text-[9px]">Status</div>
+          <div id="statStatus" class="mt-0.5 text-emerald-600 font-semibold">idle</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 gap-6">
+      <!-- Chat main -->
+      <div class="col-span-12 lg:col-span-8">
+        <div class="border-2 b-accent rounded-md bg-white flex flex-col h-[600px]">
+          <div class="border-b border-neutral-200 bg-tint px-4 py-2 flex items-center justify-between text-xs font-mono">
+            <span class="c-accent-fg">chat · Foundry Chat Agent</span>
+            <span class="text-neutral-500">streaming</span>
+          </div>
+          <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-3">
+            <div class="flex justify-start">
+              <div class="msg-agent px-4 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] text-sm font-editorial italic text-neutral-500">
+                Hello. Ask me anything, or tap a suggested prompt from the sidebar.
+              </div>
+            </div>
+          </div>
+          <form id="chatForm" class="border-t border-neutral-200 p-3 flex gap-2 bg-neutral-50">
+            <input id="chatInput" type="text" placeholder="Type a message…" autocomplete="off"
+                   class="flex-1 px-3 py-2 rounded-md border border-neutral-300 focus:outline-none focus:b-accent focus:ring-1 focus:ring-orange-400 text-sm" />
+            <button type="submit" class="bg-accent text-white text-sm font-semibold px-4 py-2 rounded-md hover:opacity-90">Send</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Guide sidebar -->
+      <aside class="col-span-12 lg:col-span-4 bg-white border b-accent rounded-md p-5 space-y-6">
+        <div>
+          <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-1">About this demo</div>
+          <p class="font-editorial text-base leading-relaxed text-neutral-700">Baseline agent — no memory, no tools, no retrieval. Just a Foundry-hosted chat agent behind the Responses API. Every other Agents tile is a variation.</p>
+        </div>
+        <div>
+          <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-2">Try this — tap to insert</div>
+          <div class="space-y-1.5">
+            <button data-prompt="Give me an elevator pitch for AI Arena." class="suggested w-full text-left text-sm text-neutral-700 border border-neutral-200 rounded px-3 py-2 font-editorial italic">"Give me an elevator pitch for AI Arena."</button>
+            <button data-prompt="Explain the difference between an agent and a chatbot." class="suggested w-full text-left text-sm text-neutral-700 border border-neutral-200 rounded px-3 py-2 font-editorial italic">"Explain the difference between an agent and a chatbot."</button>
+            <button data-prompt="What is Azure AI Foundry, in one sentence?" class="suggested w-full text-left text-sm text-neutral-700 border border-neutral-200 rounded px-3 py-2 font-editorial italic">"What is Azure AI Foundry, in one sentence?"</button>
+          </div>
+        </div>
+        <div>
+          <div class="text-[10px] uppercase tracking-[0.25em] c-accent font-semibold mb-2">What to expect</div>
+          <ul class="list-disc list-outside ml-5 space-y-1.5 text-sm text-neutral-700">
+            <li>Response streams character-by-character.</li>
+            <li>Watch the Tokens and Latency stats tick up in real time.</li>
+            <li>Status flips from idle → streaming → idle.</li>
+          </ul>
+        </div>
+        <details class="text-sm">
+          <summary class="cursor-pointer text-[10px] uppercase tracking-[0.25em] c-accent font-semibold">Under the hood</summary>
+          <ul class="mt-2 list-disc list-outside ml-5 space-y-1.5 text-neutral-600">
+            <li>Azure AI Foundry hosts the agent.</li>
+            <li>Next.js API route proxies (Azure keys stay server-side).</li>
+            <li>Streaming via Responses API (response.output_text.delta).</li>
+          </ul>
+        </details>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+  const cannedResponse = "AI Arena is my working portfolio — every tile is a live Azure AI agent or gen-AI demo I built while studying for AI-102 and AI-103. This tile is the baseline: a Foundry-hosted chat agent with streaming, no memory, no tools. The rest of the tiles will come online as I build them.";
+  const messagesEl = () => document.getElementById('chatMessages');
+  const escapeHtml = s => s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  document.querySelectorAll('[data-prompt]').forEach(el => {
+    el.addEventListener('click', () => {
+      const input = document.getElementById('chatInput');
+      input.value = el.dataset.prompt; input.focus();
+    });
+  });
+
+  document.getElementById('chatForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim(); if (!text) return;
+    input.value = '';
+
+    const u = document.createElement('div');
+    u.className = 'flex justify-end';
+    u.innerHTML = `<div class="msg-user px-4 py-2.5 rounded-2xl rounded-tr-sm max-w-[75%] text-sm">${escapeHtml(text)}</div>`;
+    messagesEl().appendChild(u);
+    messagesEl().scrollTop = messagesEl().scrollHeight;
+
+    const wrap = document.createElement('div');
+    wrap.className = 'flex justify-start';
+    const b = document.createElement('div');
+    b.className = 'msg-agent px-4 py-2.5 rounded-2xl rounded-tl-sm max-w-[85%] text-sm cursor-blink font-editorial leading-relaxed';
+    wrap.appendChild(b);
+    messagesEl().appendChild(wrap);
+
+    const start = performance.now();
+    let tokens = 0;
+    const st = document.getElementById('statStatus');
+    st.textContent = 'streaming'; st.className = 'mt-0.5 c-accent font-semibold';
+
+    for (const ch of cannedResponse) {
+      b.textContent += ch;
+      tokens += 1;
+      document.getElementById('statTokens').textContent = tokens;
+      document.getElementById('statLatency').textContent = Math.round(performance.now() - start) + 'ms';
+      messagesEl().scrollTop = messagesEl().scrollHeight;
+      await new Promise(r => setTimeout(r, 12 + Math.random() * 22));
+    }
+    b.classList.remove('cursor-blink');
+    st.textContent = 'idle'; st.className = 'mt-0.5 text-emerald-600 font-semibold';
+  });
+</script>
+</body>
+</html>

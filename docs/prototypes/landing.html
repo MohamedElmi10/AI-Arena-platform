@@ -1,0 +1,436 @@
+<!--
+  PROTOTYPE — throwaway. Answers: "What does the AI Arena landing look like?"
+  Three Editorial Bento variants: A (Baseline), B (Colored), C (Kinetic).
+  Switch via ?variant=A|B|C or ← → arrow keys.
+  Winning variant folds into the real Next.js project; this file goes on a throwaway branch.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Arena — landing prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800;9..144,900&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .font-editorial { font-family: 'Fraunces', Georgia, serif; }
+
+    /* Paper texture background for editorial variants */
+    .paper {
+      background-color: #faf7f2;
+      background-image:
+        radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+        radial-gradient(rgba(0,0,0,0.02) 1px, transparent 1px);
+      background-size: 22px 22px, 33px 33px;
+      background-position: 0 0, 11px 11px;
+    }
+
+    /* Kinetic: subtle shimmer for featured tiles */
+    @keyframes shimmer {
+      0%, 100% { background-position: -200% 0; }
+      50% { background-position: 200% 0; }
+    }
+    .shimmer {
+      background: linear-gradient(110deg, transparent 40%, rgba(255,215,150,0.15) 50%, transparent 60%);
+      background-size: 200% 100%;
+      animation: shimmer 6s ease-in-out infinite;
+    }
+
+    /* Pulsing live dot */
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.4); opacity: 0.6; }
+    }
+    .pulse-dot { animation: pulse-dot 1.6s ease-in-out infinite; }
+
+    /* Stagger fade-in for kinetic variant */
+    @keyframes riseIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: none; }
+    }
+    .rise { opacity: 0; animation: riseIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+    /* Marquee for kinetic */
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .marquee-track { animation: marquee 24s linear infinite; }
+
+    /* Hover reveal for colored variant */
+    .hover-reveal .preview {
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.25s ease;
+      margin-top: 0;
+    }
+    .hover-reveal:hover .preview {
+      max-height: 60px;
+      opacity: 1;
+      margin-top: 0.75rem;
+    }
+
+    .variant-fade { animation: fadeIn 0.35s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body class="bg-white text-neutral-900">
+
+<div id="app"></div>
+
+<!-- Planned tile modal -->
+<div id="modal" class="fixed inset-0 bg-black/50 hidden z-40 items-center justify-center p-4">
+  <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl">
+    <div class="flex items-start justify-between mb-3">
+      <span class="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Planned</span>
+      <button onclick="closeModal()" class="text-neutral-400 hover:text-neutral-900 text-2xl leading-none">&times;</button>
+    </div>
+    <h3 id="modalTitle" class="font-editorial text-2xl font-bold mb-2"></h3>
+    <p id="modalDesc" class="text-neutral-600 text-sm leading-relaxed"></p>
+    <div class="mt-4 pt-4 border-t border-neutral-200 text-xs text-neutral-500">
+      This tile will demo the concept when built. Come back soon.
+    </div>
+  </div>
+</div>
+
+<!-- Floating variant switcher -->
+<div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-neutral-900 text-white rounded-full shadow-xl flex items-center gap-1 p-1 pl-2 pr-2">
+  <button onclick="cycleVariant(-1)" class="w-8 h-8 rounded-full hover:bg-neutral-700 flex items-center justify-center" aria-label="Previous variant">←</button>
+  <span id="variantLabel" class="px-3 text-sm font-mono"></span>
+  <button onclick="cycleVariant(1)" class="w-8 h-8 rounded-full hover:bg-neutral-700 flex items-center justify-center" aria-label="Next variant">→</button>
+</div>
+
+<script>
+  // ---------- Data ----------
+  // Colors: each module gets an accent used by variant B (Colored) and hinted at in C (Kinetic).
+  const modules = [
+    {
+      id: 'agents',
+      name: 'Agents',
+      blurb: 'Agents built with Microsoft Agent Framework, Foundry, MCP, function calling, RAG, A2A, and sequential orchestration.',
+      color: { fg: '#9a3412', bg: '#fed7aa', accent: '#c2410c', tint: '#fff7ed' }, // terracotta
+      tiles: [
+        { title: 'Foundry Chat Agent', status: 'live', tag: 'streaming', desc: 'A simple Foundry-hosted chat agent. Streams responses token-by-token.', preview: 'Try: "Give me an elevator pitch for AI Arena."' },
+        { title: 'Function-Calling Agent', status: 'planned', tag: 'tools · async', desc: 'A chatbot that calls tools to get things done. Demonstrates function calling and async patterns.' },
+        { title: 'RAG Agent with Grounding & Memory', status: 'planned', tag: 'RAG · grounding · memory', desc: 'Retrieval-augmented generation with grounded citations and memory that persists across turns.' },
+        { title: 'MCP Agent (Hosted + Own)', status: 'planned', tag: 'MCP', desc: 'Toggle between calling a Microsoft-hosted MCP server and my own MCP server. Same task, two implementations.' },
+        { title: 'Microsoft Agent Framework Agent', status: 'planned', tag: 'MAF', desc: 'The same agent built with Microsoft Agent Framework instead of Foundry-native, so the pattern differences are visible.' },
+        { title: 'Multi-Agent Orchestration', status: 'planned', tag: 'workflow · A2A · sequential', desc: 'A Foundry Workflow that orchestrates multiple agents in sequence, with A2A handoffs visualised on a timeline.' },
+        { title: 'Foundry IQ', status: 'planned', tag: 'Foundry IQ', desc: 'A standalone demo of Foundry IQ — showcases the feature in isolation so the recruiter sees what makes it distinct.' },
+      ],
+    },
+    {
+      id: 'genai',
+      name: 'Gen-AI',
+      blurb: 'Generative AI patterns: streaming, async, grounding, and memory across turns.',
+      color: { fg: '#6b21a8', bg: '#e9d5ff', accent: '#7e22ce', tint: '#faf5ff' }, // plum
+      tiles: [
+        { title: 'Raw Streaming Completion', status: 'planned', tag: 'streaming · async', desc: 'No agent framing — just the LLM. A side-by-side sync vs async streaming comparison to show the primitive itself.' },
+      ],
+    },
+    {
+      id: 'nl',
+      name: 'Natural Language',
+      blurb: 'Azure Language and Speech: text analysis, speech-capable apps, and translation.',
+      color: { fg: '#166534', bg: '#bbf7d0', accent: '#15803d', tint: '#f0fdf4' }, // moss
+      tiles: [
+        { title: 'Text Analysis Agent', status: 'planned', tag: 'Azure Language · MCP', desc: 'Analyse text (sentiment, entities, key phrases) two ways: via Azure Language in Foundry Tools, and via the Azure Language MCP server.' },
+        { title: 'Speech Assistant', status: 'planned', tag: 'Azure Speech · MCP', desc: 'A speech-capable gen-AI app plus a Speech agent via the Azure Speech MCP server. Toggle implementations.' },
+        { title: 'Translation', status: 'planned', tag: 'Foundry Tools', desc: 'Translate text and speech using Microsoft Foundry Tools.' },
+      ],
+    },
+  ];
+
+  const variants = {
+    A: { name: 'Editorial · Baseline', render: renderBaseline },
+    B: { name: 'Editorial · Colored',  render: renderColored },
+    C: { name: 'Editorial · Kinetic',  render: renderKinetic },
+  };
+
+  // ---------- Routing ----------
+  function getVariant() {
+    const p = new URLSearchParams(location.search).get('variant');
+    return variants[p] ? p : 'A';
+  }
+  function setVariant(v) {
+    const url = new URL(location.href);
+    url.searchParams.set('variant', v);
+    history.replaceState(null, '', url);
+    render();
+  }
+  function cycleVariant(dir) {
+    const keys = Object.keys(variants);
+    const idx = keys.indexOf(getVariant());
+    setVariant(keys[(idx + dir + keys.length) % keys.length]);
+  }
+  document.addEventListener('keydown', (e) => {
+    const tag = document.activeElement?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
+    if (e.key === 'ArrowLeft') cycleVariant(-1);
+    if (e.key === 'ArrowRight') cycleVariant(1);
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // ---------- Modal ----------
+  function openModal(title, desc) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalDesc').textContent = desc;
+    const m = document.getElementById('modal');
+    m.classList.remove('hidden'); m.classList.add('flex');
+  }
+  function closeModal() {
+    const m = document.getElementById('modal');
+    m.classList.add('hidden'); m.classList.remove('flex');
+  }
+  document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
+
+  // ---------- Master render ----------
+  function render() {
+    const v = getVariant();
+    document.getElementById('variantLabel').textContent = `${v} — ${variants[v].name}`;
+    const app = document.getElementById('app');
+    app.innerHTML = variants[v].render();
+    app.classList.remove('variant-fade'); void app.offsetWidth; app.classList.add('variant-fade');
+    document.querySelectorAll('[data-tile-planned]').forEach(el => {
+      el.addEventListener('click', () => openModal(el.dataset.title, el.dataset.desc));
+    });
+    // Live tile → playground.html
+    document.querySelectorAll('[data-tile-live]').forEach(el => {
+      el.addEventListener('click', () => {
+        location.href = `playground.html?variant=${getVariant()}`;
+      });
+    });
+  }
+
+  function counts(mod) {
+    const live = mod.tiles.filter(t => t.status === 'live').length;
+    return `${live} / ${mod.tiles.length} live`;
+  }
+
+  // ---------- Shared: base header ----------
+  function heroBase(extra = '') {
+    return `
+      <header class="mb-16 border-b-2 border-neutral-900 pb-8">
+        <div class="flex items-baseline justify-between mb-6">
+          <div class="text-xs uppercase tracking-[0.3em] text-neutral-500">Vol. 1 · AI Arena</div>
+          <div class="text-xs uppercase tracking-[0.3em] text-neutral-500">2026</div>
+        </div>
+        <h1 class="font-editorial text-6xl md:text-7xl font-bold leading-none tracking-tight">Mohamed Elmi</h1>
+        <p class="font-editorial text-2xl italic text-neutral-700 mt-4 max-w-3xl">
+          Azure AI Engineer — a working showcase of what I built on the way to AI-102 and AI-103.
+        </p>
+        <div class="flex gap-6 text-sm mt-6">
+          <a href="#" class="underline underline-offset-4">GitHub →</a>
+          <a href="#" class="underline underline-offset-4">LinkedIn →</a>
+        </div>
+        ${extra}
+      </header>
+    `;
+  }
+
+  // =============================================================
+  // Variant A — Editorial · Baseline (unchanged from Round 1's C)
+  // =============================================================
+  function renderBaseline() {
+    return `
+      <div class="max-w-6xl mx-auto px-6 py-16 paper">
+        ${heroBase()}
+        ${modules.map((mod, idx) => renderBaselineSection(mod, idx)).join('')}
+      </div>
+    `;
+  }
+  function renderBaselineSection(mod, idx) {
+    const [featured, ...rest] = mod.tiles;
+    return `
+      <section class="mb-20">
+        <div class="grid grid-cols-12 gap-6 mb-8">
+          <div class="col-span-12 md:col-span-3">
+            <div class="text-xs uppercase tracking-[0.3em] text-neutral-500">Chapter 0${idx + 1}</div>
+            <h2 class="font-editorial text-4xl font-bold leading-tight mt-2">${mod.name}</h2>
+            <div class="text-xs font-mono text-neutral-500 mt-3">${counts(mod)}</div>
+          </div>
+          <p class="col-span-12 md:col-span-9 font-editorial text-lg leading-relaxed text-neutral-700">${mod.blurb}</p>
+        </div>
+        ${renderBento(mod, featured, rest, false, false)}
+      </section>
+    `;
+  }
+
+  // =============================================================
+  // Variant B — Editorial · Colored (accent per module, hover reveal)
+  // =============================================================
+  function renderColored() {
+    return `
+      <div class="max-w-6xl mx-auto px-6 py-16 paper">
+        ${heroBase(`
+          <div class="mt-6 flex gap-2 flex-wrap">
+            ${modules.map(m => `
+              <span class="text-xs font-mono px-3 py-1 rounded-full border" style="border-color:${m.color.accent}; color:${m.color.fg}; background:${m.color.tint};">
+                ${m.name} · ${counts(m)}
+              </span>
+            `).join('')}
+          </div>
+        `)}
+        ${modules.map((mod, idx) => renderColoredSection(mod, idx)).join('')}
+      </div>
+    `;
+  }
+  function renderColoredSection(mod, idx) {
+    const [featured, ...rest] = mod.tiles;
+    return `
+      <section class="mb-20">
+        <div class="grid grid-cols-12 gap-6 mb-8 items-start">
+          <div class="col-span-12 md:col-span-3">
+            <div class="inline-block px-2 py-0.5 rounded text-xs uppercase tracking-[0.25em] font-semibold" style="background:${mod.color.bg}; color:${mod.color.fg};">
+              Chapter 0${idx + 1}
+            </div>
+            <h2 class="font-editorial text-4xl font-bold leading-tight mt-3" style="color:${mod.color.fg};">${mod.name}</h2>
+            <div class="text-xs font-mono mt-3" style="color:${mod.color.accent};">${counts(mod)}</div>
+            <div class="w-16 h-1 mt-4" style="background:${mod.color.accent};"></div>
+          </div>
+          <p class="col-span-12 md:col-span-9 font-editorial text-lg leading-relaxed text-neutral-700">${mod.blurb}</p>
+        </div>
+        ${renderBento(mod, featured, rest, true, false)}
+      </section>
+    `;
+  }
+
+  // =============================================================
+  // Variant C — Editorial · Kinetic (motion, marquee, pulse, shimmer)
+  // =============================================================
+  function renderKinetic() {
+    const marqueeItems = modules.flatMap(m => m.tiles.map(t => `${m.name} · ${t.title}`));
+    const marqueeStr = marqueeItems.concat(marqueeItems).map(s => `<span class="mx-8">◆ ${s}</span>`).join('');
+    return `
+      <div class="max-w-6xl mx-auto px-6 py-16 paper">
+        <div class="overflow-hidden bg-neutral-900 text-neutral-400 text-xs font-mono py-2 mb-10 -mx-6 rounded-none">
+          <div class="marquee-track whitespace-nowrap flex" style="width:max-content;">${marqueeStr}</div>
+        </div>
+        ${heroBase(`
+          <div class="mt-6 flex items-center gap-2 text-sm text-neutral-500 font-mono">
+            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+            <span>Currently shipping: <span class="text-neutral-900 font-semibold">Foundry Chat Agent</span></span>
+          </div>
+        `)}
+        ${modules.map((mod, idx) => renderKineticSection(mod, idx)).join('')}
+      </div>
+    `;
+  }
+  function renderKineticSection(mod, idx) {
+    const [featured, ...rest] = mod.tiles;
+    return `
+      <section class="mb-20 rise" style="animation-delay:${idx * 120}ms;">
+        <div class="grid grid-cols-12 gap-6 mb-8">
+          <div class="col-span-12 md:col-span-3">
+            <div class="text-xs uppercase tracking-[0.3em] text-neutral-500 flex items-center gap-2">
+              <span class="inline-block w-4 h-[2px]" style="background:${mod.color.accent};"></span>
+              Chapter 0${idx + 1}
+            </div>
+            <h2 class="font-editorial text-4xl font-bold leading-tight mt-2">${mod.name}</h2>
+            <div class="text-xs font-mono text-neutral-500 mt-3">${counts(mod)}</div>
+          </div>
+          <p class="col-span-12 md:col-span-9 font-editorial text-lg leading-relaxed text-neutral-700">${mod.blurb}</p>
+        </div>
+        ${renderBento(mod, featured, rest, false, true)}
+      </section>
+    `;
+  }
+
+  // =============================================================
+  // Shared bento layout — flags: colored, kinetic
+  // =============================================================
+  function renderBento(mod, featured, rest, colored, kinetic) {
+    return `
+      <div class="grid grid-cols-12 gap-4">
+        <div class="col-span-12 md:col-span-8">${tileEditorial(featured, true, mod, colored, kinetic, 0)}</div>
+        <div class="col-span-12 md:col-span-4 grid grid-cols-1 gap-4">
+          ${rest.slice(0, 2).map((t, i) => tileEditorial(t, false, mod, colored, kinetic, i + 1)).join('')}
+        </div>
+        ${rest.slice(2).length ? `
+          <div class="col-span-12 grid grid-cols-1 md:grid-cols-3 gap-4">
+            ${rest.slice(2).map((t, i) => tileEditorial(t, false, mod, colored, kinetic, i + 3)).join('')}
+          </div>
+        ` : ''}
+      </div>
+    `;
+  }
+
+  function tileEditorial(t, featured, mod, colored, kinetic, order) {
+    if (!t) return '';
+    const isLive = t.status === 'live';
+    const size = featured ? 'p-8 min-h-[240px]' : 'p-5 min-h-[140px]';
+    const titleSize = featured ? 'text-2xl' : 'text-base';
+
+    const baseColor = 'bg-white border-neutral-900 hover:shadow-2xl';
+    const plannedColor = 'bg-transparent border-neutral-300 border-dashed text-neutral-400 hover:border-neutral-500';
+
+    let styleAttr = '';
+    let extraClass = '';
+    if (colored) {
+      if (isLive) {
+        styleAttr = `background:${mod.color.tint}; border-color:${mod.color.accent};`;
+        extraClass = 'hover-reveal';
+      } else {
+        styleAttr = `border-color:${mod.color.bg};`;
+      }
+    }
+    if (kinetic) {
+      extraClass += ' rise';
+    }
+    if (kinetic && isLive && featured) {
+      extraClass += ' shimmer';
+    }
+
+    const attrs = isLive
+      ? `data-tile-live data-title="${t.title}"`
+      : `data-tile-planned data-title="${t.title}" data-desc="${t.desc}"`;
+
+    const liveMarker = colored
+      ? `<span class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-semibold" style="color:${mod.color.accent};">
+           <span class="w-1.5 h-1.5 rounded-full pulse-dot" style="background:${mod.color.accent};"></span> Live
+         </span>`
+      : (kinetic
+          ? `<span class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-semibold text-emerald-700">
+               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 pulse-dot"></span> Live
+             </span>`
+          : `<span class="text-[10px] uppercase tracking-widest text-emerald-600 font-semibold">● Live</span>`);
+
+    const plannedMarker = colored
+      ? `<span class="text-[10px] uppercase tracking-widest" style="color:${mod.color.fg}; opacity:0.55;">○ Planned</span>`
+      : `<span class="text-[10px] uppercase tracking-widest text-neutral-400">○ Planned</span>`;
+
+    const tagColor = colored && isLive ? `style="color:${mod.color.accent};"` : '';
+
+    return `
+      <div class="border-2 rounded-md transition flex flex-col cursor-pointer ${size} ${isLive ? baseColor : plannedColor} ${extraClass}"
+           style="${styleAttr}${kinetic ? ` animation-delay:${(order * 80) + 200}ms;` : ''}"
+           ${attrs}>
+        <div class="flex items-center justify-between mb-3">
+          ${isLive ? liveMarker : plannedMarker}
+          <span class="text-[10px] font-mono ${isLive ? 'text-neutral-500' : 'text-neutral-400'}" ${tagColor}>${t.tag}</span>
+        </div>
+        <h3 class="font-editorial font-semibold ${titleSize} leading-tight ${isLive ? 'text-neutral-900' : ''}"
+            ${colored && isLive ? `style="color:${mod.color.fg};"` : ''}>
+          ${t.title}
+        </h3>
+        ${(isLive || featured) ? `<p class="mt-3 text-sm ${isLive ? 'text-neutral-600' : 'text-neutral-400 italic'} leading-relaxed">${t.desc}</p>` : ''}
+        ${isLive && colored ? `
+          <div class="preview">
+            <div class="text-xs font-mono italic px-3 py-2 rounded border-l-2" style="background:${mod.color.tint}; border-color:${mod.color.accent}; color:${mod.color.fg};">
+              ${t.preview || 'Click to try this agent →'}
+            </div>
+          </div>
+        ` : ''}
+        ${isLive ? `<div class="mt-auto pt-4 text-xs font-mono ${colored ? '' : 'text-neutral-500'}" ${colored ? `style="color:${mod.color.accent};"` : ''}>Open agent →</div>` : ''}
+      </div>
+    `;
+  }
+
+  // ---------- Boot ----------
+  render();
+</script>
+</body>
+</html>
