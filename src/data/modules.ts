@@ -4,6 +4,18 @@
 
 export type TileStatus = "live" | "planned";
 
+/** The instructional panel shown inside a tile's playground. */
+export type TileGuide = {
+  /** One paragraph: what this demo is. */
+  about: string;
+  /** Tap-to-insert example prompts. */
+  tryThis: string[];
+  /** What the visitor should watch for. */
+  expect: string[];
+  /** "Under the hood" implementation notes. */
+  hood: string[];
+};
+
 export type Tile = {
   title: string;
   /** kebab-case of the title; used by both the landing link and the playground route. */
@@ -15,6 +27,8 @@ export type Tile = {
   desc: string;
   /** Example prompt revealed on hover for live tiles (added when a tile ships). */
   preview?: string;
+  /** Playground guide content. Present only once a tile's playground is built. */
+  guide?: TileGuide;
 };
 
 /** A module's accent palette (docs/CONTEXT.md §Module). */
@@ -51,6 +65,25 @@ export const modules: Module[] = [
         status: "planned",
         tag: "streaming",
         desc: "A simple Foundry-hosted chat agent. Streams responses token-by-token.",
+        guide: {
+          about:
+            "This is the baseline agent — no memory across turns, no tools, no retrieval. Just a hosted chat agent behind the Foundry Responses API. Every other tile in Agents is a variation on this pattern.",
+          tryThis: [
+            "Give me an elevator pitch for AI Arena.",
+            "Explain the difference between an agent and a chatbot.",
+            "What is Azure AI Foundry, in one sentence?",
+          ],
+          expect: [
+            "Response streams character-by-character.",
+            "Neutral tone tuned for portfolio demos.",
+            "No tool calls, no citations — those live in other tiles.",
+          ],
+          hood: [
+            "Azure AI Foundry hosts the agent.",
+            "Next.js API route acts as a thin proxy (Azure keys stay server-side).",
+            "Streaming via the Responses API (event: response.output_text.delta).",
+          ],
+        },
       },
       {
         title: "Function-Calling Agent",
@@ -157,4 +190,15 @@ export const modules: Module[] = [
 export function liveCount(mod: Module): string {
   const live = mod.tiles.filter((t) => t.status === "live").length;
   return `${live} / ${mod.tiles.length} live`;
+}
+
+/** Resolve a playground by module id + tile slug. Returns null when the tile
+ *  doesn't exist or has no guide yet (routes call notFound() on null). */
+export function getPlaygroundData(moduleId: string, slug: string) {
+  const index = modules.findIndex((m) => m.id === moduleId);
+  if (index === -1) return null;
+  const mod = modules[index];
+  const tile = mod.tiles.find((t) => t.slug === slug);
+  if (!tile || !tile.guide) return null;
+  return { module: mod, tile, guide: tile.guide, chapter: index + 1 };
 }
