@@ -6,6 +6,8 @@ export type TileStatus = "live" | "planned";
 
 export type Tile = {
   title: string;
+  /** kebab-case of the title; used by both the landing link and the playground route. */
+  slug: string;
   status: TileStatus;
   /** Short mono-font label, e.g. "streaming" or "RAG · grounding · memory". */
   tag: string;
@@ -45,42 +47,49 @@ export const modules: Module[] = [
     tiles: [
       {
         title: "Foundry Chat Agent",
+        slug: "foundry-chat-agent",
         status: "planned",
         tag: "streaming",
         desc: "A simple Foundry-hosted chat agent. Streams responses token-by-token.",
       },
       {
         title: "Function-Calling Agent",
+        slug: "function-calling-agent",
         status: "planned",
         tag: "tools · async",
         desc: "A chatbot that calls tools to get things done. Demonstrates function calling and async patterns.",
       },
       {
         title: "RAG Agent with Grounding & Memory",
+        slug: "rag-agent-with-grounding-memory",
         status: "planned",
         tag: "RAG · grounding · memory",
         desc: "Retrieval-augmented generation with grounded citations and memory that persists across turns.",
       },
       {
         title: "MCP Agent (Hosted + Own)",
+        slug: "mcp-agent-hosted-own",
         status: "planned",
         tag: "MCP",
         desc: "Toggle between calling a Microsoft-hosted MCP server and my own MCP server. Same task, two implementations.",
       },
       {
         title: "Microsoft Agent Framework Agent",
+        slug: "microsoft-agent-framework-agent",
         status: "planned",
         tag: "MAF",
         desc: "The same agent built with Microsoft Agent Framework instead of Foundry-native, so the pattern differences are visible.",
       },
       {
         title: "Multi-Agent Orchestration",
+        slug: "multi-agent-orchestration",
         status: "planned",
         tag: "workflow · A2A · sequential",
         desc: "A Foundry Workflow that orchestrates multiple agents in sequence, with A2A handoffs visualised on a timeline.",
       },
       {
         title: "Foundry IQ",
+        slug: "foundry-iq",
         status: "planned",
         tag: "Foundry IQ",
         desc: "A standalone demo of Foundry IQ — showcases the feature in isolation so the recruiter sees what makes it distinct.",
@@ -96,6 +105,7 @@ export const modules: Module[] = [
     tiles: [
       {
         title: "Raw Streaming Completion",
+        slug: "raw-streaming-completion",
         status: "planned",
         tag: "streaming · async",
         desc: "No agent framing — just the LLM. A side-by-side sync vs async streaming comparison to show the primitive itself.",
@@ -111,18 +121,21 @@ export const modules: Module[] = [
     tiles: [
       {
         title: "Text Analysis Agent",
+        slug: "text-analysis-agent",
         status: "planned",
         tag: "Azure Language · MCP",
         desc: "Analyse text (sentiment, entities, key phrases) two ways: via Azure Language in Foundry Tools, and via the Azure Language MCP server.",
       },
       {
         title: "Speech Assistant",
+        slug: "speech-assistant",
         status: "planned",
         tag: "Azure Speech · MCP",
         desc: "A speech-capable gen-AI app plus a Speech agent via the Azure Speech MCP server. Toggle implementations.",
       },
       {
         title: "Translation",
+        slug: "translation",
         status: "planned",
         tag: "Foundry Tools",
         desc: "Translate text and speech using Microsoft Foundry Tools.",

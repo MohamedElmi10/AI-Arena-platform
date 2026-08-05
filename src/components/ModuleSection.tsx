@@ -1,10 +1,10 @@
 import type { CSSProperties } from "react";
 import { type Module, liveCount } from "@/data/modules";
+import { Tile } from "@/components/Tile";
 
 // One editorial section per module (docs/prototypes/landing.html
-// §renderColoredSection). Tiles land in T-003 — for now the grid holds a
-// placeholder note. Structural styling is Tailwind; only the per-module accent
-// colours flow through CSS variables set on the <section>.
+// §renderColoredSection + §renderBento). Structural styling is Tailwind; only
+// the per-module accent colours flow through CSS variables set on the <section>.
 type ModuleSectionProps = {
   module: Module;
   /** Zero-based index, drives the "Chapter 0N" marker. */
@@ -20,6 +20,12 @@ export function ModuleSection({ module, index }: ModuleSectionProps) {
   } as CSSProperties;
 
   const chapter = `Chapter ${String(index + 1).padStart(2, "0")}`;
+
+  // Bento: first tile is featured (large), the next two stack beside it, any
+  // remainder flows into a three-column row below.
+  const [featured, ...rest] = module.tiles;
+  const beside = rest.slice(0, 2);
+  const below = rest.slice(2);
 
   return (
     <section className="mb-20" style={accentVars}>
@@ -42,9 +48,28 @@ export function ModuleSection({ module, index }: ModuleSectionProps) {
         </p>
       </div>
 
-      {/* Placeholder — <Tile> arrives in T-003. */}
-      <div className="rounded-lg border border-dashed border-[var(--accent)]/40 bg-[var(--accent-tint)] px-6 py-10 text-center font-mono text-xs uppercase tracking-[0.2em] text-[color:var(--accent)]">
-        {module.tiles.length} tiles coming in T-003
+      <div className="grid grid-cols-12 gap-4">
+        {featured && (
+          <div className="col-span-12 md:col-span-8">
+            <Tile tile={featured} module={module} featured />
+          </div>
+        )}
+
+        {beside.length > 0 && (
+          <div className="col-span-12 grid grid-cols-1 gap-4 md:col-span-4">
+            {beside.map((tile) => (
+              <Tile key={tile.slug} tile={tile} module={module} />
+            ))}
+          </div>
+        )}
+
+        {below.length > 0 && (
+          <div className="col-span-12 grid grid-cols-1 gap-4 md:grid-cols-3">
+            {below.map((tile) => (
+              <Tile key={tile.slug} tile={tile} module={module} />
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
