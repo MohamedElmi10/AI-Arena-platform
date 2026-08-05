@@ -1,5 +1,7 @@
 # Cost Safety Posture
 
+> **As-built note:** the runtime shipped **three** layers, not four (IP rate limit dropped), and uses **Netlify Blobs** instead of Upstash Redis. The original posture is preserved below for context; see [Update — runtime implementation (T-005)](#update--runtime-implementation-t-005) at the end for what actually shipped and why.
+
 AI Arena is a public portfolio; anyone on the internet can hit the demos. To stay solvent on a free-tier budget we combine per-request bounds (`max_tokens` cap), per-visitor bounds (IP rate limit), global bounds (daily budget cap), and an emergency stop (`KILL_SWITCH` env var). All Azure resources are pinned to a single resource group so a one-command delete zeroes the bill, and any tile that would need a provisioned-tier service (currently only the RAG Agent tile, which needs Azure AI Search) runs on the free tier or is refactored to a pay-per-call vector store.
 
 ## Considered Options

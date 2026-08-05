@@ -73,11 +73,13 @@ AI Arena runs on pay-per-call by default. The one exception is the **RAG Agent**
 - Use Azure AI Search's **free tier** (50 MB, 3 indexes) — enough for the demo.
 - Or substitute a self-hosted vector store (Postgres + pgvector on Neon's free tier) to stay pay-per-call end-to-end.
 
-**Runtime protections baked into every Next.js API route:**
-- **`max_tokens` cap** on every model call (target: ≤ 400 tokens per response). Bounds per-request cost.
-- **IP rate limit** — ~5 messages / minute / IP via Upstash Redis (free tier). Blocks casual token drainage.
-- **Daily global budget** — counter with a hard cap. Over cap → friendly "demo capped for today, come back tomorrow" message. No model call happens.
-- **Kill switch** — a `KILL_SWITCH=true` env var makes every Playground respond with "demo temporarily paused." Toggle without redeploying.
+**Runtime protections baked into every Next.js API route** (as built in T-005 — `src/lib/cost-safety.ts`, `withCostSafety(...)`; three layers, not four — see [ADR-0001 → Update](adr/0001-cost-safety-posture.md)):
+- **`max_tokens` cap** — ≤ 400 tokens per response. Bounds per-request cost. (`MAX_OUTPUT_TOKENS` + `clampMaxTokens()`; the route handler applies it to its Azure call.)
+- **Daily global budget** — 500 messages/day, counter in **Netlify Blobs** keyed by UTC date (auto-resets at midnight). Over cap → 429 `budget_capped` with a friendly message. No model call happens.
+- **Kill switch** — a `KILL_SWITCH=true` env var makes every Playground respond 503 `paused`. Toggle without redeploying.
+- **~~IP rate limit~~ — dropped.** The original posture had a 4th layer (5 msgs/min/IP via Upstash Redis); it was cut because the daily cap already bounds worst-case spend and it avoided a hosted dependency. Rationale in the ADR.
+
+The middleware **fails open** if the Blobs store is unreachable — the token cap and kill switch still hold.
 
 **Portfolio-level protections:**
 - All AI Arena Azure resources live in **one dedicated resource group** (`rg-ai-arena`). One click deletes them all.

@@ -19,10 +19,24 @@ Public portfolio platform showcasing Mohamed's Azure AI skills. **Portfolio-prim
 6. **Claude NEVER commits, merges, or pushes — that's Mohamed's job.** Claude prepares the branch with every change left uncommitted (working tree or staged). Mohamed reviews the diff, commits, merges to `main`, and pushes. Claude does not run `git commit`, `git merge`, `git push`, or `git commit --amend` under any circumstances. (This rule exists because an amend of an already-pushed commit once forced a non-fast-forward push; keeping history in Mohamed's hands prevents that.)
 7. **Do not open a second ticket in the same session** unless the user explicitly asks.
 
+### Branch naming
+
+One branch per unit of work, off `main`, lowercase-hyphenated. Prefix by kind:
+
+- `t-XXX-<slug>` — **ticket work.** Matches the ticket filename, e.g. `t-007-wire-foundry-chat-runtime`.
+- `docs-<slug>` — **docs-only changes** (CONTEXT/ADR/CLAUDE/README, ticket-text edits), e.g. `docs-sync-project-state`.
+- `chore-<slug>` — **housekeeping** not tied to a ticket: moving files, deps, config, tooling, e.g. `chore-tidy-done-tickets`.
+- `fix-<slug>` — **a fix outside a ticket** (a bug too small to warrant one), e.g. `fix-tile-hover-jitter`.
+
+Only ticket branches carry a number — it references the `tickets/T-XXX-*.md` file and the `Blocks`/`Blocked by` graph. `docs-`/`chore-`/`fix-` branches are ad-hoc and have no such artifact, so a descriptive slug identifies them (a number would point at nothing and need a maintained counter). The `t-` vs `docs-`/`chore-`/`fix-` prefix also signals planned work vs a side-tidy at a glance.
+
+Mohamed merges every branch via **Squash and merge** (repo default) so `main` stays one commit per branch — no merge bubbles. Don't bundle unrelated work into one branch.
+
 ## Coding conventions
 
-- **Stack:** Next.js (App Router) · TypeScript · Tailwind · shadcn/ui · Node.js `openai` package for Azure calls.
-- **Server logic** lives in `app/api/` route handlers. Azure keys NEVER touch the browser.
+- **Stack:** Next.js 16 (App Router, **`src/` dir**) · TypeScript · Tailwind v4 · shadcn/ui (New York / neutral, Radix) · Node.js `openai` package for Azure calls · Vitest for tests. All app code lives under `src/` — paths below like `app/…` and `data/…` mean `src/app/…` and `src/data/…`.
+- **Server logic** lives in `src/app/api/` route handlers. Azure keys NEVER touch the browser.
+- **Model:** the Foundry Chat Agent runs on **`gpt-5-mini`** (the spec originally said `gpt-4o-mini`, which retired in 2026). Env vars (in `.env.local`, see `.env.local.example`): `AZURE_OPENAI_ENDPOINT` (resource URL **with `/openai/v1/` appended**), `AZURE_OPENAI_API_KEY`, `MODEL_ENDPOINT` (the deployment name), `KILL_SWITCH`.
 - **Data-driven UI:** modules and tiles come from `data/modules.ts`. Flipping a tile from Planned to Live is a data edit, not a code edit.
 - **Tile co-location:** one tile = one folder. Agents tiles under `app/agents/<slug>/`, Gen-AI under `app/genai/<slug>/`, Natural Language under `app/nl/<slug>/`. The tile's `build.py` (or `.md`) documenting how the agent was created in Foundry lives next to its page — this is portfolio surface.
 - **Components small and named:** `<Tile>`, `<PlaygroundGuide>`, `<ChatSurface>`, `<LiveStats>`. Prefer duplication over premature abstraction.
@@ -31,11 +45,10 @@ Public portfolio platform showcasing Mohamed's Azure AI skills. **Portfolio-prim
 
 ## Cost safety (non-negotiable — see [ADR-0001](docs/adr/0001-cost-safety-posture.md))
 
-Every API route calling Azure MUST wrap the handler in `withCostSafety(handler)`. That middleware enforces:
-- `max_tokens: 400` cap.
-- IP rate limit (5 msgs / min / IP) via Upstash Redis.
-- Daily global budget (500 msgs / day). Over cap → friendly "demo capped for today" response.
-- `KILL_SWITCH` env var check. If `true`, respond with "demo paused" and don't call Azure at all.
+Every API route calling Azure MUST wrap the handler in `withCostSafety(handler)` (built in T-005 — `src/lib/cost-safety.ts`). As shipped it enforces **three** layers (the IP rate limit was dropped — see [ADR-0001 → Update](docs/adr/0001-cost-safety-posture.md)):
+- `max_tokens: 400` cap — via `MAX_OUTPUT_TOKENS` / `clampMaxTokens()`; the handler applies it to its Azure request.
+- Daily global budget (500 msgs / day) — counter in **Netlify Blobs**, UTC-date keyed (auto-resets at midnight). Over cap → 429 `budget_capped`. Fails open if the store is unreachable.
+- `KILL_SWITCH=true` env var → 503 `paused`; no Azure call.
 
 A PR that adds an Azure-calling route without `withCostSafety` fails review.
 
