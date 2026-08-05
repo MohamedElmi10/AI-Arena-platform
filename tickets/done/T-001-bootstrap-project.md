@@ -1,6 +1,6 @@
 # T-001: Bootstrap project
 
-**Status:** open
+**Status:** done
 **Blocked by:** —
 **Blocks:** T-002, T-005
 

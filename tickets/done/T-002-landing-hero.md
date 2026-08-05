@@ -1,6 +1,6 @@
 # T-002: Landing hero + module scaffolding
 
-**Status:** open
+**Status:** done
 **Blocked by:** T-001
 **Blocks:** T-003
 

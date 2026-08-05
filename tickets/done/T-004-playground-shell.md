@@ -1,6 +1,6 @@
 # T-004: Playground shell + Split layout (fake stream)
 
-**Status:** open
+**Status:** done
 **Blocked by:** T-003
 **Blocks:** T-007
 

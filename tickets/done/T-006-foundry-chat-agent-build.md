@@ -1,6 +1,6 @@
 # T-006: Build Foundry Chat Agent in Azure
 
-**Status:** open
+**Status:** done
 **Blocked by:** —  (Azure work, independent of the Next.js codebase)
 **Blocks:** T-007
 

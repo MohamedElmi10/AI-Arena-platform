@@ -1,6 +1,6 @@
 # T-008: Flip Foundry Chat Agent to Live
 
-**Status:** open
+**Status:** done
 **Blocked by:** T-007
 **Blocks:** T-009
 

@@ -1,6 +1,6 @@
 # T-003: Tile components + Planned modal
 
-**Status:** open
+**Status:** done
 **Blocked by:** T-002
 **Blocks:** T-004
 
