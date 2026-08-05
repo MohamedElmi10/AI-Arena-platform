@@ -62,9 +62,10 @@ export const modules: Module[] = [
       {
         title: "Foundry Chat Agent",
         slug: "foundry-chat-agent",
-        status: "planned",
+        status: "live",
         tag: "streaming",
         desc: "A simple Foundry-hosted chat agent. Streams responses token-by-token.",
+        preview: 'Try: "Give me an elevator pitch for AI Arena."',
         guide: {
           about:
             "This is the baseline agent — no memory across turns, no tools, no retrieval. Just a hosted chat agent behind the Foundry Responses API. Every other tile in Agents is a variation on this pattern.",
