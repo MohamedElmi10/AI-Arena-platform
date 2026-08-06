@@ -126,7 +126,7 @@ export const modules: Module[] = [
         slug: "foundry-iq",
         status: "planned",
         tag: "Foundry IQ",
-        desc: "A standalone demo of Foundry IQ — showcases the feature in isolation so the recruiter sees what makes it distinct.",
+        desc: "A standalone demo of Foundry IQ — showcases the feature in isolation so visitors see what makes it distinct.",
       },
     ],
   },

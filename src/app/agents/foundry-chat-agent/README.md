@@ -27,7 +27,7 @@ reaches the browser.
 
 `gpt-5-mini` is billed only when a request happens (~$0.25 per 1M input tokens /
 ~$2 per 1M output). There is **no** hourly or provisioned charge — an idle
-deployment costs nothing. A recruiter's whole demo is a few thousand tokens:
+deployment costs nothing. A whole demo run is a few thousand tokens:
 fractions of a cent. Confirm current pricing on the
 [Azure OpenAI pricing page](https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/).
 
