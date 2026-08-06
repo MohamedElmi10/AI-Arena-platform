@@ -31,7 +31,7 @@ Ordered by portfolio impact per unit of build effort:
 
 1. Foundry Chat Agent — done (T-006 → T-008).
 2. **Function-Calling Agent** — small step up from #1; teaches tool calling.
-3. **RAG Agent with Grounding & Memory** — highest recruiter impact; also the one with the AI Search cost trap (use free tier per ADR-0001).
+3. **RAG Agent with Grounding & Memory** — highest portfolio impact; also the one with the AI Search cost trap (use free tier per ADR-0001).
 4. **Text Analysis Agent** (toggle) — Natural Language pillar comes alive.
 5. **Multi-Agent Orchestration** — the "wow" tile; save till last because the visualisation is the hardest custom UI.
 

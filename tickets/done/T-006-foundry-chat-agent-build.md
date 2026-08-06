@@ -20,7 +20,7 @@ Create the Foundry-hosted chat agent in Azure AI Foundry, capture the endpoint, 
 - [ ] Azure Cost Management budget alerts set on the subscription: $5, $10, $20 thresholds emailed to Mohamed.
 
 ## Notes
-- `gpt-5-mini` is cheap: ~$0.25 per 1M input tokens / ~$2 per 1M output. A recruiter's whole demo is a few thousand tokens — fractions of a cent.
-- The `build.py` is portfolio surface — write it clearly, with comments a recruiter can read.
+- `gpt-5-mini` is cheap: ~$0.25 per 1M input tokens / ~$2 per 1M output. A whole demo run is a few thousand tokens — fractions of a cent.
+- The `build.py` is portfolio surface — write it clearly, with comments anyone can read.
 - No Node code changes in this ticket. This is Azure + a Python file.
 - If Foundry access is unavailable and Azure OpenAI is easier for the MVP, that's an acceptable substitute — document the change in `docs/CONTEXT.md` before closing this ticket.

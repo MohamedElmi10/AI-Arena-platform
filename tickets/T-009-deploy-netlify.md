@@ -1,11 +1,11 @@
 # T-009: Deploy to Netlify
 
 **Status:** open
-**Blocked by:** T-008
+**Blocked by:** T-016  (deploy last — after all Agents + Gen-AI tiles are Live)
 **Blocks:** —
 
 ## Goal
-Get a live, recruiter-shareable URL with the Foundry Chat Agent working end-to-end.
+Get a live, shareable URL with the Foundry Chat Agent working end-to-end.
 
 ## Acceptance
 - [ ] Netlify site created and connected to the GitHub repo. Auto-deploy from `main`.

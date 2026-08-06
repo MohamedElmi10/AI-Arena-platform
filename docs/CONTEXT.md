@@ -3,13 +3,13 @@
 The shared language for this project. Implementation details do not belong here.
 
 ## AI Arena
-Mohamed's portfolio platform showcasing skills learned during AI-103. Primary audience: professional network and future recruiters. **Portfolio-primary**; code that stays readable and maintainable to Mohamed is a hard secondary constraint. The agents themselves are built in Azure AI Foundry; AI Arena is the UI that wraps and demos them.
+Mohamed's portfolio platform showcasing skills learned during AI-103. Primary audience: professional network. **Portfolio-primary**; code that stays readable and maintainable to Mohamed is a hard secondary constraint. The agents themselves are built in Azure AI Foundry; AI Arena is the UI that wraps and demos them.
 
 ## Tile
 The unit of the platform. Each tile represents one showcased capability — either a single AI-103 topic or a combination of topics rolled into one demo. The landing is a wall of tiles. Clicking a tile opens its inner **playground** — an interactive surface whose shape adapts to the tile's agent type (chat, streaming console, multi-agent flow view, etc.).
 
 ## Playground
-The interactive surface inside an opened tile. Not the top-level frame. This is where the recruiter actually plays with the agent.
+The interactive surface inside an opened tile. Not the top-level frame. This is where the visitor actually plays with the agent.
 
 ## Module
 A top-level grouping on the landing. AI Arena launches with three modules; a fourth is planned:
@@ -96,10 +96,10 @@ A tile is in exactly one of two states:
 "In progress" is Mohamed's internal state, not a visible one. A tile flips from Planned to Live when it ships.
 
 ## Playground Guide
-The instructional panel inside every Playground. Tells the visitor exactly what to try and what to expect: "Ask about X. The agent will Y. Watch for Z." Every Live tile has one. It exists because a recruiter with 30 seconds needs a prompt and a payoff, not a blank chat box.
+The instructional panel inside every Playground. Tells the visitor exactly what to try and what to expect: "Ask about X. The agent will Y. Watch for Z." Every Live tile has one. It exists because a visitor with 30 seconds needs a prompt and a payoff, not a blank chat box.
 
 ## Foundry-hosted Agent
-An agent that lives inside Azure AI Foundry as a hosted endpoint. Mohamed builds and configures these agents in Python (or the Foundry UI); at runtime, AI Arena's Next.js API routes call the Foundry endpoint by URL. Python is a **dev-time artifact**, not a runtime dependency. The `build.py` (or equivalent) file for each agent lives in the repo as portfolio surface — recruiters can read it.
+An agent that lives inside Azure AI Foundry as a hosted endpoint. Mohamed builds and configures these agents in Python (or the Foundry UI); at runtime, AI Arena's Next.js API routes call the Foundry endpoint by URL. Python is a **dev-time artifact**, not a runtime dependency. The `build.py` (or equivalent) file for each agent lives in the repo as portfolio surface — anyone can read it.
 
 ## Runtime Path
 The path a user's message takes when they interact with a Playground: browser → Next.js API route → Foundry-hosted Agent endpoint → back. Azure credentials never touch the browser. For tiles that aren't wrapping a Foundry-hosted agent (e.g. a raw streaming completion demo), the Next.js API route calls Azure OpenAI directly via the Node.js `openai` package instead.
