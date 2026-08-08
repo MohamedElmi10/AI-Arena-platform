@@ -20,7 +20,7 @@ AI Arena is a public portfolio; anyone on the internet can hit the demos. To sta
 
 The runtime middleware (`src/lib/cost-safety.ts`) ships **three** of the four layers above, with two deliberate changes from the original posture:
 
-- **IP rate limit dropped.** It was the one layer Mohamed didn't ask for. The daily global cap already bounds worst-case daily spend regardless of caller, and `max_tokens: 400` bounds each request — so per-visitor throttling adds little for a low-traffic portfolio. Removing it also removes a hosted dependency.
+- **IP rate limit dropped.** It was the one layer Mohamed didn't ask for. The daily global cap already bounds worst-case daily spend regardless of caller, and `max_tokens: 1000` bounds each request — so per-visitor throttling adds little for a low-traffic portfolio. Removing it also removes a hosted dependency.
 - **Store changed from Upstash Redis to Netlify Blobs.** The daily counter still needs external state (serverless instances share no memory), but Netlify Blobs is built into the deploy host (T-009) — no extra third-party account. Trade-off: Blobs does read-modify-write rather than an atomic `INCR`, so under a burst the counter can undercount by a few. At portfolio scale (a 500/day cap, light traffic) that's immaterial; if traffic ever warranted atomicity we'd revisit Redis.
 
 The middleware **fails open** if the Blobs store is unreachable (logs a warning and proceeds) so a store hiccup can't take the demo offline — the `max_tokens` cap and kill switch remain in force either way. Every Azure-calling route must still be wrapped in `withCostSafety(...)`; that rule is unchanged.

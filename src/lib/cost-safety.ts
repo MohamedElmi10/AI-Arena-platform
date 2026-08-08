@@ -8,7 +8,7 @@ import { getStore } from "@netlify/blobs";
 // (The ADR's original IP rate limit was dropped — see the ADR for why.)
 
 /** Hard cap on output tokens per model call. Bounds per-request cost. */
-export const MAX_OUTPUT_TOKENS = 400;
+export const MAX_OUTPUT_TOKENS = 1000;
 
 /** Hard cap on model calls per UTC day across all visitors. */
 export const DAILY_MESSAGE_CAP = 500;
