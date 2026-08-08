@@ -1,6 +1,8 @@
 import { Hero } from "@/components/Hero";
 import { ModuleSection } from "@/components/ModuleSection";
 import { modules } from "@/data/modules";
+import { SiteFooter } from "@/components/SiteFooter";
+import { ArchitectureDiagram } from "@/components/ArchitectureDiagram";
 
 export default function Home() {
   return (
@@ -10,6 +12,8 @@ export default function Home() {
         {modules.map((module, index) => (
           <ModuleSection key={module.id} module={module} index={index} />
         ))}
+        <ArchitectureDiagram />
+        <SiteFooter />
       </div>
     </main>
   );
