@@ -74,7 +74,7 @@ AI Arena runs on pay-per-call by default. The one exception is the **RAG Agent**
 - Or substitute a self-hosted vector store (Postgres + pgvector on Neon's free tier) to stay pay-per-call end-to-end.
 
 **Runtime protections baked into every Next.js API route** (as built in T-005 — `src/lib/cost-safety.ts`, `withCostSafety(...)`; three layers, not four — see [ADR-0001 → Update](adr/0001-cost-safety-posture.md)):
-- **`max_tokens` cap** — ≤ 400 tokens per response. Bounds per-request cost. (`MAX_OUTPUT_TOKENS` + `clampMaxTokens()`; the route handler applies it to its Azure call.)
+- **`max_tokens` cap** — ≤ 1000 tokens per response. Bounds per-request cost. (`MAX_OUTPUT_TOKENS` + `clampMaxTokens()`; the route handler applies it to its Azure call.)
 - **Daily global budget** — 500 messages/day, counter in **Netlify Blobs** keyed by UTC date (auto-resets at midnight). Over cap → 429 `budget_capped` with a friendly message. No model call happens.
 - **Kill switch** — a `KILL_SWITCH=true` env var makes every Playground respond 503 `paused`. Toggle without redeploying.
 - **~~IP rate limit~~ — dropped.** The original posture had a 4th layer (5 msgs/min/IP via Upstash Redis); it was cut because the daily cap already bounds worst-case spend and it avoided a hosted dependency. Rationale in the ADR.

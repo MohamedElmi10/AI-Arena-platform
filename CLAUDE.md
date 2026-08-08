@@ -46,7 +46,7 @@ Mohamed merges every branch via **Squash and merge** (repo default) so `main` st
 ## Cost safety (non-negotiable — see [ADR-0001](docs/adr/0001-cost-safety-posture.md))
 
 Every API route calling Azure MUST wrap the handler in `withCostSafety(handler)` (built in T-005 — `src/lib/cost-safety.ts`). As shipped it enforces **three** layers (the IP rate limit was dropped — see [ADR-0001 → Update](docs/adr/0001-cost-safety-posture.md)):
-- `max_tokens: 400` cap — via `MAX_OUTPUT_TOKENS` / `clampMaxTokens()`; the handler applies it to its Azure request.
+- `max_tokens: 1000` cap — via `MAX_OUTPUT_TOKENS` / `clampMaxTokens()`; the handler applies it to its Azure request. (Raised from 400 → 1000 post-T-005; see ADR-0001.)
 - Daily global budget (500 msgs / day) — counter in **Netlify Blobs**, UTC-date keyed (auto-resets at midnight). Over cap → 429 `budget_capped`. Fails open if the store is unreachable.
 - `KILL_SWITCH=true` env var → 503 `paused`; no Azure call.
 
