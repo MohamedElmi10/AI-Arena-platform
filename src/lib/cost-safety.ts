@@ -52,7 +52,7 @@ export function nextResetIso(now: Date = new Date()): string {
  *  absent). Pure + exported so it's unit-testable on its own. */
 export function clampMaxTokens<T extends { max_output_tokens?: number }>(
   payload: T
-): T {
+): T & { max_output_tokens: number } {
   const requested = payload.max_output_tokens ?? MAX_OUTPUT_TOKENS;
   return { ...payload, max_output_tokens: Math.min(requested, MAX_OUTPUT_TOKENS) };
 }
