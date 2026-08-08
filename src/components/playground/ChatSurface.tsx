@@ -53,7 +53,7 @@ export function ChatSurface({
                     "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm",
                     m.role === "user"
                       ? "rounded-tr-sm bg-[var(--accent)] text-white"
-                      : "rounded-tl-sm border border-neutral-200 bg-white font-display leading-relaxed text-neutral-700"
+                      : "whitespace-pre-line rounded-tl-sm border border-neutral-200 bg-white font-display leading-relaxed text-neutral-700"
                   )}
                 >
                   {m.text}

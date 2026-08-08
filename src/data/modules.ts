@@ -89,9 +89,29 @@ export const modules: Module[] = [
       {
         title: "Function-Calling Agent",
         slug: "function-calling-agent",
-        status: "planned",
+        status: "live",
         tag: "tools · async",
-        desc: "A chatbot that calls tools to get things done. Demonstrates function calling and async patterns.",
+        desc: "A chatbot that calls custom tools to get things done. Demonstrates function calling and async patterns.",
+        preview: 'Try: "What time is it, and what is 128 * 47?"',
+        guide: {
+          about:
+            "One step up from the baseline chat agent: this one can call tools. When a question needs a precise answer, the model doesn't guess — it asks the server to run a custom tool, gets the result back, and finishes the reply. Same gpt-5-mini deployment as tile #1, now with function calling.",
+          tryThis: [
+            "What time is it right now, and what is 128 * 47?",
+            "What's 15% of 340?",
+            "What time is it in Sweden right now?",
+          ],
+          expect: [
+            "A 🔧 line shows each tool the model called and what it returned.",
+            "The final answer uses the tool result, not a guess.",
+            "Ask something with no tool and it just answers directly.",
+          ],
+          hood: [
+            "The AI answers in two steps: it asks for a tool, the server runs it, then the AI replies using the result.",
+            "The tools and the secret Azure key run on the server, never in your browser — so the key stays private.",
+            "The calculator only accepts numbers and math symbols, so it can never run anything but arithmetic.",
+          ],
+        },
       },
       {
         title: "RAG Agent with Grounding & Memory",
