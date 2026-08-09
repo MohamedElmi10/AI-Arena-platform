@@ -38,7 +38,10 @@ function Node({ label, sublabel, icon, iconAlt }: NodeProps) {
 function Arrow({ label }: { label: string }) {
   return (
     <div className="flex shrink-0 flex-col items-center justify-center gap-1 md:px-1">
-      <span aria-hidden="true" className="text-neutral-400">
+      <span
+        aria-hidden="true"
+        className="rotate-90 text-neutral-400 md:rotate-0"
+      >
         →
       </span>
       <span className="font-mono text-[9px] uppercase tracking-widest text-neutral-400">
@@ -56,9 +59,10 @@ export function ArchitectureDiagram() {
           How it works
         </div>
         <p className="mt-3 max-w-3xl font-display text-lg leading-relaxed text-neutral-700">
-          Every message takes the same path. Your browser never sees an Azure
-          key — the Next.js route calls Azure server-side and streams the reply
-          back token by token.
+          Every demo follows the same shape: your browser never sees an Azure
+          key — the Next.js route calls Azure server-side (wrapped in
+          cost-safety) and streams the reply back token by token. Only the
+          Azure service at the end changes per tile.
         </p>
       </div>
 
@@ -72,14 +76,20 @@ export function ArchitectureDiagram() {
         <Arrow label="server-side" />
         <Node
           label="Azure AI Foundry"
-          sublabel="gpt-5-mini · streaming"
+          sublabel="gpt-5-mini · the live example"
           icon="/icons/azure-ai-foundry.svg"
           iconAlt="Azure AI Foundry"
         />
       </div>
 
       <p className="mt-4 font-mono text-xs text-neutral-500">
-        ← Tokens stream back along the same path, rendered live in the chat.
+        <span
+          aria-hidden="true"
+          className="inline-block rotate-90 md:rotate-0"
+        >
+          ←
+        </span>{" "}
+        Tokens stream back along the same path, rendered live in the chat.
       </p>
     </section>
   );
