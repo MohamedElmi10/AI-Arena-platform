@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LiveStats, type StreamStatus } from "@/components/playground/LiveStats";
+import { PoweredBy } from "@/components/PoweredBy";
 
 // Sticky breadcrumb + editorial title block + the live-stats bar
 // (docs/prototypes/playground-split.html). Presentational; the stats values
@@ -9,6 +10,7 @@ type PlaygroundHeaderProps = {
   moduleName: string;
   title: string;
   tagline: string;
+  poweredBy: string;
   model: string;
   tokens: number;
   latency: string;
@@ -19,6 +21,7 @@ export function PlaygroundHeader({
   chapterLabel,
   title,
   tagline,
+  poweredBy,
   model,
   tokens,
   latency,
@@ -55,6 +58,11 @@ export function PlaygroundHeader({
           {tagline}
         </p>
         <div className="mt-4 h-1 w-16 bg-[var(--accent)]" />
+        <PoweredBy
+          service={poweredBy}
+          prefix="Powered by"
+          className="mt-3 text-[color:var(--accent)]"
+        />
       </div>
 
       <LiveStats

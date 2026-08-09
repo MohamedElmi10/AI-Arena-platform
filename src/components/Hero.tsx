@@ -1,4 +1,5 @@
 import { modules, liveCount } from "@/data/modules";
+import { PoweredBy } from "@/components/PoweredBy";
 
 // Editorial masthead for the landing (docs/prototypes/landing.html §heroBase +
 // renderColored pills). Server component — no interactivity.
@@ -22,6 +23,12 @@ export function Hero() {
         Azure AI Engineer — a working showcase of what I built on the way to
         AI-102 and AI-103.
       </p>
+
+      <PoweredBy
+        service="Microsoft Azure AI"
+        prefix="Built on"
+        className="mt-4 text-neutral-500"
+      />
 
       <div className="mt-6 flex gap-6 text-sm">
         {/* TODO(Mohamed): confirm your LinkedIn URL. */}

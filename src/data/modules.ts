@@ -20,6 +20,8 @@ export type Tile = {
   title: string;
   /** kebab-case of the title; used by both the landing link and the playground route. */
   slug: string;
+  /** The Azure service that powers this tile (wordmark attribution — T-017). */
+  poweredBy: string;
   status: TileStatus;
   /** Short mono-font label, e.g. "streaming" or "RAG · grounding · memory". */
   tag: string;
@@ -64,6 +66,7 @@ export const modules: Module[] = [
         slug: "foundry-chat-agent",
         status: "live",
         tag: "streaming",
+        poweredBy: "Azure AI Foundry",
         desc: "A simple Foundry-hosted chat agent. Streams responses token-by-token.",
         preview: 'Try: "Give me an elevator pitch for AI Arena."',
         guide: {
@@ -91,6 +94,7 @@ export const modules: Module[] = [
         slug: "function-calling-agent",
         status: "live",
         tag: "tools · async",
+        poweredBy: "Azure AI Foundry",
         desc: "A chatbot that calls custom tools to get things done. Demonstrates function calling and async patterns.",
         preview: 'Try: "What time is it, and what is 128 * 47?"',
         guide: {
@@ -118,6 +122,7 @@ export const modules: Module[] = [
         slug: "rag-agent-with-grounding-memory",
         status: "planned",
         tag: "RAG · grounding · memory",
+        poweredBy: "Azure AI Foundry",
         desc: "Retrieval-augmented generation with grounded citations and memory that persists across turns.",
       },
       {
@@ -125,6 +130,7 @@ export const modules: Module[] = [
         slug: "mcp-agent-hosted-own",
         status: "planned",
         tag: "MCP",
+        poweredBy: "Azure AI Foundry",
         desc: "Toggle between calling a Microsoft-hosted MCP server and my own MCP server. Same task, two implementations.",
       },
       {
@@ -132,6 +138,7 @@ export const modules: Module[] = [
         slug: "microsoft-agent-framework-agent",
         status: "planned",
         tag: "MAF",
+        poweredBy: "Azure AI Foundry",
         desc: "The same agent built with Microsoft Agent Framework instead of Foundry-native, so the pattern differences are visible.",
       },
       {
@@ -139,6 +146,7 @@ export const modules: Module[] = [
         slug: "multi-agent-orchestration",
         status: "planned",
         tag: "workflow · A2A · sequential",
+        poweredBy: "Azure AI Foundry",
         desc: "A Foundry Workflow that orchestrates multiple agents in sequence, with A2A handoffs visualised on a timeline.",
       },
       {
@@ -146,6 +154,7 @@ export const modules: Module[] = [
         slug: "foundry-iq",
         status: "planned",
         tag: "Foundry IQ",
+        poweredBy: "Azure AI Foundry",
         desc: "A standalone demo of Foundry IQ — showcases the feature in isolation so visitors see what makes it distinct.",
       },
     ],
@@ -162,6 +171,7 @@ export const modules: Module[] = [
         slug: "raw-streaming-completion",
         status: "planned",
         tag: "streaming · async",
+        poweredBy: "Azure OpenAI",
         desc: "No agent framing — just the LLM. A side-by-side sync vs async streaming comparison to show the primitive itself.",
       },
     ],
@@ -178,6 +188,7 @@ export const modules: Module[] = [
         slug: "text-analysis-agent",
         status: "planned",
         tag: "Azure Language · MCP",
+        poweredBy: "Azure Language",
         desc: "Analyse text (sentiment, entities, key phrases) two ways: via Azure Language in Foundry Tools, and via the Azure Language MCP server.",
       },
       {
@@ -185,6 +196,7 @@ export const modules: Module[] = [
         slug: "speech-assistant",
         status: "planned",
         tag: "Azure Speech · MCP",
+        poweredBy: "Azure Speech",
         desc: "A speech-capable gen-AI app plus a Speech agent via the Azure Speech MCP server. Toggle implementations.",
       },
       {
@@ -192,6 +204,7 @@ export const modules: Module[] = [
         slug: "translation",
         status: "planned",
         tag: "Foundry Tools",
+        poweredBy: "Azure Translator",
         desc: "Translate text and speech using Microsoft Foundry Tools.",
       },
     ],

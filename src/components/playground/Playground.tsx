@@ -9,6 +9,7 @@ import {
   type ChatMessage,
 } from "@/components/playground/ChatSurface";
 import type { StreamStatus } from "@/components/playground/LiveStats";
+import { SiteFooter } from "@/components/SiteFooter";
 import { parseSSEFrame, splitSSEFrames } from "@/lib/sse";
 
 // The Split playground (docs/CONTEXT.md §Playground Layout). Orchestrator: owns
@@ -149,6 +150,7 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             moduleName={module.name}
             title={tile.title}
             tagline={tile.desc}
+            poweredBy={tile.poweredBy}
             model={MODEL}
             tokens={tokens}
             latency={latency}
@@ -167,6 +169,8 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             onSubmit={runStream}
           />
         </div>
+
+        <SiteFooter />
       </div>
     </main>
   );

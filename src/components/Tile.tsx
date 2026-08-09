@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { PoweredBy } from "@/components/PoweredBy";
 import type { Module, Tile as TileData } from "@/data/modules";
 
 // One tile on the landing wall (docs/prototypes/landing.html §tileEditorial,
@@ -98,11 +99,19 @@ export function Tile({ tile, module, featured = false }: TileProps) {
         </div>
       )}
 
-      {isLive && (
-        <div className="mt-auto pt-4 font-mono text-xs text-[color:var(--accent)]">
-          Open agent →
-        </div>
-      )}
+      <div className="mt-auto flex items-center justify-between gap-2 pt-4">
+        <PoweredBy
+          service={tile.poweredBy}
+          className={cn(
+            isLive ? "text-[color:var(--accent)]" : "text-neutral-400"
+          )}
+        />
+        {isLive && (
+          <span className="font-mono text-xs text-[color:var(--accent)]">
+            Open agent →
+          </span>
+        )}
+      </div>
     </div>
   );
 
