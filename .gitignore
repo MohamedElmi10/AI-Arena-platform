@@ -46,3 +46,6 @@ next-env.d.ts
 .venv/
 __pycache__/
 *.pyc
+
+.fuse_hidden*
+_fuse_trash/

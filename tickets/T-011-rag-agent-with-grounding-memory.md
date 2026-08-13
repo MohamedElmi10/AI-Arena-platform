@@ -28,5 +28,6 @@ Ship the RAG tile end-to-end. Highest portfolio impact — and the one with the 
 - [ ] Landing Live; counts update; `/agents/rag-agent-with-grounding-memory` works end-to-end (grounded answer + citations + memory across two turns).
 
 ## Notes
+- **Retrieval approach = MANUAL** (embed question → hybrid vector+keyword search on Azure AI Search → ground gpt-5-mini on the chunks → cite `[n]`). Azure OpenAI **"On Your Data" is deprecated** (retires 2026-10-14) and does **not** support gpt-5-mini — only old GPT-4o. Managed alternative (Foundry IQ) belongs to its own tile (T-015). Decision recorded in `build.py` + the tile README.
 - Fully-pay-per-call alternative: Postgres + pgvector on Neon free tier (CONTEXT.md §Cost) — note in README + ADR if chosen.
 - Flip last, one-line data edit, verify.
