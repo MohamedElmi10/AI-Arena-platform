@@ -67,7 +67,7 @@ const handler: CostSafetyHandler = async (req, ctx) => {
           if (event.type === "response.output_text.delta") {
             controller.enqueue(sse({ delta: event.delta }));
           } else if (event.type === "response.completed") {
-            controller.enqueue(sse({ done: true }));
+            controller.enqueue(sse({ done: true, outputTokens: event.response.usage?.output_tokens }));
           }
         }
       } catch (err) {
