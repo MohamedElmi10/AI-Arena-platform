@@ -15,6 +15,7 @@ Ship the Generative Media tile end-to-end: prompt in, media out, with a **toggle
 - [ ] Endpoint / key → `.env.local` — **NOT committed**.
 
 ## Phase 2 — Wire (Next.js + inline UI)
+- [ ] Ensure the module route `src/app/vision/[slug]/page.tsx` exists — if this is the first Vision tile to ship, create it (mirrors `agents/[slug]` · `genai/[slug]` · `nl/[slug]`); a live tile 404s without it.
 - [ ] Extend `withCostSafety(...)` to accept an optional `{ limit, key }` (default unchanged = global 500/day). Per ADR-0002. Update `lib/cost-safety.test.ts` (default path unchanged).
 - [ ] `app/api/generate/generative-media/route.ts` (image path) wrapped in `withCostSafety({ limit: 25, key: "genmedia" })`; returns the generated image. **Video path is not a live route.**
 - [ ] Inline UI — build **`MediaGenSurface`** (prompt + Generate + output canvas) and **`ImplementationToggle`** (Image ⇄ Video). Build the toggle generic/reusable (the MCP tile T-012 and Text Analysis tile want it too). Video side plays the committed sample clips with their prompts.
@@ -23,7 +24,7 @@ Ship the Generative Media tile end-to-end: prompt in, media out, with a **toggle
 - [ ] **Generation feedback:** the output canvas shows a shimmering skeleton (module accent) while the image generates, then the image fades/scales in; the Video side shows a brief spinner, then plays. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
 - [ ] `data/modules.ts` → `generative-media` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; Insight Visual Data `2 / 4`, global `13 / 15`; image generates live; Video toggle plays samples.
+- [ ] Landing Live; the Insight Visual Data and global live-counts each increment by one; image generates live; Video toggle plays samples.
 
 ## Notes
 - `max_tokens` is irrelevant to image billing — the 25/day key is the bound.

@@ -17,6 +17,7 @@ Ship the Document Intelligence tile end-to-end: **pick a document type + a sampl
 - [ ] Endpoint / key → `.env.local` — **NOT committed**.
 
 ## Phase 2 — Wire (Next.js + inline UI)
+- [ ] Ensure the module route `src/app/vision/[slug]/page.tsx` exists — if this is the first Vision tile to ship, create it (mirrors `agents/[slug]` · `genai/[slug]` · `nl/[slug]`); a live tile 404s without it.
 - [ ] `app/api/analyze/document-intelligence/route.ts` wrapped in `withCostSafety(...)`; sends the image, polls, returns fields + `boundingRegions`. Unwrapped = fails review.
 - [ ] Inline UI — a **doc-type picker** (Receipt / Invoice / ID) + **sample gallery**; reuse **`ImageDropzone`** (T-020, full 1536px) → build **`AnnotationOverlay`** (boxes over the image, scaled to render size, two-way hover-highlight with the **`ExtractionResult`** side panel from T-022).
 - [ ] Single-page / image input; friendly errors (an Azure 429 from F0's rate limit rendered distinctly from the cost-safety 429). `data/modules.ts` `guide` added.
@@ -24,7 +25,7 @@ Ship the Document Intelligence tile end-to-end: **pick a document type + a sampl
 - [ ] **Generation feedback:** an “analysing…” shimmer over the document while polling; on result, the bounding boxes draw/fade in and the field rows populate. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
 - [ ] `data/modules.ts` → `document-intelligence` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; Insight Visual Data `4 / 4`, global `15 / 15`; the overlay + hover-linking work end-to-end.
+- [ ] Landing Live; the module now reads `4 / 4` and the global live-count includes all four Vision tiles; the overlay + hover-linking work end-to-end.
 
 ## Notes
 - **Image-input only** — no PDF renderer. A pdf.js (free/OSS) page-render is a later follow-up ticket if wanted.

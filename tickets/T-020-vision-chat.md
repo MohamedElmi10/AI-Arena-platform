@@ -17,6 +17,7 @@ Ship the Vision Chat tile end-to-end: a vision-enabled chat agent — pick a **s
 - [ ] `README.md` — what it is; cost (**pay-per-call, ~$0.002–0.003/message**; images are *input* tokens, so the 1536px downscale is the real bound); redeploy steps.
 
 ## Phase 2 — Wire (Next.js + inline UI)
+- [ ] Ensure the module route `src/app/vision/[slug]/page.tsx` exists — if this is the first Vision tile to ship, create it (mirrors `agents/[slug]` · `genai/[slug]` · `nl/[slug]`); a live tile 404s without it.
 - [ ] `app/api/chat/vision-chat/route.ts` — `POST { message, image }`, wrapped in `withCostSafety(...)`. Unwrapped = fails review.
 - [ ] Encodes the image server-side, calls the Foundry vision endpoint via Node `openai`, streams `output_text.delta` (project SSE pattern from T-007).
 - [ ] Inline UI — build **`ImageDropzone`** (drag/drop + picker, inline preview, in-browser downscale ≤1536px longest edge, reject >4MB / non-image) **plus a sample-image gallery** (tap a committed sample to load it). Build `ImageDropzone` reusable — T-022 and T-023 consume it.
@@ -26,7 +27,7 @@ Ship the Vision Chat tile end-to-end: a vision-enabled chat agent — pick a **s
 - [ ] **Generation feedback:** a “reading the image…” pulsing indicator (module accent) before the first token, then the existing token-stream; `<LiveStats>` Status `idle → generating → done`. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
 - [ ] `data/modules.ts` → `vision-chat` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; Insight Visual Data `1 / 4`, global `12 / 15`; `/vision/vision-chat` works end-to-end (sample + own upload).
+- [ ] Landing Live; the Insight Visual Data and global live-counts each increment by one; `/vision/vision-chat` works end-to-end (sample + own upload).
 
 ## Notes
 - Images are per-message, never stored. Downscale is the input-cost bound; `max_tokens` only bounds output.
