@@ -141,13 +141,23 @@ export function Markdown({ children, className, trailing }: MarkdownProps) {
         const tail = i === last ? trailing : null;
 
         switch (block.type) {
-          case "h":
+          case "h": {
+            // Real heading elements so screen readers get landmarks and each
+            // level reads distinctly. Mapped to h3–h5 (not h1/h2) so a heading
+            // inside a chat bubble stays subordinate to the page's own title.
+            const levels = {
+              1: { Tag: "h3", cls: "text-base font-semibold" },
+              2: { Tag: "h4", cls: "text-sm font-semibold" },
+              3: { Tag: "h5", cls: "text-sm font-semibold text-neutral-500" },
+            } as const;
+            const { Tag, cls } = levels[block.level as 1 | 2 | 3] ?? levels[3];
             return (
-              <p key={i} className="font-semibold">
+              <Tag key={i} className={cls}>
                 {renderInline(block.text)}
                 {tail}
-              </p>
+              </Tag>
             );
+          }
           case "ul":
             return (
               <ul key={i} className="list-disc space-y-1 pl-5">
