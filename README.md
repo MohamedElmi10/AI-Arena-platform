@@ -1,6 +1,6 @@
 # AI Arena
 
-A working portfolio of Azure AI skills — every tile is a live agent or generative-AI demo built while studying for AI-102 / AI-103.
+A working portfolio of Azure AI skills — every tile is a live agent or generative-AI demo built while studying for AI-103.
 
 **Live at:** *(set after T-009)*
 

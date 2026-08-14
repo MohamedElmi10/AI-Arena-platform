@@ -22,6 +22,7 @@ export type Tile = {
   slug: string;
   /** The Azure service that powers this tile (wordmark attribution — T-017). */
   poweredBy: string;
+  model?: string;
   status: TileStatus;
   /** Short mono-font label, e.g. "streaming" or "RAG · grounding · memory". */
   tag: string;
@@ -120,11 +121,33 @@ export const modules: Module[] = [
       {
         title: "RAG Agent with Grounding & Memory",
         slug: "rag-agent-with-grounding-memory",
-        status: "planned",
+        status: "live",
         tag: "RAG · grounding · memory",
         poweredBy: "Azure AI Foundry",
+        model: "gpt-4.1-nano",
         desc: "Retrieval-augmented generation with grounded citations and memory that persists across turns.",
+        preview: 'Try: "What is AI Arena, and how does it keep costs down?"',
+        guide: {
+          about:
+            "This agent answers only from a small corpus about AI Arena and Mohamed, stored in an Azure AI Search index. It retrieves the most relevant passages, grounds its answer in them, cites what it used, and remembers the conversation across turns.",
+          tryThis: [
+            "How does AI Arena work?",
+            "How does this RAG tile actually work?",
+            "What's Mohamed's background?",
+          ],
+          expect: [
+            "Answers are drawn only from the corpus, with citations.",
+            "Ask a follow-up — it keeps context from earlier turns.",
+            "Ask something outside the docs and it says so instead of guessing.",
+          ],
+          hood: [
+            "A Foundry-hosted agent with an Azure AI Search tool over the ai-arena-rag index.",
+            "The Next.js route proxies to the agent — Azure creds stay server-side, wrapped in withCostSafety.",
+            "Runs on gpt-4.1-nano",
+          ],
+        },
       },
+      
       {
         title: "MCP Agent (Hosted + Own)",
         slug: "mcp-agent-hosted-own",

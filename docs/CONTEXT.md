@@ -3,7 +3,7 @@
 The shared language for this project. Implementation details do not belong here.
 
 ## AI Arena
-Mohamed's portfolio platform showcasing skills learned during AI-103. Primary audience: professional network. **Portfolio-primary**; code that stays readable and maintainable to Mohamed is a hard secondary constraint. The agents themselves are built in Azure AI Foundry; AI Arena is the UI that wraps and demos them.
+Mohamed's portfolio platform showcasing skills learned during AI-103. Primary audience: interested end users and Mohamed's professional network. **Portfolio-primary**; code that stays readable and maintainable to Mohamed is a hard secondary constraint. The agents themselves are built in Azure AI Foundry; AI Arena is the UI that wraps and demos them.
 
 ## Tile
 The unit of the platform. Each tile represents one showcased capability — either a single AI-103 topic or a combination of topics rolled into one demo. The landing is a wall of tiles. Clicking a tile opens its inner **playground** — an interactive surface whose shape adapts to the tile's agent type (chat, streaming console, multi-agent flow view, etc.).

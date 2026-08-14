@@ -21,7 +21,7 @@ export function Hero() {
 
       <p className="mt-4 max-w-3xl font-display text-2xl italic text-neutral-700">
         Azure AI Engineer — a working showcase of what I built on the way to
-        AI-102 and AI-103.
+        AI-103.
       </p>
 
       <PoweredBy

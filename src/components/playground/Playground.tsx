@@ -22,8 +22,6 @@ type PlaygroundProps = {
   chapter: number;
 };
 
-const MODEL = "gpt-5-mini";
-
 export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -74,10 +72,18 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
     let firstDelta = true;
 
     try {
+      const history = [
+        ...messages.slice(1).map((m) => ({
+          role: m.role === "agent" ? "assistant" : "user",
+          content: m.text,
+        })),
+        { role: "user", content: text },
+      ];
+
       const res = await fetch(`/api/chat/${tile.slug}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, messages: history }),
       });
 
       // Cost-safety gates (kill switch, budget cap) + other non-OK responses
@@ -151,7 +157,7 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             title={tile.title}
             tagline={tile.desc}
             poweredBy={tile.poweredBy}
-            model={MODEL}
+            model={tile.model ?? "gpt-5-mini"}
             tokens={tokens}
             latency={latency}
             status={status}
