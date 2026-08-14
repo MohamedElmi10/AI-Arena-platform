@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { Markdown } from "./Markdown";
 
 export type ChatMessage = { role: "user" | "agent"; text: string };
 
@@ -53,11 +54,22 @@ export function ChatSurface({
                     "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm",
                     m.role === "user"
                       ? "rounded-tr-sm bg-[var(--accent)] text-white"
-                      : "whitespace-pre-line rounded-tl-sm border border-neutral-200 bg-white font-display leading-relaxed text-neutral-700"
+                      : "rounded-tl-sm border border-neutral-200 bg-white font-display leading-relaxed text-neutral-700"
                   )}
                 >
-                  {m.text}
-                  {showCursor && <span className="ml-0.5 animate-pulse">▊</span>}
+                  {m.role === "agent" ? (
+                    <Markdown
+                      trailing={
+                        showCursor ? (
+                          <span className="ml-0.5 animate-pulse">▊</span>
+                        ) : null
+                      }
+                    >
+                      {m.text}
+                    </Markdown>
+                  ) : (
+                    m.text
+                  )}
                 </div>
               </div>
             );
