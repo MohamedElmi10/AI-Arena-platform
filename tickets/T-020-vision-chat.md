@@ -27,7 +27,7 @@ Ship the Vision Chat tile end-to-end: a vision-enabled chat agent — pick a **s
 - [ ] **Generation feedback:** a “reading the image…” pulsing indicator (module accent) before the first token, then the existing token-stream; `<LiveStats>` Status `idle → generating → done`. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
 - [ ] `data/modules.ts` → `vision-chat` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; the Insight Visual Data and global live-counts each increment by one; `/vision/vision-chat` works end-to-end (sample + own upload).
+- [ ] Landing Live; the Insight Visual Data live-count increments by one; `/vision/vision-chat` works end-to-end (sample + own upload).
 
 ## Notes
 - Images are per-message, never stored. Downscale is the input-cost bound; `max_tokens` only bounds output.

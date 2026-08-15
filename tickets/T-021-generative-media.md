@@ -24,7 +24,7 @@ Ship the Generative Media tile end-to-end: prompt in, media out, with a **toggle
 - [ ] **Generation feedback:** the output canvas shows a shimmering skeleton (module accent) while the image generates, then the image fades/scales in; the Video side shows a brief spinner, then plays. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
 - [ ] `data/modules.ts` → `generative-media` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; the Insight Visual Data and global live-counts each increment by one; image generates live; Video toggle plays samples.
+- [ ] Landing Live; the Insight Visual Data live-count increments by one; image generates live; Video toggle plays samples.
 
 ## Notes
 - `max_tokens` is irrelevant to image billing — the 25/day key is the bound.

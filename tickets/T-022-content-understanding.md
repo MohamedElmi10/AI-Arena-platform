@@ -25,7 +25,7 @@ Ship the Content Understanding tile end-to-end: **pick a preset field-set + a sa
 - [ ] **Generation feedback:** the `ExtractionResult` panel shows shimmering skeleton rows while the analyzer polls, then the real fields stagger-fade in. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
 - [ ] `data/modules.ts` → `content-understanding` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; the Insight Visual Data and global live-counts each increment by one; `/vision/content-understanding` works — preset+sample, own upload, canned A/V.
+- [ ] Landing Live; the Insight Visual Data live-count increments by one; `/vision/content-understanding` works — preset+sample, own upload, canned A/V.
 
 ## Notes
 - No free tier — every live call costs a little; keep the caps tight.

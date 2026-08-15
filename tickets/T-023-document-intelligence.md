@@ -25,7 +25,7 @@ Ship the Document Intelligence tile end-to-end: **pick a document type + a sampl
 - [ ] **Generation feedback:** an “analysing…” shimmer over the document while polling; on result, the bounding boxes draw/fade in and the field rows populate. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
 - [ ] `data/modules.ts` → `document-intelligence` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; the module now reads `4 / 4` and the global live-count includes all four Vision tiles; the overlay + hover-linking work end-to-end.
+- [ ] Landing Live; the module now reads `4 / 4`; the overlay + hover-linking work end-to-end.
 
 ## Notes
 - **Image-input only** — no PDF renderer. A pdf.js (free/OSS) page-render is a later follow-up ticket if wanted.
