@@ -14,6 +14,10 @@ type ChatSurfaceProps = {
   streaming: boolean;
   onInputChange: (value: string) => void;
   onSubmit: () => void;
+  /** Optional streaming-mode toggle in the header (e.g. sync/async — T-016). */
+  modes?: { label: string; value: string }[];
+  mode?: string;
+  onModeChange?: (value: string) => void;
 };
 
 export function ChatSurface({
@@ -23,6 +27,9 @@ export function ChatSurface({
   streaming,
   onInputChange,
   onSubmit,
+  modes,
+  mode,
+  onModeChange,
 }: ChatSurfaceProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -37,7 +44,29 @@ export function ChatSurface({
       <div className="flex h-[560px] flex-col rounded-md border-2 border-[var(--accent)] bg-white">
         <div className="flex items-center justify-between border-b border-neutral-200 bg-[var(--accent-tint)] px-4 py-2 font-mono text-xs">
           <span className="text-[color:var(--accent-fg)]">chat · {title}</span>
-          <span className="text-neutral-500">{streaming ? "streaming" : "idle"}</span>
+          <div className="flex items-center gap-3">
+            {modes && mode && onModeChange ? (
+              <div className="flex overflow-hidden rounded border border-[var(--accent)] text-[10px] font-semibold uppercase tracking-wider">
+                {modes.map((m) => (
+                  <button
+                    key={m.value}
+                    type="button"
+                    onClick={() => onModeChange(m.value)}
+                    disabled={streaming}
+                    className={cn(
+                      "px-2 py-1 transition disabled:opacity-50",
+                      mode === m.value
+                        ? "bg-[var(--accent)] text-white"
+                        : "bg-white text-[color:var(--accent)]"
+                    )}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            <span className="text-neutral-500">{streaming ? "streaming" : "idle"}</span>
+          </div>
         </div>
 
         <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-5">
