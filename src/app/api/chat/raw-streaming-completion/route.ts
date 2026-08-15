@@ -75,6 +75,17 @@ const handler: CostSafetyHandler = async (req, ctx) => {
                   outputTokens: event.response.usage?.output_tokens,
                 })
               );
+            } else if (event.type === "response.incomplete") {
+              // Token cap (or other stop) reached — Azure ends the stream here,
+              // not on completed. Emit the terminal frame so the client still
+              // reconciles usage, flagged so it can note the cut-off.
+              controller.enqueue(
+                sse({
+                  done: true,
+                  truncated: true,
+                  outputTokens: event.response.usage?.output_tokens,
+                })
+              );
             }
           }
         } catch (err) {
@@ -103,12 +114,17 @@ const handler: CostSafetyHandler = async (req, ctx) => {
     max_output_tokens: ctx.maxOutputTokens,
   } satisfies ResponseCreateParamsNonStreaming;
   const response = await client.responses.create(ctx.clampMaxTokens(base));
+  const truncated = response.status === "incomplete";
 
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
       controller.enqueue(sse({ delta: response.output_text }));
       controller.enqueue(
-        sse({ done: true, outputTokens: response.usage?.output_tokens })
+        sse({
+          done: true,
+          outputTokens: response.usage?.output_tokens,
+          ...(truncated ? { truncated: true } : {}),
+        })
       );
       controller.close();
     },

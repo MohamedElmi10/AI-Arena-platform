@@ -140,6 +140,12 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             if (typeof event.outputTokens === "number") {
               setTokens(event.outputTokens);
             }
+            // Response hit the token cap — note the cut-off so it doesn't read
+            // as a clean finish (both sync and async paths flag this).
+            if (event.truncated) {
+              acc += "\n\n_…(stopped at token limit)_";
+              setAgentText(acc);
+            }
           }
         }
       }
