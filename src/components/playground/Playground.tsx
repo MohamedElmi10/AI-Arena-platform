@@ -33,6 +33,9 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
   const [tokens, setTokens] = useState(0);
   const [latency, setLatency] = useState("—");
   const [status, setStatus] = useState<StreamStatus>("idle");
+  // Streaming-mode toggle (e.g. sync/async — T-016). Undefined for tiles that
+  // declare no modes, in which case the request sends no `mode`.
+  const [mode, setMode] = useState(tile.modes?.[0]?.value);
   const streamingRef = useRef(false);
 
   const accentVars = {
@@ -83,7 +86,11 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
       const res = await fetch(`/api/chat/${tile.slug}`, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message: text, messages: history }),
+        body: JSON.stringify({
+          message: text,
+          messages: history,
+          ...(mode ? { mode } : {}),
+        }),
       });
 
       // Cost-safety gates (kill switch, budget cap) + other non-OK responses
@@ -133,6 +140,12 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             if (typeof event.outputTokens === "number") {
               setTokens(event.outputTokens);
             }
+            // Response hit the token cap — note the cut-off so it doesn't read
+            // as a clean finish (both sync and async paths flag this).
+            if (event.truncated) {
+              acc += "\n\n_…(stopped at token limit)_";
+              setAgentText(acc);
+            }
           }
         }
       }
@@ -173,6 +186,9 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             streaming={status === "streaming"}
             onInputChange={setInput}
             onSubmit={runStream}
+            modes={tile.modes}
+            mode={mode}
+            onModeChange={setMode}
           />
         </div>
 

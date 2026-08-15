@@ -30,6 +30,8 @@ export type Tile = {
   desc: string;
   /** Example prompt revealed on hover for live tiles (added when a tile ships). */
   preview?: string;
+  /** Optional streaming-mode toggle for the playground (e.g. sync vs async — T-016). */
+  modes?: { label: string; value: string }[];
   /** Playground guide content. Present only once a tile's playground is built. */
   guide?: TileGuide;
 };
@@ -192,10 +194,34 @@ export const modules: Module[] = [
       {
         title: "Raw Streaming Completion",
         slug: "raw-streaming-completion",
-        status: "planned",
+        status: "live",
         tag: "streaming · async",
         poweredBy: "Azure OpenAI",
-        desc: "No agent framing — just the LLM. A side-by-side sync vs async streaming comparison to show the primitive itself.",
+        desc: "No agent framing — just the LLM. A sync vs async streaming comparison to show the primitive itself.",
+        preview: 'Try: "Explain streaming in one sentence." — then flip sync/async.',
+        modes: [
+          { label: "async", value: "async" },
+          { label: "sync", value: "sync" },
+        ],
+        guide: {
+          about:
+            "The baseline gen-AI primitive: a raw Azure OpenAI completion over the Responses API — no agent, no tools, no memory. Toggle sync vs async to see the difference. Same gpt-5-mini deployment as the Foundry Chat Agent.",
+          tryThis: [
+            "Explain what streaming a completion means, and why it matters for chat UIs.",
+            "Write a short paragraph explaining what Azure OpenAI is to a non-engineer.",
+            "Summarize what a token is and how models count them, in about four sentences.",
+          ],
+          expect: [
+            "async: tokens stream in progressively, one chunk at a time.",
+            "sync: nothing appears until the whole answer is ready, then it lands at once.",
+            "Same text either way — the difference is when you see it, not what you get.",
+          ],
+          hood: [
+            "async streams the Responses API deltas straight to the browser as they arrive.",
+            "sync waits for the full completion on the server, then sends it in a single frame.",
+            "The Next.js route calls Azure OpenAI directly; the key stays server-side, wrapped in withCostSafety.",
+          ],
+        },
       },
     ],
   },

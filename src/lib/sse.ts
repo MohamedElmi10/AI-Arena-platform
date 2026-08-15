@@ -5,7 +5,7 @@
 /** The parsed payloads the route can send inside an SSE `data:` frame. */
 export type FoundryStreamEvent =
   | { delta: string }
-  | { done: true; outputTokens?: number }
+  | { done: true; outputTokens?: number; truncated?: boolean }
   | { error: string; message: string };
 
 /**
