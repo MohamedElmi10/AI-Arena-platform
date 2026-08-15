@@ -12,17 +12,17 @@ The unit of the platform. Each tile represents one showcased capability — eith
 The interactive surface inside an opened tile. Not the top-level frame. This is where the visitor actually plays with the agent.
 
 ## Module
-A top-level grouping on the landing. AI Arena launches with three modules; a fourth is planned:
+A top-level grouping on the landing. AI Arena has four modules:
 - **Agents** — agents built with Microsoft Agent Framework, Foundry, MCP, function calling, RAG, A2A, sequential orchestration, Foundry Workflow, Foundry IQ.
 - **Gen-AI** — generative AI patterns: memory across turns, streaming, async, grounding.
 - **Natural Language** — Azure Language and Speech (text analysis, speech-capable apps, translation, MCP-backed variants).
-- **Insight Visual Data** *(future)* — Azure AI Vision path (Microsoft Learn `insight-visual-data`). Not part of MVP; will land as a 4th module once Mohamed studies it. The landing layout must accommodate a 4th module without redesign.
+- **Insight Visual Data** — Azure AI Vision on Foundry (Microsoft Learn `insight-visual-data`): vision-enabled multimodal chat, image and video generation, Content Understanding, and Document Intelligence.
 
 Each module has an accent color used by tiles inside it:
 - Agents: **terracotta** (#c2410c / #fed7aa / #fff7ed)
 - Gen-AI: **plum** (#7e22ce / #e9d5ff / #faf5ff)
 - Natural Language: **moss** (#15803d / #bbf7d0 / #f0fdf4)
-- Insight Visual Data: TBD when added.
+- Insight Visual Data: **steel blue** (#1d4ed8 / #bfdbfe / #eff6ff)
 
 Each module is one section on the landing. Tiles live inside a module.
 
@@ -46,7 +46,13 @@ The MVP tile map, locked. Any "toggle" tile is ONE tile with a UI toggle between
 10. Speech Assistant — **toggle**: speech-capable gen-AI app vs. Speech MCP agent.
 11. Translation — text + speech translation via Foundry Tools.
 
-**Total: 11 tiles.** No further tiles until Insight Visual Data is added.
+**Insight Visual Data (4 tiles)**
+12. Vision Chat — vision-enabled multimodal chat: upload an image, ask about it. Uploads are downscaled to 1536px and files >4MB rejected client-side (image bytes are input tokens, which `max_tokens` can't bound).
+13. Generative Media — **toggle**: live image generation vs. build-time-rendered Sora video. Image is capped at 25/day on its own budget key; video is pre-rendered to keep runtime cost at zero. See [ADR-0002](adr/0002-generative-media-cost-posture.md).
+14. Content Understanding — one analyzer, any modality, via preset field-sets. Image + single-page document run live; audio and video are pre-analysed samples.
+15. Document Intelligence — prebuilt receipt/invoice/ID extraction with a bounding-box overlay on the page. Runs on the Document Intelligence F0 free tier (500 pages/mo).
+
+**Total: 15 tiles.** Knowledge Mining (Azure AI Search, module 8 of the path) was considered for this module and cut: AI Search is provisioned-tier (the one cost trap in ADR-0001) and it overlaps the existing RAG Agent tile. Its "enrich unstructured content into searchable fields" idea is covered by the Content Understanding tile.
 
 ## Design Direction
 **Editorial · Colored.** Baseline aesthetic:
@@ -61,6 +67,8 @@ The MVP tile map, locked. Any "toggle" tile is ONE tile with a UI toggle between
 **Split** — locked. Guide on the left (~5/12), Chat on the right (~7/12). Above both: the Chapter pill, tile title, tagline, accent underscore, then a horizontal row of live stat cards (**Model / Tokens / Latency / Status**). Stats tick up in real time as the response streams. Below both: nothing — the layout stops at the fold.
 
 The Live Stats bar is folded in from the Dashboard variant. Position: between the title block and the Guide+Chat grid. Behaviour: `Status` flips `idle → streaming → idle`; `Tokens` and `Latency` update on every streamed chunk.
+
+**Generation feedback.** Every Playground shows a consistent “working” state while an async operation runs, in the module’s accent: the Live Stats `Status` pill flips `idle → generating → done`, and the result surface shows an appropriate placeholder — streaming text (chat), a shimmering skeleton (image canvas, fields panel), or an “analysing” shimmer (document) — that resolves into the real result (fade / draw-in). All motion respects `prefers-reduced-motion`.
 
 The winning prototype file is `prototypes/playground-split.html`. The other layouts (`playground-chapter.html`, `playground-dashboard.html`) stay in the folder as primary source until the real Next.js project is set up, then move to a throwaway branch.
 

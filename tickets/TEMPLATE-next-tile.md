@@ -1,37 +1,27 @@
 # TEMPLATE: adding a tile
 
-**Not a ticket.** A pattern. To add tile N: duplicate this file three times (build / wire / flip), replace `<slug>` and `<Module>`, work in order.
+**Not a ticket.** A pattern. **One tile = one ticket**, named `T-XXX-<slug>.md`, with three phase-sections inside it (Build / Wire / Flip). Tile #1 (Foundry Chat) was split across three files T-006→T-008; every tile since is a single ticket — follow the single-ticket shape below.
 
-The three-step pattern that turned Foundry Chat Agent Live (T-006 → T-007 → T-008):
+## Header
+```
+# T-XXX: <Tile Title> (whole tile)
 
-## Step 1 — Build the agent in Azure — `T-XXX-<slug>-build.md`
+**Status:** open
+**Blocked by:** —            (or the tickets that must close first)
+**Blocks:** —                (or the tickets waiting on this one)
+**Module:** <Module> · **Slug:** `<slug>`
+```
 
-- Create the agent in Azure AI Foundry (or Azure OpenAI / Language / Speech / Translator, whichever this tile uses).
-- Endpoint URL + API key → Mohamed's local `.env.local` (never committed).
-- `src/app/<module>/<slug>/build.py` — reproducible build script, portfolio surface.
-- `src/app/<module>/<slug>/README.md` — what it is, cost model, how to redeploy.
-- Cost check: is any backing resource provisioned-tier? If yes, either use the free tier or open a new ADR before proceeding.
-
-## Step 2 — Wire the runtime — `T-XXX-<slug>-wire.md`
-
-- Extend `data/modules.ts` for this tile's `guide` content (About / Try / Expect / Under the hood).
-- `app/api/chat/<slug>/route.ts` — wrapped in `withCostSafety(...)`. Non-negotiable.
-- Playground consumes the real stream. `<LiveStats>` reads real numbers.
-- Handle any tile-specific UI: MCP toggle, multi-agent timeline visualisation, dual-implementation switcher, etc. These go inline in this ticket — don't defer.
-
-## Step 3 — Flip to Live — `T-XXX-<slug>-flip.md`
-
-- `data/modules.ts` → this tile → `status: 'live'`.
-- Verify: landing count updates, tile navigates, playground works end-to-end.
-- **One-line data change. Nothing else.**
+## Body — three phases as sections
+- **## Phase 1 — Build (Azure).** Create the agent/model/resource in Foundry (or Azure OpenAI / Language / Speech / Translator / Vision / Document Intelligence). Endpoint + key → local `.env.local` (never committed). `src/app/<module>/<slug>/build.py` (reproducible, portfolio surface) + `README.md` (what it is, **cost model**, redeploy). Commit any **sample assets** the playground ships (sample images/docs, pre-rendered clips). Cost check: anything provisioned / idle-billing? If yes → free tier or a new ADR before proceeding.
+- **## Phase 2 — Wire (Next.js + inline UI).** `app/api/.../route.ts` wrapped in `withCostSafety(...)` — non-negotiable. Playground consumes the real stream/response; `<LiveStats>` reads real numbers; `data/modules.ts` `guide` added. **Any custom UI is built inline here** — toggles, overlays, dropzones, timelines. A widget shared by several tiles is built inline in the **first tile that needs it** and reused by later tiles (add a `Blocked by` link); don't split it into its own ticket.
+- **## Phase 3 — Flip (data).** `data/modules.ts` → this tile → `status: 'live'` (+ `preview`). Verify counts, navigation, end-to-end. One-line data change. On flip, run the **T-018** corpus pass.
 
 ## Order of tile priority (recommended)
-
 Ordered by portfolio impact per unit of build effort:
-
 1. Foundry Chat Agent — done (T-006 → T-008).
 2. **Function-Calling Agent** — small step up from #1; teaches tool calling.
-3. **RAG Agent with Grounding & Memory** — highest portfolio impact; also the one with the AI Search cost trap (use free tier per ADR-0001).
+3. **RAG Agent with Grounding & Memory** — highest portfolio impact; also the AI Search cost trap (free tier per ADR-0001).
 4. **Text Analysis Agent** (toggle) — Natural Language pillar comes alive.
 5. **Multi-Agent Orchestration** — the "wow" tile; save till last because the visualisation is the hardest custom UI.
 

@@ -232,15 +232,47 @@ export const modules: Module[] = [
       },
     ],
   },
-  // Future — Insight Visual Data (Azure AI Vision). Not part of MVP; lands as a
-  // 4th module once studied. The landing must accommodate it without a redesign.
-  // {
-  //   id: "vision",
-  //   name: "Insight Visual Data",
-  //   blurb: "Azure AI Vision: image analysis, OCR, and visual grounding.",
-  //   color: { fg: "", bg: "", accent: "", tint: "" }, // TBD
-  //   tiles: [],
-  // },
+  {
+    id: "vision",
+    name: "Insight Visual Data",
+    blurb:
+      "Azure AI Vision on Foundry: vision-enabled multimodal chat, image and video generation, Content Understanding, and Document Intelligence.",
+    color: { fg: "#1e40af", bg: "#bfdbfe", accent: "#1d4ed8", tint: "#eff6ff" }, // steel blue
+    tiles: [
+      {
+        title: "Vision Chat",
+        slug: "vision-chat",
+        status: "planned",
+        tag: "multimodal · vision",
+        poweredBy: "Azure AI Foundry",
+        desc: "Drop in an image and ask about it. A vision-enabled chat agent that describes, reads, and reasons over what it sees.",
+      },
+      {
+        title: "Generative Media",
+        slug: "generative-media",
+        status: "planned",
+        tag: "image · video · toggle",
+        poweredBy: "Azure AI Foundry",
+        desc: "Generate an image or a short video from a text prompt. Toggle between Foundry's image and video models.",
+      },
+      {
+        title: "Content Understanding",
+        slug: "content-understanding",
+        status: "planned",
+        tag: "multimodal · extraction",
+        poweredBy: "Azure Content Understanding",
+        desc: "Pick the fields you want, upload any content, get it back structured. One analyzer across images, documents, audio, and video.",
+      },
+      {
+        title: "Document Intelligence",
+        slug: "document-intelligence",
+        status: "planned",
+        tag: "documents · layout · boxes",
+        poweredBy: "Azure AI Document Intelligence",
+        desc: "Upload a receipt, invoice, or ID and watch each field get boxed on the page — extraction with exact spatial layout, not just values.",
+      },
+    ],
+  },
 ];
 
 /** Live-tile count for a module, formatted as "0 / N live". */
