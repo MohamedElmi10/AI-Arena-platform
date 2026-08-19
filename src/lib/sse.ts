@@ -2,10 +2,15 @@
 // no DOM — so they unit-test without a browser. The route emits frames shaped
 // like `data: {json}\n\n` (see src/app/api/chat/foundry-chat-agent/route.ts).
 
+/** A cited retrieval source for a RAG answer (T-019 Part B). `title` is the
+ *  corpus filename Azure returns in its url_citation annotation, e.g.
+ *  "08-tile-rag-agent.md" — enough to open the file in the in-app viewer. */
+export type Source = { title: string };
+
 /** The parsed payloads the route can send inside an SSE `data:` frame. */
 export type FoundryStreamEvent =
   | { delta: string }
-  | { done: true; outputTokens?: number; truncated?: boolean }
+  | { done: true; outputTokens?: number; truncated?: boolean; sources?: Source[] }
   | { error: string; message: string };
 
 /**

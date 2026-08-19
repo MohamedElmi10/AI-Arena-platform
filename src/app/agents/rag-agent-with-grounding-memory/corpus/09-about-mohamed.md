@@ -19,14 +19,6 @@ retrieval-augmented generation with grounded citations, and he takes
 production-minded concerns seriously — server-side secret handling, a layered
 cost-safety posture, and clean, data-driven front-end architecture.
 
-<!--
-The facts below are not in the repository. Mohamed should fill them in before
-ingesting this file, or delete any line he does not want the agent to answer.
-The RAG agent must never be fed a placeholder as if it were a fact.
--->
-
-# About Mohamed
-
 Mohamed Elmi is based in Stockholm, Sweden.
 
 Mohamed has about  six months of professional experience as a front-end

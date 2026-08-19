@@ -1,5 +1,6 @@
 import type { ResponseCreateParamsStreaming } from "openai/resources/responses/responses";
 import { withCostSafety, type CostSafetyHandler } from "@/lib/cost-safety";
+import type { Source } from "@/lib/sse";
 import { DefaultAzureCredential } from "@azure/identity";
 import OpenAI from "openai";
 
@@ -62,12 +63,27 @@ const handler: CostSafetyHandler = async (req, ctx) => {
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
+      // Cited sources for this answer, de-duped by filename. The agent emits an
+      // `annotation.added` event per citation; Azure's url_citation carries the
+      // corpus filename as `title` (its `url` is just the search endpoint, so we
+      // ignore it and let the client link the file). Sent on the done frame.
+      const sources = new Map<string, Source>();
       try {
         for await (const event of azureStream) {
           if (event.type === "response.output_text.delta") {
             controller.enqueue(sse({ delta: event.delta }));
+          } else if (event.type === "response.output_text.annotation.added") {
+            const ann = (event as { annotation?: { type?: string; title?: string } })
+              .annotation;
+            if (ann?.title) sources.set(ann.title, { title: ann.title });
           } else if (event.type === "response.completed") {
-            controller.enqueue(sse({ done: true, outputTokens: event.response.usage?.output_tokens }));
+            controller.enqueue(
+              sse({
+                done: true,
+                outputTokens: event.response.usage?.output_tokens,
+                sources: [...sources.values()],
+              })
+            );
           }
         }
       } catch (err) {

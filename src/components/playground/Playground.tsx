@@ -140,6 +140,15 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             if (typeof event.outputTokens === "number") {
               setTokens(event.outputTokens);
             }
+            // Attach cited sources (RAG tile — T-019 Part B) to the answer bubble.
+            if (event.sources && event.sources.length > 0) {
+              const cited = event.sources;
+              setMessages((prev) => {
+                const next = [...prev];
+                next[next.length - 1] = { ...next[next.length - 1], sources: cited };
+                return next;
+              });
+            }
             // Response hit the token cap — note the cut-off so it doesn't read
             // as a clean finish (both sync and async paths flag this).
             if (event.truncated) {
@@ -189,6 +198,7 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             modes={tile.modes}
             mode={mode}
             onModeChange={setMode}
+            accentVars={accentVars}
           />
         </div>
 
