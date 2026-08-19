@@ -8,8 +8,10 @@ open-source — no paid APIs or hosted services.
 
 The default model for the hosted chat agents is **`gpt-5-mini`**. (The original
 spec called for `gpt-4o-mini`, which retired in 2026 and can no longer be
-deployed, so the project moved to `gpt-5-mini`.) The RAG tile also uses the
-embedding model `text-embedding-3-small`.
+deployed, so the project moved to `gpt-5-mini`.) The RAG tile is the exception:
+its agent runs on **`gpt-4.1-nano`**, because the Azure AI Search tool it uses
+does not yet support the gpt-5 family. The RAG tile also uses the embedding
+model `text-embedding-3-small` to build its search index.
 
 The visual direction is **"Editorial · Colored."** The background is a
 paper-textured cream (`#faf7f2`) with a subtle grain. Typography uses three

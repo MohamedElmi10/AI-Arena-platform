@@ -5,11 +5,15 @@ The knowledge base for the **RAG Agent with Grounding & Memory** tile. Every
 
 ## How it's used
 
-`build.py --ingest` reads each file in this folder, splits it into chunks,
-embeds each chunk with `text-embedding-3-small`, and uploads them to the
-`ai-arena-rag` index in Azure AI Search (Free tier). At query time the agent
-does a hybrid (vector + keyword) search, feeds the top matches to `gpt-5-mini`,
-and answers **only** from them — citing each claim as `[n]`.
+The files in this folder were indexed once into the `ai-arena-rag` index in
+Azure AI Search (Free tier) using the portal's **Import and vectorize data**
+wizard, which chunks each document and embeds it with `text-embedding-3-small`.
+At query time the Foundry-hosted `rag-agent` — running `gpt-4.1-nano` with the
+Azure AI Search tool attached — retrieves the top matches, answers **only** from
+them, and cites each source. `build.py` next to this corpus is a dev-time chat
+client for that agent, not an ingest script; the running app never executes it.
+When the corpus changes, re-index so the search index matches these files (via
+the portal wizard, or the `build.py --ingest` loop once it exists — see T-018).
 
 ## Conventions
 
