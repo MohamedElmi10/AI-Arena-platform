@@ -21,19 +21,22 @@ Two concerns, one ticket — they live in the same chat bubble.
 - [x] No new runtime dependency added (hand-rolled renderer, ~60 lines). Free + OSS by construction.
 - [x] Covered by unit tests: `src/components/playground/markdown.test.ts` (bold / lists / spacing / graceful degradation / caret). Vitest gained a `@/` path alias so component tests resolve imports.
 
-## Part B — Clickable sources (RAG-specific) — NOT STARTED (blocked by T-011 on `main`)
+## Part B — Clickable sources (RAG-specific) — DONE
 `src/app/api/chat/rag-agent-with-grounding-memory/route.ts` currently forwards only `response.output_text.delta` and `response.completed` and drops everything else — so Azure's citation annotations never reach the browser. Surface them.
 
-- [ ] Route forwards the retrieval citations Azure emits (the annotation/citation events on the Responses stream — e.g. `response.output_text.annotation.added`, or the annotations on the completed output item) as their own SSE frame, alongside the text deltas. Keep the handler inside `withCostSafety(...)` — no new Azure route is added, so the existing wrap stands (ADR-0001).
-- [ ] `ChatMessage` carries the sources for an agent turn; `Playground` collects the citation frames into that message.
-- [ ] `ChatSurface` renders a "Sources" affordance under a RAG answer where each cited source is clickable. Link target is Mohamed's call — the corpus doc on the public GitHub repo (`src/app/agents/rag-agent-with-grounding-memory/corpus/<file>.md`) is the obvious free option; an in-app viewer is fine too. Requirement: clickable, and it lands on the right source.
+- [x] Route forwards the retrieval citations Azure emits (the annotation/citation events on the Responses stream — e.g. `response.output_text.annotation.added`, or the annotations on the completed output item) as their own SSE frame, alongside the text deltas. Keep the handler inside `withCostSafety(...)` — no new Azure route is added, so the existing wrap stands (ADR-0001).
+- [x] `ChatMessage` carries the sources for an agent turn; `Playground` collects the citation frames into that message.
+- [x] `ChatSurface` renders a "Sources" affordance under a RAG answer where each cited source is clickable. Link target is Mohamed's call — the corpus doc on the public GitHub repo (`src/app/agents/rag-agent-with-grounding-memory/corpus/<file>.md`) is the obvious free option; an in-app viewer is fine too. Requirement: clickable, and it lands on the right source.
 - [ ] Inline citation markers in the text (if the agent emits `[n]` / bracketed markers) map to the sources list — nice-to-have, not blocking.
-- [ ] Non-RAG tiles (which send no citations) show no empty "Sources" block.
+- [x] Non-RAG tiles (which send no citations) show no empty "Sources" block.
 
 ## Out of scope
 - No change to what the agent retrieves or how grounding works (that is T-011; corpus freshness is T-018).
 - No restyle of the playground beyond the answer bubble and its sources.
 
 ## Notes
+- **Part B done.** Azure emits a `response.output_text.annotation.added` event per citation; the `url_citation` carries the corpus filename as `title` (e.g. `08-tile-rag-agent.md`) — its `url` is only the search endpoint, so the client links the file itself. The route de-dupes by filename and forwards them on the `done` SSE frame; `ChatSurface` shows a Sources chip row that opens an in-app viewer (`SourceViewer` → `GET /api/corpus/<file>`, whitelisted read, reuses `Markdown`). Chose the in-app viewer over a GitHub link — portfolio-primary, keeps visitors in-app.
+- Inline `【n†source】` markers are stripped from the bubble (Part A) rather than mapped to the list — the mapping was the ticket's explicit nice-to-have, deferred.
+- **Deploy caveat (T-009):** `/api/corpus/<file>` reads the corpus from disk at runtime. Works in dev and on a Node server; on Netlify serverless, add the corpus dir to `outputFileTracingIncludes` in `next.config` so the files ship with the function.
 - Part A shipped first because it stands alone and improves every tile. Part B is blocked: it edits `route.ts` and `Playground.tsx`, which only exist on the T-011 branch — do Part B once T-011 lands on `main`.
 - Verify Part A: `npm test` (the markdown suite), then `npm run dev` and ask any tile a question — the reply is formatted with real spacing and no stray `**`.
