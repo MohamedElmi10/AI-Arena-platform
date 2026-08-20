@@ -42,7 +42,7 @@ The MVP tile map, locked. Any "toggle" tile is ONE tile with a UI toggle between
 8. Raw Streaming Completion — no agent framing; sync vs async streaming side-by-side.
 
 **Natural Language (3 tiles)**
-9. Text Analysis Agent — **toggle**: Azure Language via Foundry Tools vs. via Azure Language MCP server.
+9. Text Analysis Agent — Azure AI Language (sentiment, entities, key phrases, PII redaction) as a tool inside a Foundry-hosted agent.
 10. Speech Assistant — **toggle**: speech-capable gen-AI app vs. Speech MCP agent.
 11. Translation — text + speech translation via Foundry Tools.
 

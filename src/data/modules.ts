@@ -14,6 +14,8 @@ export type TileGuide = {
   expect: string[];
   /** "Under the hood" implementation notes. */
   hood: string[];
+  /** Opening agent message. Falls back to a generic greeting when absent. */
+  greeting?: string;
 };
 
 export type Tile = {
@@ -73,6 +75,8 @@ export const modules: Module[] = [
         desc: "A simple Foundry-hosted chat agent. Streams responses token-by-token.",
         preview: 'Try: "Give me an elevator pitch for AI Arena."',
         guide: {
+          greeting:
+            "Hi — I'm a streaming chat agent on Azure AI Foundry. Ask me anything, or tap a suggested prompt.",
           about:
             "This is the baseline agent — no memory across turns, no tools, no retrieval. Just a hosted chat agent behind the Foundry Responses API. Every other tile in Agents is a variation on this pattern.",
           tryThis: [
@@ -101,6 +105,8 @@ export const modules: Module[] = [
         desc: "A chatbot that calls custom tools to get things done. Demonstrates function calling and async patterns.",
         preview: 'Try: "What time is it, and what is 128 * 47?"',
         guide: {
+          greeting:
+            "Ask me something that needs a real answer — the time, some maths — and I'll call a tool to get it. Or tap a suggested prompt.",
           about:
             "One step up from the baseline chat agent: this one can call tools. When a question needs a precise answer, the model doesn't guess — it asks the server to run a custom tool, gets the result back, and finishes the reply. Same gpt-5-mini deployment as tile #1, now with function calling.",
           tryThis: [
@@ -130,6 +136,8 @@ export const modules: Module[] = [
         desc: "Retrieval-augmented generation with grounded citations and memory that persists across turns.",
         preview: 'Try: "What is AI Arena, and how does it keep costs down?"',
         guide: {
+          greeting:
+            "Ask me about AI Arena or Mohamed — I answer only from a small set of docs, and I cite what I use. Or tap a suggested prompt.",
           about:
             "This agent answers only from a small corpus about AI Arena and Mohamed, stored in an Azure AI Search index. It retrieves the most relevant passages, grounds its answer in them, cites what it used, and remembers the conversation across turns.",
           tryThis: [
@@ -204,6 +212,8 @@ export const modules: Module[] = [
           { label: "sync", value: "sync" },
         ],
         guide: {
+          greeting:
+            "Give me anything to write or explain, then flip sync vs async to see how the tokens arrive. Or tap a suggested prompt.",
           about:
             "The baseline gen-AI primitive: a raw Azure OpenAI completion over the Responses API — no agent, no tools, no memory. Toggle sync vs async to see the difference. Same gpt-5-mini deployment as the Foundry Chat Agent.",
           tryThis: [
@@ -235,10 +245,32 @@ export const modules: Module[] = [
       {
         title: "Text Analysis Agent",
         slug: "text-analysis-agent",
-        status: "planned",
-        tag: "Azure Language · MCP",
+        status: "live",
+        tag: "sentiment · entities · PII",
         poweredBy: "Azure Language",
-        desc: "Analyse text (sentiment, entities, key phrases) two ways: via Azure Language in Foundry Tools, and via the Azure Language MCP server.",
+        desc: "Analyse text — sentiment, entities, key phrases, and PII redaction — with Azure AI Language, run as a tool inside a Foundry-hosted agent.",
+        preview: 'Try: "I loved the hotel, but the food was disappointing."',
+        guide: {
+          greeting:
+            "Paste any text and I'll analyse it — sentiment, entities, key phrases, or PII redaction. Or tap a suggested prompt.",
+          about:
+            "Paste any text and this agent breaks it down: the overall sentiment, the people, places, and organisations it mentions, and the key phrases that carry its meaning. It can also redact personal data — names, emails, phone numbers — so you can share or log text without leaking private details, which matters when the source is a support ticket, chat log, or document. It runs Azure AI Language as a tool inside a Foundry-hosted agent.",
+          tryThis: [
+            "The staff were lovely, but the room was filthy and the food arrived cold.",
+            "Redact the personal details: Sara Lind booked a table for two — reach her on 070-123 45 67 or sara.lind@example.com.",
+            "Microsoft was founded in 1975 by Bill Gates and Paul Allen in Albuquerque, New Mexico.",
+          ],
+          expect: [
+            "Sentiment comes back as positive, neutral, or negative with a confidence score — and mixed text is flagged as mixed.",
+            "Ask it to redact and personal data — names, emails, phone numbers — comes back masked, so nothing sensitive leaks.",
+            "Named entities (people, places, organisations, dates) and the key phrases that summarise the text are pulled out and labelled.",
+          ],
+          hood: [
+            "Azure AI Language does the analysis; the agent calls it as a tool and explains the result.",
+            "Your text goes browser → Next.js route → Azure — the Azure key stays on the server, never in the browser.",
+            "One agent, several Language operations — sentiment, entities, key phrases, PII redaction — picked to fit what you ask.",
+          ],
+        },
       },
       {
         title: "Speech Assistant",
