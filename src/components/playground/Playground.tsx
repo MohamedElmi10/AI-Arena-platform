@@ -26,7 +26,9 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: "agent",
-      text: "Hello. Ask me anything, or tap a suggested prompt from the guide.",
+      text:
+        guide.greeting ??
+        "Hello. Ask me anything, or tap a suggested prompt from the guide.",
     },
   ]);
   const [input, setInput] = useState("");
