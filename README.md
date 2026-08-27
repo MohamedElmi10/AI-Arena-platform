@@ -2,7 +2,7 @@
 
 A working portfolio of Azure AI skills — every tile is a live agent or generative-AI demo built while studying for AI-103.
 
-**Live at:** *(set after T-009)*
+**Live at:** https://aiarena-mohamed-elmi.netlify.app/
 
 ## Modules
 
