@@ -1,8 +1,4 @@
-import {
-  DefaultAzureCredential,
-  ClientSecretCredential,
-  type TokenCredential,
-} from "@azure/identity";
+import { DefaultAzureCredential, ClientSecretCredential } from "@azure/identity";
 
 // Credential for calling a Foundry-hosted agent endpoint (RAG, Text Analysis).
 //
@@ -16,9 +12,9 @@ import {
 // Prod (Netlify): a service principal via AZURE_TENANT_ID / AZURE_CLIENT_ID / AZURE_CLIENT_SECRET.
 // Local dev: none of those set → DefaultAzureCredential uses your `az login` session.
 
-let cached: TokenCredential | undefined;
+let cached: ClientSecretCredential | DefaultAzureCredential | undefined;
 
-export function getAgentCredential(): TokenCredential {
+export function getAgentCredential(): ClientSecretCredential | DefaultAzureCredential {
   if (cached) return cached;
 
   const tenantId = process.env.AZURE_TENANT_ID;
