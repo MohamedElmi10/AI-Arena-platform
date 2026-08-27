@@ -188,20 +188,31 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
           />
         </div>
 
+        {/* Mobile order: guide-top → chat → guide-bottom (chat right after "Try this").
+            Desktop: guide stacks in the left column, chat spans both rows on the right. */}
         <div className="grid grid-cols-12 gap-8">
-          <PlaygroundGuide guide={guide} onInsert={setInput} />
-          <ChatSurface
-            title={tile.title}
-            messages={messages}
-            input={input}
-            streaming={status === "streaming"}
-            onInputChange={setInput}
-            onSubmit={runStream}
-            modes={tile.modes}
-            mode={mode}
-            onModeChange={setMode}
-            accentVars={accentVars}
-          />
+          <div className="order-1 col-span-12 md:col-span-5 md:row-start-1">
+            <PlaygroundGuide guide={guide} onInsert={setInput} part="top" />
+          </div>
+
+          <div className="order-2 col-span-12 md:col-span-7 md:row-span-2 md:row-start-1">
+            <ChatSurface
+              title={tile.title}
+              messages={messages}
+              input={input}
+              streaming={status === "streaming"}
+              onInputChange={setInput}
+              onSubmit={runStream}
+              modes={tile.modes}
+              mode={mode}
+              onModeChange={setMode}
+              accentVars={accentVars}
+            />
+          </div>
+
+          <div className="order-3 col-span-12 md:col-span-5 md:row-start-2">
+            <PlaygroundGuide guide={guide} onInsert={setInput} part="bottom" />
+          </div>
         </div>
 
         <SiteFooter />
