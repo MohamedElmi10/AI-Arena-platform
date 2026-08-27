@@ -1,0 +1,21 @@
+# Netlify config for AI Arena (T-009)
+# The Next.js runtime plugin below provides SSR + API route support and
+# auto-installs on Netlify. Env vars are set in the Netlify UI, never here.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# --- Secrets scanning ---
+# These keys are non-secret IDENTIFIERS (deployment names, agent names, endpoints,
+# the public client/tenant IDs, the kill-switch flag). They legitimately appear in
+# source, docs, and the RAG corpus, so scanning their values produces false
+# positives. The two genuine secrets — AZURE_OPENAI_API_KEY and AZURE_CLIENT_SECRET
+# — are deliberately NOT omitted, so a real leak into served output still fails the build.
+[build.environment]
+  SECRETS_SCAN_OMIT_KEYS = "MODEL_ENDPOINT,MODEL_ENDPOINT_RAG,EMBED_DEPLOYMENT,RAG_AGENT_NAME,TEXT_ANALYSIS_AGENT_NAME,RAG_APP,PROJECT_ENDPOINT,AZURE_OPENAI_ENDPOINT,AZURE_CLIENT_ID,AZURE_TENANT_ID,KILL_SWITCH"
+  # The API key's only hits were in the Turbopack build cache (never served), so skip it.
+  SECRETS_SCAN_OMIT_PATHS = ".netlify/.next/cache/**"

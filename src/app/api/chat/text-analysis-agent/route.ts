@@ -1,6 +1,6 @@
 import type { ResponseCreateParamsStreaming } from "openai/resources/responses/responses";
 import { withCostSafety, type CostSafetyHandler } from "@/lib/cost-safety";
-import { DefaultAzureCredential } from "@azure/identity";
+import { getAgentCredential } from "@/lib/agent-credential";
 import OpenAI from "openai";
 
 // POST /api/chat/text-analysis-agent — runtime path for the Text Analysis tile.
@@ -9,7 +9,6 @@ import OpenAI from "openai";
 export const runtime = "nodejs";
 
 const AGENT_SCOPE = "https://ai.azure.com/.default";
-const credential = new DefaultAzureCredential();
 
 const encoder = new TextEncoder();
 const sse = (payload: unknown): Uint8Array =>
@@ -40,7 +39,7 @@ const handler: CostSafetyHandler = async (req, ctx) => {
   }
 
   const baseUrl = `${process.env.PROJECT_ENDPOINT!.replace(/\/$/, "")}/agents/${process.env.TEXT_ANALYSIS_AGENT_NAME}/endpoint/protocols/openai`;
-  const { token } = await credential.getToken(AGENT_SCOPE);
+  const { token } = await getAgentCredential().getToken(AGENT_SCOPE);
   const client = new OpenAI({
     baseURL: baseUrl,
     apiKey: token,
