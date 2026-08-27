@@ -59,19 +59,20 @@ export function ArchitectureDiagram() {
           How it works
         </div>
         <p className="mt-3 max-w-3xl font-display text-lg leading-relaxed text-neutral-700">
-          Every demo follows the same shape: your browser never sees an Azure
-          key — the Next.js route calls Azure server-side (wrapped in
-          cost-safety) and streams the reply back token by token. Only the
-          Azure service at the end changes per tile.
+          Every demo follows the same shape: the browser never sees Azure
+          credentials — the Next.js route authenticates to Azure server-side
+          (wrapped in cost-safety) and streams the reply back token by token. The
+          only thing that differs from one tile to the next is the Azure service
+          at the end.
         </p>
       </div>
 
       <div className="flex flex-col items-stretch gap-3 md:flex-row md:items-center">
-        <Node label="Your browser" sublabel="the playground" />
+        <Node label="The browser" sublabel="the playground" />
         <Arrow label="prompt" />
         <Node
           label="Next.js API route"
-          sublabel="withCostSafety · key server-side"
+          sublabel="withCostSafety · credentials server-side"
         />
         <Arrow label="server-side" />
         <Node

@@ -20,25 +20,43 @@ export function Hero() {
       </h1>
 
       <p className="mt-4 max-w-3xl font-display text-2xl italic text-neutral-700">
-        Azure AI Engineer — a working showcase of what I built on the way to
-        AI-103.
+        Azure AI Engineer — Microsoft AI-103 certified. A working showcase of the
+        skills behind the credential.
       </p>
+
+      {/* Certification badge — links to the verified Microsoft Learn credential. */}
+      <div className="mt-5">
+        <a
+          href="https://learn.microsoft.com/api/credentials/share/en-gb/MohamedElmi-4290/A5D54B676DB783A3?sharingId=3105092C8A9E2CA6"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block rounded border border-neutral-900 px-2.5 py-1 font-mono text-[11px] font-semibold uppercase tracking-widest text-neutral-900 transition hover:bg-neutral-900 hover:text-white"
+        >
+          Microsoft Certified · Azure AI Apps &amp; Agents Developer (AI-103) →
+        </a>
+      </div>
 
       <PoweredBy
         service="Microsoft Azure AI"
         prefix="Built on"
-        className="mt-4 text-neutral-500"
+        className="mt-5 text-neutral-500"
       />
 
       <div className="mt-6 flex gap-6 text-sm">
-        {/* TODO(Mohamed): confirm your LinkedIn URL. */}
         <a
           href="https://github.com/MohamedElmi10"
+          target="_blank"
+          rel="noopener noreferrer"
           className="underline underline-offset-4"
         >
           GitHub →
         </a>
-        <a href="#" className="underline underline-offset-4">
+        <a
+          href="https://www.linkedin.com/in/-elmi"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-4"
+        >
           LinkedIn →
         </a>
       </div>

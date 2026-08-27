@@ -2,8 +2,8 @@
 
 Mohamed Elmi is a software engineer moving from front-end development into AI
 engineering. His front-end background is in React, Next.js, and MongoDB. He is
-currently focused full-time on that transition, actively pursuing the Azure AI
-certification AI-103.
+currently focused full-time on that transition and holds the Microsoft Certified:
+Azure AI Apps and Agents Developer Associate certification (exam AI-103).
 
 AI Arena is the vehicle he uses to learn Azure by building. Rather than studying
 the certification material in the abstract, he wires up one live Azure AI agent
@@ -25,11 +25,10 @@ Mohamed has about  six months of professional experience as a front-end
 developer intern, working with React, Next.js, and MongoDB. Over roughly the
 past year he has also built his own projects end to end — some front-end only,
 others spanning back-end and databases, and several focused on AI development.
-AI Arena is the largest of these: a Next.js front end wrapping live Azure AI
-agents.
+AI Arena is one of these: a Next.js front end wrapping live Azure AI agents.
 
 Before moving into AI engineering, he worked as Frontend Intern at Diya Interactive from
-2024 to 2025, where he developed Responsive and modern interface experience. A project
+2024 to 2025, where he developed Responsive and modern interface experience. A project
 worth naming is Health4Travel — a travel-health app that helps travelers manage vaccination and
 health records, book appointments with clinics abroad, use telehealth, and keep
 certificates and prescriptions in an offline health wallet. Mohamed worked on
