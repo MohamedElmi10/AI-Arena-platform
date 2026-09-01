@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Custom lexicon for the AI Arena Speech Assistant tile.
+
+  This is a PLS 1.0 document, NOT an SSML document — it can't be sent to the
+  synthesiser directly. It's published at a public URL and referenced from SSML:
+
+      <lexicon uri="https://.../lexicon.xml"/>      (inside <voice>)
+
+  Two ways to fix a word, both shown below:
+    <alias>   — respell it. Use for acronyms and initialisms. Wins over <phoneme>
+                when both are given for the same grapheme.
+    <phoneme> — give the exact sounds in IPA. Use for names the voice mangles.
+                No whitespace inside the IPA string. '.' marks a syllable break.
+
+  Rules that will bite you:
+    - One lexicon file = ONE locale. This one is en-US; it does nothing to a
+      sv-SE voice.
+    - <lexeme> is CASE SENSITIVE. "SSML" and "ssml" are separate entries.
+    - Cached by URI for up to 15 minutes. Edits won't be heard immediately.
+    - Max 100 KB per file.
+
+  Reference:
+  https://learn.microsoft.com/azure/ai-services/speech-service/speech-synthesis-markup-pronunciation#custom-lexicon
+-->
+<lexicon version="1.0"
+         xmlns="http://www.w3.org/2005/01/pronunciation-lexicon"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.w3.org/2005/01/pronunciation-lexicon
+                             http://www.w3.org/TR/2007/CR-pronunciation-lexicon-20071212/pls.xsd"
+         alphabet="ipa"
+         xml:lang="en-US">
+
+  <!-- Certification codes. Without these a voice reads "AI-102" as
+       "AI minus one hundred and two". -->
+  <lexeme>
+    <grapheme>AI-102</grapheme>
+    <alias>A I one oh two</alias>
+  </lexeme>
+
+  <lexeme>
+    <grapheme>AI-103</grapheme>
+    <alias>A I one oh three</alias>
+  </lexeme>
+
+  <!-- Initialisms. Spell them out rather than letting the voice attempt a word. -->
+  <lexeme>
+    <grapheme>SSML</grapheme>
+    <alias>S S M L</alias>
+  </lexeme>
+
+  <lexeme>
+    <grapheme>STT</grapheme>
+    <alias>speech to text</alias>
+  </lexeme>
+
+  <lexeme>
+    <grapheme>TTS</grapheme>
+    <alias>text to speech</alias>
+  </lexeme>
+
+  <!-- A name the en-US voices get wrong. This is the <phoneme> path: exact
+       sounds in IPA, not a respelling. -->
+  <lexeme>
+    <grapheme>Elmi</grapheme>
+    <phoneme>ˈɛl.mi</phoneme>
+  </lexeme>
+
+</lexicon>

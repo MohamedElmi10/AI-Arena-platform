@@ -49,3 +49,6 @@ __pycache__/
 
 .fuse_hidden*
 _fuse_trash/
+
+# audio produced by the speech tile build.py
+*.wav
