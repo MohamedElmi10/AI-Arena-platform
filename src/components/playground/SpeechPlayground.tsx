@@ -5,7 +5,7 @@ import type { Module, Tile, TileGuide } from "@/data/modules";
 import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
 import { PlaygroundGuide } from "@/components/playground/PlaygroundGuide";
 import { SiteFooter } from "@/components/SiteFooter";
-import { TRAINED_WORDS, trainedWordsIn } from "@/lib/lexicon";
+import { nearMissesIn, TRAINED_WORDS, trainedWordsIn } from "@/lib/lexicon";
 
 // The Speech Assistant playground. Unlike the other tiles this is not a chat, so
 // it doesn't use <Playground> — it reuses the header, guide and footer and owns
@@ -206,6 +206,9 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
   // otherwise both renderings are identical and two players imply a lie.
   const taught = trainedWordsIn(text);
   const comparable = taught.length > 0;
+  // Right letters, wrong case: a lexeme is case sensitive, so say so rather than
+  // offering a comparison that would play two identical clips.
+  const nearMiss = nearMissesIn(text);
 
   const recording = phase === "recording";
   const busy = phase === "transcribing" || phase === "speaking";
@@ -275,9 +278,10 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
                 The mouth · text becomes speech
               </div>
               <p className="mb-3 text-sm text-neutral-600">
-                Type anything and hear it read aloud. Include a word this voice has
-                been taught and you can play it both ways — same sentence, same
-                voice, the only difference being the pronunciation guide.
+                A voice works out how to say a word from its spelling, so unusual
+                ones come out wrong. We gave this one a short list of corrections.
+                Select a word from that list and you can hear it both ways, the pre
+                - and post-training versions.
               </p>
               <textarea
                 value={text}
@@ -345,10 +349,26 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
                   {clips.after && (
                     <audio controls src={clips.after} className="mt-2 h-8 w-full max-w-sm" />
                   )}
-                  <p className="mt-3 text-xs text-neutral-500">
-                    Nothing here has been taught to this voice, so there is no
-                    before-and-after to hear. Try one of these:
-                  </p>
+                  {nearMiss.length > 0 ? (
+                    <p className="mt-3 text-xs text-neutral-600">
+                      Capitals matter — the list is case sensitive, so{" "}
+                      <span className="font-mono">{nearMiss[0].toLowerCase()}</span>{" "}
+                      isn&apos;t corrected. Try{" "}
+                      <button
+                        onClick={() => setText(nearMiss[0])}
+                        className="font-mono font-medium text-[color:var(--accent)] underline underline-offset-2"
+                      >
+                        {nearMiss[0]}
+                      </button>
+                      .
+                    </p>
+                  ) : (
+                    <p className="mt-3 text-xs text-neutral-500">
+                      {text.trim()
+                        ? "None of these words are on the list, so both versions would sound the same. Try one of these:"
+                        : "Words this voice has been taught:"}
+                    </p>
+                  )}
                   <div className="mt-2 flex flex-wrap gap-1.5">
                     {TRAINED_WORDS.map((word) => (
                       <button

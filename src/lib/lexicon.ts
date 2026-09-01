@@ -28,3 +28,17 @@ export const TRAINED_WORDS = [
 export function trainedWordsIn(text: string): string[] {
   return TRAINED_WORDS.filter((word) => text.includes(word));
 }
+
+/**
+ * Trained words the text nearly matches — right letters, wrong case.
+ *
+ * A lexeme really is case sensitive, so "stt" is not corrected and offering a
+ * comparison for it would show two identical clips. Catching the near-miss lets
+ * the playground say why instead of looking broken.
+ */
+export function nearMissesIn(text: string): string[] {
+  const lower = text.toLowerCase();
+  return TRAINED_WORDS.filter(
+    (word) => !text.includes(word) && lower.includes(word.toLowerCase())
+  );
+}

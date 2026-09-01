@@ -1,149 +1,86 @@
-# T-025: Speech Assistant (whole tile)
+# T-025: Speech Assistant
 
-**Status:** open
-**Blocked by:** — (ADR-0003 merged)
-**Blocks:** —
+**Status:** open — corpus pass still owed
+**Blocked by:** — · **Blocks:** —
 **Module:** Natural Language · **Slug:** `speech-assistant`
 
 ## Goal
-Ship the Natural Language pillar's second tile: a **speech-capable** demo built
-directly on the Speech SDK — speech to text, text to speech with SSML, and
-one-call speech translation.
 
-## ⚠️ Scope change before you start — read this first
+A tile you can talk to and hear back. It turns your speech into text, and reads
+text aloud with a custom lexicon fixing how certain words are pronounced.
 
-`data/modules.ts` currently promises:
+Speech translation is proven in `build.py` but is not wired into the page. The
+page itself never touches the Speech SDK — both calls are plain HTTP.
 
-> "A speech-capable gen-AI app **plus a Speech agent via the Azure Speech MCP
-> server**. Toggle implementations."
+## What shipped
 
-**Drop the MCP half.** The Azure Speech MCP Server is real — it's in the Foundry
-tool catalog and you attach it the same way the Text Analysis Agent attaches
-Azure Language. But it carries three blockers this project can't absorb:
+- `src/app/nl/speech-assistant/build.py` — run it in a terminal and it prompts for
+  A, B, C or D: listen, speak plain, speak with the lexicon, or translate. Each
+  part testable on its own. Plus `lexicon.xml` and a README.
+- `src/app/api/speech/speech-assistant/route.ts` — one route, two operations,
+  chosen by content type. JSON in, audio out. WAV in, text out.
+- `src/components/playground/SpeechPlayground.tsx` and its page.
+- `withCostSafety` gained an optional `{ limit, key }` so a costly route can have
+  its own daily budget. ADR-0002 specified it; T-021 never built it, so this did.
+- `src/lib/lexicon.ts` — the taught-word list the UI reads, with a test that fails
+  if it drifts from `lexicon.xml`.
 
-1. **It requires the Agent Service Enterprise tier.** Connecting it on a
-   non-Enterprise resource fails with
-   `Invalid tool value(s): mcp. Use the Enterprise offerings to access these tool(s)`.
-   Per CLAUDE.md, a paid-tier resource needs a **new ADR** before provisioning.
-2. **It requires an Azure Storage account and SAS URLs** for both input audio and
-   output audio. That is a second provisioned resource plus secret-handling the
-   cost-safety posture doesn't currently cover.
-3. **It authenticates with a raw API key** (`Bearer` = `KEY1`/`KEY2`) pasted into
-   the tool config — not managed identity, unlike every other tile.
+## Decisions made here
 
-It is also **not a live speech app**: audio has to be a blob with a SAS URL, so
-you can't stream a microphone into it. It answers "transcribe the file at this
-URL", which is a weaker demo than the SDK route.
+**The MCP variant was dropped.** `modules.ts` promised a toggle between an app and
+a Speech MCP agent. The MCP server needs the Agent Service Enterprise tier, a
+storage account with SAS URLs, and raw key auth. It also can't take a live
+microphone — it transcribes a file at a URL. If it's wanted later it's a new
+ticket and a new ADR. T-024 shipped one wiring after promising a toggle; this time
+the copy was fixed to match.
 
-T-024 already shipped one wiring after promising a toggle. **Don't repeat that.**
-Promise one wiring, ship one wiring, and update `desc`/`tag`/`guide` in
-`data/modules.ts` and `docs/CONTEXT.md` so nothing claims what isn't built. If the
-MCP route is wanted later it's a separate ticket **plus an ADR**.
+**S0, not F0.** F0 can't bill you but allows one concurrent request, so the second
+visitor gets an error. See [ADR-0003](../docs/adr/0003-speech-cost-posture.md).
 
-Source: [Connect Azure Speech in Foundry Tools to an agent](https://learn.microsoft.com/en-us/azure/foundry/agents/how-to/tools/azure-ai-speech)
+**Its own caps.** `withCostSafety` bounds output tokens, which is the wrong unit —
+speech bills per second of audio in and per character out. So the route caps 30
+seconds and 800 characters, checked before any Azure call, on a 100/day key.
 
-## ⚠️ Cost posture — settled in ADR-0003, don't re-decide it here
+**A bespoke page, not the shared `Playground`.** `Playground` hardcodes
+`fetch('/api/chat/<slug>')` and assumes a chat. This tile records and plays, so it
+reuses the header, guide and footer and owns its body.
 
-An earlier draft of this ticket said F0 free tier, no new ADR needed. That was
-wrong on both counts and [ADR-0003](../docs/adr/0003-speech-cost-posture.md) now
-supersedes it. The short version:
-
-- **S0 (paid), not F0.** F0 can't bill you, but its concurrent request limit is 1
-  and isn't adjustable — the second simultaneous visitor gets a 429. A tile that
-  breaks when two people open it is worse than a small bill.
-- **`withCostSafety(...)` alone is not enough here.** It bounds `max_output_tokens`,
-  which is the wrong unit: speech bills per audio second in and per character out.
-  Wrapping the route satisfies ADR-0001's letter while leaving the real cost lever
-  unbounded.
-- The two caps below are the speech equivalent of `max_output_tokens`. They are
-  acceptance items, not polish.
+**No SDK at runtime.** The JavaScript SDK won't accept browser audio anyway, so
+both calls are plain HTTP and nothing was added to `package.json`. The browser
+converts its own recording to the WAV Azure wants.
 
 ## Phase 1 — Build (Azure) — DONE
 
-- [x] Create a **standalone Azure Speech resource** in `rg-ai-arena` on the
-      **S0 tier**, per ADR-0003. **Do not reuse the Foundry resource** — Foundry
-      has no F0 path, provisions Speech at S0 anyway, and mixing them makes the
-      Speech line item unreadable on the bill.
-- [x] `pip install azure-cognitiveservices-speech`
-- [x] Env in `.env` at the repo root (gitignored, never committed):
-      `SPEECH_KEY`, `SPEECH_REGION`, and `LEXICON_URI` for Part B.
-- [x] **Write** `src/app/nl/speech-assistant/build.py` — the folder doesn't exist
-      yet. Scaffold it TODO-style like the other tiles (nudges, not solutions) and
-      fill it in yourself; that's the point of the tile.
-- [x] Upload the custom lexicon XML somewhere publicly readable (a raw GitHub URL
-      is free and avoids a storage account — prefer it over Blob + SAS). Commit the
-      lexicon file itself to the tile folder as portfolio surface.
-- [x] `README.md` next to `build.py` — what it is, **cost model per ADR-0003**,
-      redeploy.
-- [x] **No custom speech model and no custom neural voice.** Both are hourly-billed
-      custom endpoints (CONTEXT.md §Provisioned) and each would need its own ADR.
-      The table below is exam knowledge for the README — not a build instruction.
+- [x] Standalone Speech resource, S0, in `rg-ai-arena`. Not the Foundry one.
+- [x] `SPEECH_KEY`, `SPEECH_REGION`, `LEXICON_URI` in `.env` (gitignored).
+- [x] `build.py` scaffolded TODO-style, filled in by hand.
+- [x] `lexicon.xml` committed and served from a raw GitHub URL. No storage account.
+- [x] README covering the tile, the cost model and the gotchas.
+- [x] No custom speech model, no custom neural voice — both are hourly-billed and
+      would need their own ADR.
 
-## Phase 2 — Wire (Next.js + inline UI)
+## Phase 2 — Wire — DONE
 
-- [ ] Route wrapped in `withCostSafety(handler, { limit: 100, key: "speech" })`
-      — the dedicated budget key from ADR-0003, not the global chat budget.
-- [ ] **`MAX_AUDIO_SECONDS = 30`** — reject longer uploads. Checked **before** the
-      Speech client is constructed, so a rejection costs nothing.
-- [ ] **`MAX_SYNTHESIS_CHARS = 800`** — reject longer synthesis input, same
-      placement.
-- [ ] Both rejections return a friendly bubble that reads as a designed boundary
-      ("this demo listens for 30 seconds at a time"), not an error.
-- [ ] Speech keys never reach the browser (ADR-0001).
-- [ ] Decide the browser story before writing UI. Two options:
-      - **Simplest:** browser records audio → POST to the route → server calls
-        Speech → return transcript/audio. One round trip, no browser SDK, keys
-        stay server-side. **Recommended.**
-      - **Live:** issue a short-lived Speech **authorization token** from the route
-        and let the browser SDK stream. Better demo, more moving parts, and the
-        token is still a credential in the browser.
-- [ ] **Decide the UI shell — this is not a free choice.** `Playground.tsx`
-      hardcodes `fetch('/api/chat/${tile.slug}')`, so a route at
-      `app/api/speech/speech-assistant/` is unreachable from the shared Playground.
-      Pick one and write it down:
-      - **Reuse `Playground`** — keep the route at `app/api/chat/speech-assistant/`
-        (consistent with all five live tiles) and teach `ChatSurface` an audio
-        input. Keeps the guide pane, `LiveStats`, the cost-safety friendly-error
-        path, and the SSE parser. **Recommended** — "consistency over novelty".
-      - **Bespoke page** — a standalone speech UI. Then say so out loud, and note
-        that the `guide` field below renders nowhere unless it's wired by hand.
-- [ ] `data/modules.ts` `guide` added (greeting / about / tryThis / expect).
+- [x] Route wrapped in `withCostSafety(handler, { limit: 100, key: "speech" })`.
+- [x] `MAX_AUDIO_SECONDS = 30` and `MAX_SYNTHESIS_CHARS = 800`, both checked before
+      the Azure call.
+- [x] Caps verified by curl, not through the UI — the recorder and textarea stop
+      you first, so the browser never reaches either limit.
+- [x] Keys stay server-side.
+- [x] Before/after playback, so you can hear what the lexicon changed.
+- [x] `guide` added to `data/modules.ts`.
 
-## Phase 3 — Flip (data)
+## Phase 3 — Flip — DONE except the corpus pass
 
-- [ ] `data/modules.ts` → NL → `speech-assistant` → `status: 'live'` (+ `preview`).
-- [ ] Fix the tile `tag` and `desc` to match what shipped (no "MCP", no "toggle").
-- [ ] `docs/CONTEXT.md` — tile 10 in the tile map still says "**toggle**: speech-capable
-      gen-AI app vs. Speech MCP agent". Fix it, and link ADR-0003 from §Cost Safety
-      the way tile 13 links ADR-0002.
-- [ ] Run the **T-018** corpus pass. Note it inherits T-024's unpaid debt —
-      `corpus/05-modules-and-tiles.md` still calls the Text Analysis tile a
-      "toggle" too. Fix both in the same pass.
-
-## Why this tile is built this way
-
-The AI-103 retake weak areas are monitoring, responsible AI, and **speech**. On a
-Speech-filtered drill run on 2026-08-24 the score was **1/7**, and the misses were
-not random — they clustered on **which side of the service you customise**:
-
-| Confusion | Recognition side (STT) | Synthesis side (TTS) |
-|---|---|---|
-| Fix vocabulary the model mis-hears | **custom speech model**, phrase list | — |
-| Fix how a word is spoken aloud | — | **custom lexicon** + SSML, `phoneme`, `sub` |
-| Make a new voice | — | **custom neural voice** (needs voice talent + approval) |
-
-Parts B and C of `build.py` exist to make that boundary physical. Build it once
-and the exam question stops being a coin flip. Note that only the **custom lexicon**
-row is actually built here — the other two are provisioned endpoints (see Phase 1).
+- [x] `status: 'live'`, with a `preview`.
+- [x] `tag` and `desc` match what shipped. No "MCP", no "toggle".
+- [x] `docs/CONTEXT.md` tile map corrected.
+- [ ] T-018 corpus pass. It inherits T-024's debt —
+      `corpus/05-modules-and-tiles.md` still calls both tiles toggles.
 
 ## Notes
 
-- Speech translation is **one** `TranslationRecognizer` — source language, target
-  language, synthesis voice, done. It is *not* STT → Translator → TTS chained by
-  hand. Part C exists so the "least development effort" answer is something you've
-  felt in your fingers rather than memorised.
-- Translation bills per audio hour at a higher rate than plain transcription, but
-  it *replaces* the STT call rather than adding to it, and the same
-  `MAX_AUDIO_SECONDS` cap bounds it.
-- **Deploy (T-009):** Netlify needs `SPEECH_KEY`, `SPEECH_REGION` and
-  `LEXICON_URI` set, same as the other tiles' env.
+- Speech translation is one `TranslationRecognizer`, not three chained calls. The
+  spoken translation arrives on an event, not on the result.
+- **Deploy:** Netlify needs `SPEECH_KEY`, `SPEECH_REGION` and `LEXICON_URI`. Point
+  `LEXICON_URI` at `main` before deleting the branch.

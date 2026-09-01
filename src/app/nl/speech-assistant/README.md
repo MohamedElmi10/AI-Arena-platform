@@ -62,8 +62,14 @@ account; Microsoft's docs list GitHub URIs as supported.
 
 Two ways to fix a word, both in the file:
 
-- `<alias>` — respell it. For acronyms and codes: `AI-103` → `A I one oh three`.
-- `<phoneme>` — the exact sounds, in IPA. For names: `Elmi` → `ˈɛl.mi`.
+- `<alias>` — respell it. For acronyms and codes: `STT` → `speech to text`.
+- `<phoneme>` — the exact sounds, in IPA. For names and foreign spellings that
+  English cannot respell: `Umeå` → `ˈuː.mɛ.oʊ`.
+
+Words are only kept if the before/after actually differs. Several candidates —
+AI-103, SSML, Elmi, Göteborg, Uppsala — were culled because the voice already
+said them correctly. A lexicon entry that changes nothing makes the demo look
+broken.
 
 Four things that will waste your time:
 

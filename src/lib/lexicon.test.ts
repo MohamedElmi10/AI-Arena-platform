@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { TRAINED_WORDS, trainedWordsIn } from "./lexicon";
+import { nearMissesIn, TRAINED_WORDS, trainedWordsIn } from "./lexicon";
 
 // The playground decides whether to offer a before/after comparison from
 // TRAINED_WORDS, but Azure reads lexicon.xml. If the two drift, the tile either
@@ -47,5 +47,19 @@ describe("trainedWordsIn", () => {
   it("is case sensitive, matching how a lexeme actually behaves", () => {
     expect(trainedWordsIn("stt")).toEqual([]);
     expect(trainedWordsIn("STT")).toEqual(["STT"]);
+  });
+});
+
+describe("nearMissesIn", () => {
+  it("spots the right letters in the wrong case", () => {
+    expect(nearMissesIn("stt")).toEqual(["STT"]);
+  });
+
+  it("stays quiet when the case is already right", () => {
+    expect(nearMissesIn("STT")).toEqual([]);
+  });
+
+  it("stays quiet for unrelated text", () => {
+    expect(nearMissesIn("hello there")).toEqual([]);
   });
 });
