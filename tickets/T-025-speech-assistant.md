@@ -1,7 +1,7 @@
 # T-025: Speech Assistant (whole tile)
 
 **Status:** open
-**Blocked by:** — (needs [ADR-0003](../docs/adr/0003-speech-cost-posture.md) merged first)
+**Blocked by:** — (ADR-0003 merged)
 **Blocks:** —
 **Module:** Natural Language · **Slug:** `speech-assistant`
 
@@ -58,24 +58,24 @@ supersedes it. The short version:
 - The two caps below are the speech equivalent of `max_output_tokens`. They are
   acceptance items, not polish.
 
-## Phase 1 — Build (Azure)
+## Phase 1 — Build (Azure) — DONE
 
-- [ ] Create a **standalone Azure Speech resource** in `rg-ai-arena` on the
+- [x] Create a **standalone Azure Speech resource** in `rg-ai-arena` on the
       **S0 tier**, per ADR-0003. **Do not reuse the Foundry resource** — Foundry
       has no F0 path, provisions Speech at S0 anyway, and mixing them makes the
       Speech line item unreadable on the bill.
-- [ ] `pip install azure-cognitiveservices-speech`
-- [ ] Env in `.env.local` (never committed):
+- [x] `pip install azure-cognitiveservices-speech`
+- [x] Env in `.env` at the repo root (gitignored, never committed):
       `SPEECH_KEY`, `SPEECH_REGION`, and `LEXICON_URI` for Part B.
-- [ ] **Write** `src/app/nl/speech-assistant/build.py` — the folder doesn't exist
+- [x] **Write** `src/app/nl/speech-assistant/build.py` — the folder doesn't exist
       yet. Scaffold it TODO-style like the other tiles (nudges, not solutions) and
       fill it in yourself; that's the point of the tile.
-- [ ] Upload the custom lexicon XML somewhere publicly readable (a raw GitHub URL
+- [x] Upload the custom lexicon XML somewhere publicly readable (a raw GitHub URL
       is free and avoids a storage account — prefer it over Blob + SAS). Commit the
       lexicon file itself to the tile folder as portfolio surface.
-- [ ] `README.md` next to `build.py` — what it is, **cost model per ADR-0003**,
+- [x] `README.md` next to `build.py` — what it is, **cost model per ADR-0003**,
       redeploy.
-- [ ] **No custom speech model and no custom neural voice.** Both are hourly-billed
+- [x] **No custom speech model and no custom neural voice.** Both are hourly-billed
       custom endpoints (CONTEXT.md §Provisioned) and each would need its own ADR.
       The table below is exam knowledge for the README — not a build instruction.
 
