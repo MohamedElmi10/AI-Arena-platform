@@ -80,7 +80,7 @@ type Props = {
 
 export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
   const [phase, setPhase] = useState<Phase>("idle");
-  const [text, setText] = useState("Mohamed Elmi is AI-103 certified, and SSML fixes pronunciation.");
+  const [text, setText] = useState("");
   const [transcript, setTranscript] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [seconds, setSeconds] = useState(0);
@@ -290,6 +290,7 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
                   });
                 }}
                 rows={3}
+                placeholder="Type something, or tap a taught word below…"
                 className="w-full resize-none rounded-lg border border-neutral-300 p-3 text-sm focus:border-[var(--accent)] focus:outline-none"
               />
 

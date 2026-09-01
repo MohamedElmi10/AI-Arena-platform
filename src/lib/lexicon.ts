@@ -9,16 +9,13 @@
 
 /** Graphemes from src/app/nl/speech-assistant/lexicon.xml, in file order. */
 export const TRAINED_WORDS = [
-  "AI-103",
-  "SSML",
   "STT",
   "TTS",
-  "Göteborg",
+  "Umeå",
   "Jönköping",
   "Nguyen",
   "i18n",
   "l10n",
-  "Elmi",
 ] as const;
 
 /**

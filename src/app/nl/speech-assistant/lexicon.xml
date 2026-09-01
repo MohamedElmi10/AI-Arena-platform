@@ -33,17 +33,7 @@
 
   <!-- Certification codes. Without this a voice reads "AI-103" as
        "AI minus one hundred and three". -->
-  <lexeme>
-    <grapheme>AI-103</grapheme>
-    <alias>A I one oh three</alias>
-  </lexeme>
-
   <!-- Initialisms. Spell them out rather than letting the voice attempt a word. -->
-  <lexeme>
-    <grapheme>SSML</grapheme>
-    <alias>S S M L</alias>
-  </lexeme>
-
   <lexeme>
     <grapheme>STT</grapheme>
     <alias>speech to text</alias>
@@ -54,12 +44,17 @@
     <alias>text to speech</alias>
   </lexeme>
 
-  <!-- Swedish place names an en-US voice has no chance with. Aliases are read
-       by the same English voice, so they are respelled the way an English
-       speaker would have to say them. -->
+  <!-- Swedish place names an en-US voice mangles. An alias is read aloud by the
+       same English voice, so it is respelled the way an English speaker would
+       have to write it to land on the Swedish sound. Auditioned by ear, not
+       derived — type the alias into the tile to hear exactly what it produces. -->
+  <!-- Umeå is [ˈʉːmɛo] in Swedish, and ʉ does not exist in en-US. An alias cannot
+       spell it either — English has no spelling for å. So this is the phoneme
+       path: the nearest en-US sounds, written in IPA. Stress mark, then u: (boot),
+       ɛ (bed), oʊ (boat), with '.' marking syllables and no spaces allowed. -->
   <lexeme>
-    <grapheme>Göteborg</grapheme>
-    <alias>Yutebory</alias>
+    <grapheme>Umeå</grapheme>
+    <phoneme>ˈuː.mɛ.oʊ</phoneme>
   </lexeme>
 
   <lexeme>
@@ -82,13 +77,6 @@
   <lexeme>
     <grapheme>l10n</grapheme>
     <alias>localization</alias>
-  </lexeme>
-
-  <!-- A name the en-US voices get wrong. This is the <phoneme> path: exact
-       sounds in IPA, not a respelling. -->
-  <lexeme>
-    <grapheme>Elmi</grapheme>
-    <phoneme>ˈɛl.mi</phoneme>
   </lexeme>
 
 </lexicon>

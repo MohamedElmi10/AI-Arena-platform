@@ -29,7 +29,7 @@ describe("lexicon.xml stays in sync with TRAINED_WORDS", () => {
 
 describe("trainedWordsIn", () => {
   it("finds a taught word in a sentence", () => {
-    expect(trainedWordsIn("I flew to Göteborg last week")).toEqual(["Göteborg"]);
+    expect(trainedWordsIn("I flew to Umeå last week")).toEqual(["Umeå"]);
   });
 
   it("finds several", () => {
@@ -45,7 +45,7 @@ describe("trainedWordsIn", () => {
   });
 
   it("is case sensitive, matching how a lexeme actually behaves", () => {
-    expect(trainedWordsIn("ssml")).toEqual([]);
-    expect(trainedWordsIn("SSML")).toEqual(["SSML"]);
+    expect(trainedWordsIn("stt")).toEqual([]);
+    expect(trainedWordsIn("STT")).toEqual(["STT"]);
   });
 });

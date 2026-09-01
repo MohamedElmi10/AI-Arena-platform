@@ -85,9 +85,11 @@ export const modules: Module[] = [
             "What is Azure AI Foundry, in one sentence?",
           ],
           expect: [
-            "Response streams character-by-character.",
-            "Neutral tone tuned for portfolio demos.",
-            "No tool calls, no citations — those live in other tiles.",
+            "\"Umeå\" said roughly \"OO-meh-oh\", instead of the voice guessing at the å.",
+            "\"STT\" and \"TTS\" read out in full as \"speech to text\" and \"text to speech\".",
+            "\"i18n\" and \"l10n\" read as the words they stand for, not as letters and numbers.",
+            "Anything not in the guide sounds identical on both sides. That is the control, not a bug.",
+            "Now record your own name. It may well come back misspelled — teaching a service to hear a word is a different job from teaching it to say one, and this demo only does the second.",
           ],
           hood: [
             "Azure AI Foundry hosts the agent.",
@@ -285,9 +287,9 @@ export const modules: Module[] = [
           about:
             "Say something, it writes down what it heard. Type something, it reads it out loud. It doesn't answer you. The voice has been taught to pronounce names and codes it would otherwise mangle.",
           tryThis: [
-            "Mohamed Elmi is AI-103 certified, and SSML fixes pronunciation.",
-            "The AI-103 exam covers STT and TTS.",
-            "SSML controls how a voice reads a word.",
+            "Nguyen is flying to Umeå, then Jönköping.",
+            "Our team handles i18n and l10n for the whole product.",
+            "STT and TTS are the two halves of a speech service.",
           ],
           expect: [
             "\"AI-103\" said as A-I one-oh-three — not as a subtraction sum.",
