@@ -106,7 +106,7 @@ def speak_ssml(text):
     return result
 
 
-TEST_LINE = "Mohamed Elmi is studying for AI-102, and SSML fixes pronunciation."
+TEST_LINE = "Mohamed Elmi is AI-103 certified, and SSML fixes pronunciation."
 
 # speak_ssml(TEST_LINE)   # uncomment once LEXICON_URI is set
 

@@ -31,13 +31,8 @@
          alphabet="ipa"
          xml:lang="en-US">
 
-  <!-- Certification codes. Without these a voice reads "AI-102" as
-       "AI minus one hundred and two". -->
-  <lexeme>
-    <grapheme>AI-102</grapheme>
-    <alias>A I one oh two</alias>
-  </lexeme>
-
+  <!-- Certification codes. Without this a voice reads "AI-103" as
+       "AI minus one hundred and three". -->
   <lexeme>
     <grapheme>AI-103</grapheme>
     <alias>A I one oh three</alias>
