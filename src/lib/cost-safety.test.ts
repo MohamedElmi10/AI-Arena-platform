@@ -73,6 +73,43 @@ describe("daily budget cap", () => {
   });
 });
 
+describe("per-route budget (ADR-0002 / ADR-0003)", () => {
+  it("uses its own key, so it doesn't touch the shared budget", async () => {
+    const handler = vi.fn(ok);
+    await withCostSafety(handler, { limit: 100, key: "speech" })(
+      new Request("http://x")
+    );
+    expect(store.get(dailyKey(new Date(), "speech"))).toBe("1");
+    expect(store.get(dailyKey())).toBeUndefined();
+  });
+
+  it("caps at its own limit, not the global one", async () => {
+    store.set(dailyKey(new Date(), "speech"), "100");
+    const handler = vi.fn(ok);
+    const res = await withCostSafety(handler, { limit: 100, key: "speech" })(
+      new Request("http://x")
+    );
+    expect(res.status).toBe(429);
+    expect(handler).not.toHaveBeenCalled();
+  });
+
+  it("is not blocked by a full shared budget", async () => {
+    store.set(dailyKey(), String(DAILY_MESSAGE_CAP));
+    const handler = vi.fn(ok);
+    const res = await withCostSafety(handler, { limit: 100, key: "speech" })(
+      new Request("http://x")
+    );
+    expect(res.status).toBe(200);
+    expect(handler).toHaveBeenCalledOnce();
+  });
+
+  it("existing routes are unchanged when no options are passed", async () => {
+    const handler = vi.fn(ok);
+    await withCostSafety(handler)(new Request("http://x"));
+    expect(store.get(dailyKey())).toBe("1");
+  });
+});
+
 describe("graceful errors + context", () => {
   it("passes the token cap to the handler and returns 500 on handler throw", async () => {
     let seenCap = 0;

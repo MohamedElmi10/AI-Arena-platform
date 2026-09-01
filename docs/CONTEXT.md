@@ -43,7 +43,7 @@ The MVP tile map, locked. Any "toggle" tile is ONE tile with a UI toggle between
 
 **Natural Language (3 tiles)**
 9. Text Analysis Agent — Azure AI Language (sentiment, entities, key phrases, PII redaction) as a tool inside a Foundry-hosted agent.
-10. Speech Assistant — **toggle**: speech-capable gen-AI app vs. Speech MCP agent.
+10. Speech Assistant — speech to text and text to speech on the Speech SDK, with a custom lexicon fixing pronunciation. The MCP variant was dropped (Enterprise tier + storage + key auth) — see T-025.
 11. Translation — text + speech translation via Foundry Tools.
 
 **Insight Visual Data (4 tiles)**

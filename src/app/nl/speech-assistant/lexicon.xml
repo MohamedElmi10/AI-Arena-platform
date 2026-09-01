@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Custom lexicon for the AI Arena Speech Assistant tile.
+
+  This is a PLS 1.0 document, NOT an SSML document — it can't be sent to the
+  synthesiser directly. It's published at a public URL and referenced from SSML:
+
+      <lexicon uri="https://.../lexicon.xml"/>      (inside <voice>)
+
+  Two ways to fix a word, both shown below:
+    <alias>   — respell it. Use for acronyms and initialisms. Wins over <phoneme>
+                when both are given for the same grapheme.
+    <phoneme> — give the exact sounds in IPA. Use for names the voice mangles.
+                No whitespace inside the IPA string. '.' marks a syllable break.
+
+  Rules that will bite you:
+    - One lexicon file = ONE locale. This one is en-US; it does nothing to a
+      sv-SE voice.
+    - <lexeme> is CASE SENSITIVE. "SSML" and "ssml" are separate entries.
+    - Cached by URI for up to 15 minutes. Edits won't be heard immediately.
+    - Max 100 KB per file.
+
+  Reference:
+  https://learn.microsoft.com/azure/ai-services/speech-service/speech-synthesis-markup-pronunciation#custom-lexicon
+-->
+<lexicon version="1.0"
+         xmlns="http://www.w3.org/2005/01/pronunciation-lexicon"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.w3.org/2005/01/pronunciation-lexicon
+                             http://www.w3.org/TR/2007/CR-pronunciation-lexicon-20071212/pls.xsd"
+         alphabet="ipa"
+         xml:lang="en-US">
+
+  <!-- Certification codes. Without this a voice reads "AI-103" as
+       "AI minus one hundred and three". -->
+  <!-- Initialisms. Spell them out rather than letting the voice attempt a word. -->
+  <lexeme>
+    <grapheme>STT</grapheme>
+    <alias>speech to text</alias>
+  </lexeme>
+
+  <lexeme>
+    <grapheme>TTS</grapheme>
+    <alias>text to speech</alias>
+  </lexeme>
+
+  <!-- Swedish place names an en-US voice mangles. An alias is read aloud by the
+       same English voice, so it is respelled the way an English speaker would
+       have to write it to land on the Swedish sound. Auditioned by ear, not
+       derived — type the alias into the tile to hear exactly what it produces. -->
+  <!-- Umeå is [ˈʉːmɛo] in Swedish, and ʉ does not exist in en-US. An alias cannot
+       spell it either — English has no spelling for å. So this is the phoneme
+       path: the nearest en-US sounds, written in IPA. Stress mark, then u: (boot),
+       ɛ (bed), oʊ (boat), with '.' marking syllables and no spaces allowed. -->
+  <lexeme>
+    <grapheme>Umeå</grapheme>
+    <phoneme>ˈuː.mɛ.oʊ</phoneme>
+  </lexeme>
+
+  <lexeme>
+    <grapheme>Jönköping</grapheme>
+    <alias>Yunshuhping</alias>
+  </lexeme>
+
+  <!-- One of the world's most common surnames, and one of the most mangled. -->
+  <lexeme>
+    <grapheme>Nguyen</grapheme>
+    <alias>Nwin</alias>
+  </lexeme>
+
+  <!-- Numeronyms: first letter, count of letters between, last letter. -->
+  <lexeme>
+    <grapheme>i18n</grapheme>
+    <alias>internationalization</alias>
+  </lexeme>
+
+  <lexeme>
+    <grapheme>l10n</grapheme>
+    <alias>localization</alias>
+  </lexeme>
+
+</lexicon>

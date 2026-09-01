@@ -16,6 +16,14 @@ export const DAILY_MESSAGE_CAP = 500;
 /** Netlify Blobs store name for the daily counter. */
 const STORE_NAME = "cost-safety";
 
+/** Per-route budget override (ADR-0002). Omit for the shared 500/day chat budget. */
+export type CostSafetyOptions = {
+  /** Calls allowed per UTC day on this key. Defaults to DAILY_MESSAGE_CAP. */
+  limit?: number;
+  /** Blobs key namespace, so a costly route can't starve the chat budget. */
+  key?: string;
+};
+
 export type CostSafetyContext = {
   /** The token cap the handler must apply to its Azure request. */
   maxOutputTokens: number;
@@ -37,8 +45,8 @@ function json(body: unknown, status: number): Response {
 
 /** UTC date key, e.g. "budget:2026-08-05". Keying by date auto-resets the
  *  counter at midnight UTC — a new day is simply a new key. */
-export function dailyKey(now: Date = new Date()): string {
-  return `budget:${now.toISOString().slice(0, 10)}`;
+export function dailyKey(now: Date = new Date(), key = "budget"): string {
+  return `${key}:${now.toISOString().slice(0, 10)}`;
 }
 
 /** Midnight-UTC of the following day, as ISO — sent to the client as retryAfter. */
@@ -59,10 +67,10 @@ export function clampMaxTokens<T extends { max_output_tokens?: number }>(
 
 /** Read today's count. Returns null if the store is unreachable (fail-open —
  *  the kill switch + token cap still bound cost; see ADR). */
-async function readDailyCount(): Promise<number | null> {
+async function readDailyCount(key: string): Promise<number | null> {
   try {
     const store = getStore(STORE_NAME);
-    const raw = await store.get(dailyKey());
+    const raw = await store.get(dailyKey(new Date(), key));
     return raw ? Number(raw) : 0;
   } catch (err) {
     console.warn("[cost-safety] budget store unavailable, failing open:", err);
@@ -71,10 +79,10 @@ async function readDailyCount(): Promise<number | null> {
 }
 
 /** Increment today's count by one. Best-effort; ignores store errors. */
-async function incrementDailyCount(current: number): Promise<void> {
+async function incrementDailyCount(key: string, current: number): Promise<void> {
   try {
     const store = getStore(STORE_NAME);
-    await store.set(dailyKey(), String(current + 1));
+    await store.set(dailyKey(new Date(), key), String(current + 1));
   } catch (err) {
     console.warn("[cost-safety] could not persist budget count:", err);
   }
@@ -85,7 +93,13 @@ async function incrementDailyCount(current: number): Promise<void> {
  * daily-budget checks before the handler; on pass, reserves one message and
  * hands the handler the token cap to apply to its Azure call.
  */
-export function withCostSafety(handler: CostSafetyHandler) {
+export function withCostSafety(
+  handler: CostSafetyHandler,
+  options: CostSafetyOptions = {}
+) {
+  const limit = options.limit ?? DAILY_MESSAGE_CAP;
+  const budgetKey = options.key ?? "budget";
+
   return async function (req: Request): Promise<Response> {
     // 1. Kill switch — hard stop, no downstream work.
     if (process.env.KILL_SWITCH === "true") {
@@ -99,8 +113,8 @@ export function withCostSafety(handler: CostSafetyHandler) {
     }
 
     // 2. Daily global budget.
-    const count = await readDailyCount();
-    if (count !== null && count >= DAILY_MESSAGE_CAP) {
+    const count = await readDailyCount(budgetKey);
+    if (count !== null && count >= limit) {
       return json(
         {
           error: "budget_capped",
@@ -113,7 +127,7 @@ export function withCostSafety(handler: CostSafetyHandler) {
     }
 
     // Reserve this message against the cap (skipped if the store was down).
-    if (count !== null) await incrementDailyCount(count);
+    if (count !== null) await incrementDailyCount(budgetKey, count);
 
     // 3. Hand off, with the token cap for the handler to apply.
     const ctx: CostSafetyContext = {

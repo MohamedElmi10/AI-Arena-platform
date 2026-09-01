@@ -121,7 +121,7 @@ export const modules: Module[] = [
           ],
           hood: [
             "The AI answers in two steps: it asks for a tool, the server runs it, then the AI replies using the result.",
-            "The tools and the secret Azure key run on the server, never in your browser — so the key stays private.",
+            "The tools and the secret Azure key run on the server, never in the browser — so the key stays private.",
             "The calculator only accepts numbers and math symbols, so it can never run anything but arithmetic.",
           ],
         },
@@ -275,10 +275,34 @@ export const modules: Module[] = [
       {
         title: "Speech Assistant",
         slug: "speech-assistant",
-        status: "planned",
-        tag: "Azure Speech · MCP",
+        status: "live",
+        tag: "SSML · custom lexicon",
         poweredBy: "Azure Speech",
-        desc: "A speech-capable gen-AI app plus a Speech agent via the Azure Speech MCP server. Toggle implementations.",
+        model: "Azure Speech",
+        desc: "Say something and see it written down. Type something and hear it read aloud — with names and codes pronounced properly.",
+        preview: 'Try: "Nguyen is flying to Umeå."',
+        guide: {
+          about:
+            "Say something, it writes down what it heard. Type something, it reads it out loud. It doesn't answer you. The voice has been taught to pronounce names and codes it would otherwise mangle.",
+          tryThis: [
+            "Nguyen is flying to Umeå, then Jönköping.",
+            "Our team handles i18n and l10n for the whole product.",
+            "STT and TTS are the two main parts of a speech service.",
+          ],
+          expect: [
+            "\"STT\" and \"TTS\" read out in full, not spelled.",
+            "\"i18n\" and \"l10n\" read as the words they stand for.",
+            "\"Umeå\" said roughly \"OO-meh-oh\".",
+            "Untaught words sound the same on both sides. That is the control.",
+            "This training fixes speaking, not listening.",
+          ],
+          hood: [
+            "Nothing extra installed. The site talks to Azure directly, which keeps it small and fast.",
+            "The browser records in a format Azure will not accept. Rather than converting it on the server, the page decodes and resamples the audio itself using APIs the browser already ships. Nothing is stored, at either end.",
+            "The pronunciation fixes live in a small XML file in this repo. The request points at its public URL, Azure fetches it, and caches it for fifteen minutes.",
+            "Speech is billed per second of audio and per character spoken, so the token limit the chat tiles use would protect nothing here. This route caps 30 seconds in and 800 characters out, on its own daily budget.",
+          ],
+        },
       },
       {
         title: "Translation",
