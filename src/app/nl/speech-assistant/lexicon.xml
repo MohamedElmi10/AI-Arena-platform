@@ -54,6 +54,36 @@
     <alias>text to speech</alias>
   </lexeme>
 
+  <!-- Swedish place names an en-US voice has no chance with. Aliases are read
+       by the same English voice, so they are respelled the way an English
+       speaker would have to say them. -->
+  <lexeme>
+    <grapheme>Göteborg</grapheme>
+    <alias>Yutebory</alias>
+  </lexeme>
+
+  <lexeme>
+    <grapheme>Jönköping</grapheme>
+    <alias>Yunshuhping</alias>
+  </lexeme>
+
+  <!-- One of the world's most common surnames, and one of the most mangled. -->
+  <lexeme>
+    <grapheme>Nguyen</grapheme>
+    <alias>Nwin</alias>
+  </lexeme>
+
+  <!-- Numeronyms: first letter, count of letters between, last letter. -->
+  <lexeme>
+    <grapheme>i18n</grapheme>
+    <alias>internationalization</alias>
+  </lexeme>
+
+  <lexeme>
+    <grapheme>l10n</grapheme>
+    <alias>localization</alias>
+  </lexeme>
+
   <!-- A name the en-US voices get wrong. This is the <phoneme> path: exact
        sounds in IPA, not a respelling. -->
   <lexeme>

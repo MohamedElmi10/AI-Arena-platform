@@ -276,9 +276,32 @@ export const modules: Module[] = [
         title: "Speech Assistant",
         slug: "speech-assistant",
         status: "planned",
-        tag: "Azure Speech · MCP",
+        tag: "SSML · custom lexicon",
         poweredBy: "Azure Speech",
-        desc: "A speech-capable gen-AI app plus a Speech agent via the Azure Speech MCP server. Toggle implementations.",
+        model: "Azure Speech",
+        desc: "Say something and see it written down. Type something and hear it read aloud — with names and codes pronounced properly.",
+        preview: 'Try: "Mohamed Elmi is AI-103 certified."',
+        guide: {
+          about:
+            "Say something, it writes down what it heard. Type something, it reads it out loud. It doesn't answer you. The voice has been taught to pronounce names and codes it would otherwise mangle.",
+          tryThis: [
+            "Mohamed Elmi is AI-103 certified, and SSML fixes pronunciation.",
+            "The AI-103 exam covers STT and TTS.",
+            "SSML controls how a voice reads a word.",
+          ],
+          expect: [
+            "\"AI-103\" said as A-I one-oh-three — not as a subtraction sum.",
+            "\"SSML\", \"STT\" and \"TTS\" spelled out letter by letter.",
+            "\"Elmi\" said the way it is actually pronounced, not guessed from the spelling.",
+            "Now record your own name. It may well come back misspelled — teaching it to hear a word is a different job from teaching it to say one, and this demo only does the second.",
+          ],
+          hood: [
+            "Azure Speech on the pay-as-you-go tier, called over plain HTTP. No SDK, and nothing added to package.json.",
+            "Your browser records in a format Azure will not accept. Rather than converting it on the server, the page decodes and resamples the audio itself using APIs the browser already ships. Nothing is stored, at either end.",
+            "The pronunciation fixes live in a small XML file in this repo. The request points at its public URL, Azure fetches it, and caches it for fifteen minutes.",
+            "Speech is billed per second of audio and per character spoken, so the token limit the chat tiles use would protect nothing here. This route caps 30 seconds in and 800 characters out, on its own daily budget (ADR-0003).",
+          ],
+        },
       },
       {
         title: "Translation",
