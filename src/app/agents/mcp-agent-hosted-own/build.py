@@ -91,6 +91,26 @@ mcp_tool_own_live = MCPTool(
 
 
 # ── the agent ────────────────────────────────────────────────────────────────
+# One instruction per server. They have to differ: the GitHub server serves every
+# repository on GitHub and has no idea which one this project is, so without the
+# owner/repo named here it answers "which repository do you mean?" and never calls
+# the tool. The tile's suggested prompts don't name a repo, and a visitor won't
+# either.
+INSTRUCTIONS = {
+    "github": (
+        "You answer questions about one repository: owner MohamedElmi10, "
+        "repo AI-Arena-platform, default branch main. Assume that repository "
+        "unless the user names a different one — never ask which repo. "
+        "Always call your tools; never answer from memory."
+    ),
+    "own": (
+        "You answer questions about the AI Arena site itself: which demos exist, "
+        "which are live, and what they are built on. "
+        "Always call your tools; never answer from memory."
+    ),
+}
+
+
 def create_agent(mcp_tool, suffix=""):
     """One agent per server, on purpose.
 
@@ -104,10 +124,7 @@ def create_agent(mcp_tool, suffix=""):
         agent_name=f"{os.getenv('MCP_AGENT_NAME')}-{mcp_tool.server_label}{suffix}",
         definition=PromptAgentDefinition(
             model=os.getenv("MODEL_ENDPOINT"),
-            instructions=(
-                "Answer only from your tools. If the question is about this "
-                "project or repository, call the tool. Never answer from memory."
-            ),
+            instructions=INSTRUCTIONS[mcp_tool.server_label],
             tools=[mcp_tool],
         ),
     )

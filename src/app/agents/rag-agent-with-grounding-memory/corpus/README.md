@@ -12,8 +12,20 @@ At query time the Foundry-hosted `rag-agent` — running `gpt-4.1-nano` with the
 Azure AI Search tool attached — retrieves the top matches, answers **only** from
 them, and cites each source. `build.py` next to this corpus is a dev-time chat
 client for that agent, not an ingest script; the running app never executes it.
-When the corpus changes, re-index so the search index matches these files (via
-the portal wizard, or the `build.py --ingest` loop once it exists — see T-018).
+When the corpus changes, re-index so the search index matches these files. There
+is no `--ingest` loop in `build.py` despite what the run instructions imply, so
+the refresh is two manual steps:
+
+1. **Azure portal → the `aiarenacorpus` storage account → the corpus container →
+   Upload**, with **Overwrite if files already exist** ticked. These blobs, not
+   the files in this repo, are what Azure AI Search reads. Editing the repo alone
+   changes nothing.
+2. **`ai-arena-rag` → Search management → Indexers → Run.** The indexer tracks
+   blob last-modified, so changed files are re-chunked and new ones added.
+
+Do **not** use *Import data* / *Import and vectorize data* for a refresh — those
+wizards create a second index, data source and indexer rather than updating the
+existing ones.
 
 ## Conventions
 

@@ -13,11 +13,16 @@ ones?" They deliberately answer different questions; making the second server a
 worse copy of the first would have reduced the tile to two ways of reading a
 repository.
 
-Ask the hosted server what shipped and it will not know. That is the correct
-behaviour, not a bug, and it is the clearest demonstration of what the toggle
-actually changes. Every answer is prefixed with a line naming which server
-replied, and if the model answers from memory without calling a tool at all, the
-tile says so rather than presenting a guess as a lookup.
+Asking both halves the same question is where the tile earns its keep. "How many
+demos are live?" takes the own server one call — it has a tool built for exactly
+that. The hosted server gets there too, but by searching the repository and
+reading source files until it can reconstruct the answer: five tool calls instead
+of one. A general-purpose tool and a purpose-built one can return the same
+answer by very different routes, and that difference is visible on screen.
+
+Every answer is prefixed with a line naming which server replied, and if the
+model answers from memory without calling a tool at all, the tile says so rather
+than presenting a guess as a lookup.
 
 The own server is not a separate service. It is an ordinary route in this same
 Next.js app, so it reads the same file the landing page reads — there is no copy

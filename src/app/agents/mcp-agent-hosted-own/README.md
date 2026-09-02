@@ -83,13 +83,32 @@ integrations, and you start trusting servers you didn't write.
 Both answer "what is the state of AI Arena", and both change every time I push.
 The contrast is who runs the thing that answers.
 
-| | Server | Question | Runs where |
+| | Server | Tools | Runs where |
 |---|---|---|---|
-| **A** | GitHub's MCP server | *what changed?* — commits, issues, PRs | GitHub |
-| **B** | AI Arena's own server | *what shipped?* — live vs planned tiles | this app |
+| **A** | GitHub's MCP server | ~40 general ones — commits, issues, PRs, code search | GitHub |
+| **B** | AI Arena's own server | 2, built for this page's questions | this app |
 
-They deliberately don't answer the *same* question. Making my server a worse copy
-of GitHub's would turn the tile into "two ways to read a repo" and teach nothing.
+### What I got wrong here first
+
+The tile originally promised that asking the hosted server *what shipped* would
+fail, because that's the other server's subject. It doesn't fail. GitHub's server
+has `search_code` and `get_file_contents`, and this repo **is** the site's source
+— so it finds `data/modules.ts` and answers correctly.
+
+Nothing enforced the split I'd described. I built the contrast on subject matter
+when the real difference is where a tool lives and who runs it; the subject-matter
+story was an assumption about what each server would happen to be good at.
+
+The honest version is the better demo anyway. Ask both "how many demos are live":
+
+- **own** — one call. Someone built a tool for that exact question.
+- **hosted** — five calls. A general tool reconstructing the answer by searching
+  the repository and opening source files.
+
+Same answer, and the `🔌` lines make the difference visible. That is the actual
+trade between a general-purpose integration and a purpose-built one, and it's a
+sharper lesson than a limitation I would have had to manufacture with
+`allowed_tools` to keep my original sentence true.
 
 ## The own server is a route, not a host
 

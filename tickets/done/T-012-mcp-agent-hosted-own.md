@@ -1,6 +1,6 @@
 # T-012: MCP Agent — Hosted + Own
 
-**Status:** open
+**Status:** done
 **Blocked by:** — · **Blocks:** —
 **Module:** Agents · **Slug:** `mcp-agent-hosted-own`
 
@@ -99,9 +99,9 @@ name with the server label so the two don't overwrite each other.
 - [x] Connected as a custom MCP tool with no connection (unauthenticated), and
       both paths proven end to end.
 - [x] `src/app/agents/mcp-agent-hosted-own/build.py` — both paths, commented.
-- [ ] `README.md` — what MCP is, hosted vs own, cost, how to run each.
-- [ ] After merge: rerun `build.py` with `OWN_MCP_URL` on production. Both agents
-      are currently pinned to `deploy-preview-27`, which dies with the PR.
+- [x] `README.md` — what MCP is, hosted vs own, cost, how to run each.
+- [x] After merge: reran `build.py` **L** with `OWN_MCP_URL` on production.
+      Both agents had been pinned to `deploy-preview-27`, which dies with the PR.
 
 ## Phase 2 — Wire
 
@@ -118,8 +118,28 @@ server they carry.
 - [x] `guide` added to `data/modules.ts`.
 - [x] No history sent. Carrying turns would let the model reuse a previous tool
       result instead of calling again — the one thing the tile must not do.
-- [ ] `build.py` **L** run against production, and the two agent names set on
-      Netlify.
+- [x] `build.py` **L** run against production, the two agent names set on
+      Netlify, and both toggle positions verified live.
+
+### Three things the deploy taught, none of them visible in the code
+
+**A Foundry agent stores its MCP server URL inside itself.** Nothing reads `.env`
+at run time — `os.getenv` is evaluated when `create_version` is called and the
+string is copied into the agent. Repointing `OWN_MCP_URL` does nothing until `L`
+runs again. Miss that after a merge and the tile still looks healthy: the hosted
+half is unaffected and only `own` quietly dies.
+
+**Per-server instructions, not one shared string.** GitHub's server fronts every
+repo on GitHub and has no idea which one this project is. With a shared
+instruction the agent replies "which repository do you mean?" and never calls the
+tool. The tile's suggested prompts don't name a repo and a visitor won't either,
+so owner/repo has to live in the agent's instructions.
+
+**`netlify.toml` needed a secrets-scan entry.** The tile README documents the two
+agent names to paste into Netlify; the scanner found those values in the repo and
+failed the build. Agent names are identifiers, not credentials — the same
+argument as `RAG_AGENT_NAME`, already on the omit list. The genuine secrets stay
+off it, and the check did its job: it caught a real documentation slip.
 
 ## Phase 3 — Flip
 
@@ -134,9 +154,12 @@ server they carry.
       `12-tile-speech-assistant.md`, `13-tile-mcp-agent.md`. Fixed the module
       colour list in `03-tech-stack.md` and "what's built so far" in
       `10-common-questions.md`.
-- [ ] **Re-index.** The corpus files changed, so the Azure AI Search index is now
-      behind them. Until it's re-indexed the RAG tile will confidently cite the
-      old numbers — worse than not answering.
+- [x] **Re-indexed** — 17 documents, 0 failures. Procedure written into
+      `corpus/README.md`, which previously pointed at a `build.py --ingest` that
+      does not exist.
+- [x] Found while testing: the RAG tile was serving an **unpublished** agent
+      version, so a fix verified in the portal never reached the site. Noted in
+      that tile's README.
 
 ## Notes
 

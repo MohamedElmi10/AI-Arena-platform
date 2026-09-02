@@ -52,3 +52,4 @@ _fuse_trash/
 
 # audio produced by the speech tile build.py
 *.wav
+probe_mcp.py

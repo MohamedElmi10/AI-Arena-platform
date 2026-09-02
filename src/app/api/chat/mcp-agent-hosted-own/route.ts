@@ -78,9 +78,28 @@ const handler: CostSafetyHandler = async (req, ctx) => {
     max_output_tokens: ctx.maxOutputTokens,
     stream: true,
   });
-  const azureStream = await client.responses.create(
-    payload as ResponseCreateParamsStreaming
-  );
+
+  // This call happens BEFORE the stream exists, so a rejection here escapes to
+  // withCostSafety's catch-all and the real Azure message is lost. It cost an
+  // afternoon once: a 500 that said nothing, because the two agents differ only
+  // in whether they need a project connection — and reading one is a separate
+  // permission from invoking an agent.
+  let azureStream;
+  try {
+    azureStream = await client.responses.create(
+      payload as ResponseCreateParamsStreaming
+    );
+  } catch (err) {
+    const status = (err as { status?: number }).status;
+    console.error(`[mcp-agent] ${mode} agent "${agentName}" failed:`, status, err);
+    return jsonError(
+      "upstream_error",
+      status === 401 || status === 403
+        ? "This demo can't reach its tools right now."
+        : "Something went wrong reaching the model. Please try again.",
+      502
+    );
+  }
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
