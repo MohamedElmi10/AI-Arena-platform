@@ -230,10 +230,16 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
           />
         </div>
 
+        {/* Same three-slot layout as <Playground> (T-026): guide top, body, guide
+            bottom. On mobile the body sits between the two halves; on desktop
+            both halves stack in the left column. PlaygroundGuide no longer owns
+            its column, so the spans live here. */}
         <div className="grid grid-cols-12 gap-8">
-          <PlaygroundGuide guide={guide} onInsert={setText} />
+          <div className="order-1 col-span-12 md:col-span-5 md:row-start-1">
+            <PlaygroundGuide guide={guide} onInsert={setText} part="top" />
+          </div>
 
-          <section className="col-span-12 space-y-5 md:col-span-7">
+          <section className="order-2 col-span-12 min-w-0 space-y-5 md:col-span-7 md:row-span-2 md:row-start-1">
             {/* The ear */}
             <div className="rounded-xl border border-neutral-200 bg-white p-5">
               <div className="mb-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-[color:var(--accent)]">
@@ -306,7 +312,7 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
                     return (
                       <div
                         key={which}
-                        className={`rounded-lg border p-3 ${
+                        className={`min-w-0 rounded-lg border p-3 ${
                           trained
                             ? "border-[var(--accent)] bg-[var(--accent-tint)]"
                             : "border-neutral-200"
@@ -331,7 +337,7 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
                               : "Play"}
                         </button>
                         {url && (
-                          <audio controls src={url} className="mt-2 h-8 w-full" />
+                          <audio controls src={url} className="mt-2 h-8 w-full min-w-0" />
                         )}
                       </div>
                     );
@@ -394,6 +400,10 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
               </div>
             )}
           </section>
+
+          <div className="order-3 col-span-12 md:col-span-5 md:row-start-2">
+            <PlaygroundGuide guide={guide} onInsert={setText} part="bottom" />
+          </div>
         </div>
 
         <SiteFooter />
