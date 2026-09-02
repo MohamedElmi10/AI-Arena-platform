@@ -174,7 +174,7 @@ export const modules: Module[] = [
           greeting:
             "Pick a server above, then ask. I can only answer from whichever one is switched on — I have no idea about the other half.",
           about:
-            "The agent has no facts about this project. It borrows them, live, from a separate program called a server. Flip the switch and it borrows from a different one: GitHub's, or a small one I wrote that lives inside this website. Same question, different source.",
+            "The agent has no facts about this project. It borrows them, live, from a separate program called a server. Flip the switch and it borrows from a different one: GitHub's, or a small one I wrote that lives inside this website. Ask both the same thing and watch how differently they get there.",
           tryThis: [
             "What were the last three commits?",
             "How many demos are live here, and which ones?",
@@ -183,12 +183,13 @@ export const modules: Module[] = [
           ],
           expect: [
             "A line at the top naming which server answered.",
-            "hosted knows the code history. own knows what shipped.",
-            "Ask hosted what shipped and it will not know. That is correct — it is a different server.",
+            "hosted reads the repository. own reads what the site actually ships.",
+            "Ask both what shipped. own answers in one call. hosted has to read through the source files to work it out — same answer, far more digging.",
             "The answers change as I push. Nothing here is written down twice.",
           ],
           hood: [
             "Nothing about these tools is in the agent's code. It asks the server what it can do, at the moment you ask your question.",
+            "GitHub's server offers about forty general tools. Mine offers two, built for the questions this page asks. That is why one answers in a single step and the other takes several.",
             "The second server is this website. It reads the same file the page you are on reads, so it cannot fall out of date.",
             "GitHub's server needs a password. It is stored in Azure, not in this repo, and never reaches your browser.",
             "In the script version, the agent has to ask permission before touching either server, and I have to type yes. Here that is switched off — nobody is standing by to approve.",

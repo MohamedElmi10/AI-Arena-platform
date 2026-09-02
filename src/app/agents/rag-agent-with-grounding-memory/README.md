@@ -59,6 +59,18 @@ python src/app/agents/rag-agent-with-grounding-memory/build.py --ingest   # crea
 python src/app/agents/rag-agent-with-grounding-memory/build.py            # demo a grounded, cited answer
 ```
 
+## The endpoint serves the *published* version
+
+Editing the agent in the Foundry portal creates a new draft version. The
+playground runs the version you are editing; `/agents/<name>/endpoint/...` — what
+this tile's route calls — serves the **published** one. So a fix can test
+perfectly in the portal and change nothing on the site.
+
+This cost a full debugging loop once: the portal answered correctly while the
+live tile said "the sources do not contain the answer", and the corpus and index
+were both fine. After any portal edit, hit **Publish** and confirm the version
+dropdown marks it as published.
+
 ## Clean delete
 
 The index lives in the Free-tier Search service in `rg-ai-arena`. Deleting the
