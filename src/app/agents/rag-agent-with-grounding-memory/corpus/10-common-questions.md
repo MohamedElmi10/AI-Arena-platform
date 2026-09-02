@@ -27,10 +27,13 @@ A front-end engineer (React, Next.js, MongoDB) transitioning into AI
 engineering, currently focused on that move and pursuing AI-103.
 
 **What's built so far?**
-Two tiles are live — the Foundry Chat Agent (streaming baseline) and the
-Function-Calling Agent (tool calls). The rest, including this RAG tile in its
-full form, MCP agents, multi-agent orchestration, and the Natural Language
-module, are on the roadmap.
+Seven of fifteen tiles are live. In Agents: the Foundry Chat Agent (streaming
+baseline), the Function-Calling Agent (tool calls), this RAG agent, and the MCP
+Agent (tools discovered over a protocol, from two different servers). In Gen-AI:
+Raw Streaming Completion. In Natural Language: the Text Analysis Agent and the
+Speech Assistant. Still on the roadmap: Microsoft Agent Framework, multi-agent
+orchestration, Foundry IQ, Translation, and the whole Insight Visual Data
+module.
 
 **How does he keep the Azure bill under control?**
 Everything runs pay-per-call except the one tile that needs Azure AI Search,

@@ -161,10 +161,40 @@ export const modules: Module[] = [
       {
         title: "MCP Agent (Hosted + Own)",
         slug: "mcp-agent-hosted-own",
-        status: "planned",
-        tag: "MCP",
+        status: "live",
+        tag: "MCP · two servers",
         poweredBy: "Azure AI Foundry",
-        desc: "Toggle between calling a Microsoft-hosted MCP server and my own MCP server. Same task, two implementations.",
+        desc: "Ask about this project and watch the answer arrive from a tool the agent didn't ship with — once from GitHub's server, once from one I wrote.",
+        preview: 'Try: "What were the last three commits?"',
+        modes: [
+          { label: "hosted", value: "hosted" },
+          { label: "own", value: "own" },
+        ],
+        guide: {
+          greeting:
+            "Pick a server above, then ask. I can only answer from whichever one is switched on — I have no idea about the other half.",
+          about:
+            "The agent has no facts about this project. It borrows them, live, from a separate program called a server. Flip the switch and it borrows from a different one: GitHub's, or a small one I wrote that lives inside this website. Same question, different source.",
+          tryThis: [
+            "What were the last three commits?",
+            "How many demos are live here, and which ones?",
+            "What is still planned?",
+            "Which Azure services does this site use?",
+          ],
+          expect: [
+            "A line at the top naming which server answered.",
+            "hosted knows the code history. own knows what shipped.",
+            "Ask hosted what shipped and it will not know. That is correct — it is a different server.",
+            "The answers change as I push. Nothing here is written down twice.",
+          ],
+          hood: [
+            "Nothing about these tools is in the agent's code. It asks the server what it can do, at the moment you ask your question.",
+            "The second server is this website. It reads the same file the page you are on reads, so it cannot fall out of date.",
+            "GitHub's server needs a password. It is stored in Azure, not in this repo, and never reaches your browser.",
+            "In the script version, the agent has to ask permission before touching either server, and I have to type yes. Here that is switched off — nobody is standing by to approve.",
+            "Sending the agent a list of everything the server can do is not free. This tile has its own daily budget for that reason.",
+          ],
+        },
       },
       {
         title: "Microsoft Agent Framework Agent",

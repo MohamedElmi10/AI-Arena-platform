@@ -13,9 +13,11 @@
 # These keys are non-secret IDENTIFIERS (deployment names, agent names, endpoints,
 # the public client/tenant IDs, the kill-switch flag). They legitimately appear in
 # source, docs, and the RAG corpus, so scanning their values produces false
-# positives. The two genuine secrets — AZURE_OPENAI_API_KEY and AZURE_CLIENT_SECRET
+# positives. A Foundry agent name is not a credential: without the service
+# principal it names something you cannot invoke. The MCP pair was added after a
+# tile README documented the two values to paste into Netlify and failed the build. The two genuine secrets — AZURE_OPENAI_API_KEY and AZURE_CLIENT_SECRET
 # — are deliberately NOT omitted, so a real leak into served output still fails the build.
 [build.environment]
-  SECRETS_SCAN_OMIT_KEYS = "MODEL_ENDPOINT,MODEL_ENDPOINT_RAG,EMBED_DEPLOYMENT,RAG_AGENT_NAME,TEXT_ANALYSIS_AGENT_NAME,RAG_APP,PROJECT_ENDPOINT,AZURE_OPENAI_ENDPOINT,AZURE_CLIENT_ID,AZURE_TENANT_ID,KILL_SWITCH"
+  SECRETS_SCAN_OMIT_KEYS = "MODEL_ENDPOINT,MODEL_ENDPOINT_RAG,EMBED_DEPLOYMENT,RAG_AGENT_NAME,TEXT_ANALYSIS_AGENT_NAME,MCP_AGENT_HOSTED_NAME,MCP_AGENT_OWN_NAME,RAG_APP,PROJECT_ENDPOINT,AZURE_OPENAI_ENDPOINT,AZURE_CLIENT_ID,AZURE_TENANT_ID,KILL_SWITCH"
   # The API key's only hits were in the Turbopack build cache (never served), so skip it.
   SECRETS_SCAN_OMIT_PATHS = ".netlify/.next/cache/**"
