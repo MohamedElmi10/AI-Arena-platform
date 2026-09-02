@@ -19,7 +19,8 @@ faces: **Fraunces**, a serif, for display headings; **Inter** for body text; and
 **JetBrains Mono** for metadata such as tags, chapter markers, and counts.
 
 Each module carries an accent color that its tiles inherit — terracotta for
-Agents, plum for Gen-AI, moss for Natural Language. Live tiles use their
+Agents, plum for Gen-AI, moss for Natural Language, steel blue for Insight
+Visual Data. Live tiles use their
 module's accent for the border, a tinted background, a pulsing "live" dot, and a
 hover-revealed example prompt. Planned tiles are dashed-border and faded in the
 same tint. Each module features one enlarged tile in a bento-style layout.

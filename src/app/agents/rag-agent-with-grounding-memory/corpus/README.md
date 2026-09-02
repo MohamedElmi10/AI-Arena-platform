@@ -43,3 +43,6 @@ the portal wizard, or the `build.py --ingest` loop once it exists — see T-018)
 | `08-tile-rag-agent.md` | Tile: this RAG agent |
 | `09-about-mohamed.md` | About Mohamed (the candidate) |
 | `10-common-questions.md` | Common questions, answered |
+| `11-tile-text-analysis-agent.md` | Tile: Text Analysis Agent |
+| `12-tile-speech-assistant.md` | Tile: Speech Assistant |
+| `13-tile-mcp-agent.md` | Tile: MCP Agent (Hosted + Own) |

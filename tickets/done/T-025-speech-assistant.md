@@ -1,6 +1,6 @@
 # T-025: Speech Assistant
 
-**Status:** open — corpus pass still owed
+**Status:** done
 **Blocked by:** — · **Blocks:** —
 **Module:** Natural Language · **Slug:** `speech-assistant`
 
@@ -70,13 +70,13 @@ converts its own recording to the WAV Azure wants.
 - [x] Before/after playback, so you can hear what the lexicon changed.
 - [x] `guide` added to `data/modules.ts`.
 
-## Phase 3 — Flip — DONE except the corpus pass
+## Phase 3 — Flip — DONE
 
 - [x] `status: 'live'`, with a `preview`.
 - [x] `tag` and `desc` match what shipped. No "MCP", no "toggle".
 - [x] `docs/CONTEXT.md` tile map corrected.
-- [ ] T-018 corpus pass. It inherits T-024's debt —
-      `corpus/05-modules-and-tiles.md` still calls both tiles toggles.
+- [x] T-018 corpus pass — done under T-012, which cleared all three tiles' debt
+      at once. `12-tile-speech-assistant.md` added; the module map corrected.
 
 ## Notes
 

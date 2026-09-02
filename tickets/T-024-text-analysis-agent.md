@@ -32,9 +32,10 @@ Language, run as a tool inside a Foundry-hosted agent.
 ## Phase 3 — Flip (data) — DONE
 - [x] `data/modules.ts` → NL → `text-analysis-agent` → `status: 'live'` (+ `preview`).
 - [x] Playground works end-to-end (sentiment, entities, key phrases, PII redaction).
-- [ ] **T-018 corpus pass** still owed: `corpus/05-modules-and-tiles.md` still calls
-      this tile a "toggle" between Foundry Tools and the Language MCP server — stale
-      now (see scope change below). Update + re-ingest on the next corpus pass.
+- [x] **T-018 corpus pass** — done under T-012. `05-modules-and-tiles.md` no longer
+      calls this tile a toggle and records why it shipped as one wiring;
+      `11-tile-text-analysis-agent.md` added. Still needs re-ingest into the search
+      index — tracked in T-012.
 
 ## Scope changes vs the original plan
 The planned tile promised **two wirings behind a toggle** (Azure Language as a Foundry
