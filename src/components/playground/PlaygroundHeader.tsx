@@ -30,17 +30,19 @@ export function PlaygroundHeader({
   return (
     <>
       <div className="sticky top-0 z-30 border-b border-neutral-200 bg-white/70 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3 text-sm">
-          <div className="flex items-center gap-2 font-mono text-neutral-500">
-            <Link href="/" className="hover:text-neutral-900">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-6 py-3 text-sm">
+          <div className="flex min-w-0 items-center gap-2 font-mono text-neutral-500">
+            <Link href="/" className="whitespace-nowrap hover:text-neutral-900">
               ← AI Arena
             </Link>
+            {/* Chapter segment is redundant with the pill below on mobile — show
+                it only from `sm` up so the breadcrumb doesn't wrap word-by-word. */}
+            <span className="hidden text-neutral-300 sm:inline">/</span>
+            <span className="hidden whitespace-nowrap sm:inline">{chapterLabel}</span>
             <span className="text-neutral-300">/</span>
-            <span>{chapterLabel}</span>
-            <span className="text-neutral-300">/</span>
-            <span className="text-neutral-900">{title}</span>
+            <span className="truncate text-neutral-900">{title}</span>
           </div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-[color:var(--accent)]">
+          <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-[color:var(--accent)]">
             <span className="size-1.5 animate-pulse rounded-full bg-[var(--accent)]" />
             Live
           </span>
