@@ -172,9 +172,9 @@ export const modules: Module[] = [
         ],
         guide: {
           greeting:
-            "Pick a server above, then ask. I can only answer from whichever one is switched on — I have no idea about the other half.",
+            "Pick a server above, then ask. GitHub's server knows the repository; mine knows this site. Ask both the same question and compare.",
           about:
-            "The agent has no facts about this project. It borrows them, live, from a separate program called a server. Flip the switch and it borrows from a different one: GitHub's, or a small one I wrote that lives inside this website. Ask both the same thing and watch how differently they get there.",
+            "The agent knows nothing about this project. It borrows every fact, live, from a separate program called a server — and the switch above changes which one. GitHub's server covers every repository on GitHub. Mine is small, lives inside this website, and only knows this site. Neither is better; they are built for different jobs, and you can see the difference in how they answer.",
           tryThis: [
             "What were the last three commits?",
             "How many demos are live here, and which ones?",
@@ -182,18 +182,19 @@ export const modules: Module[] = [
             "Which Azure services does this site use?",
           ],
           expect: [
-            "A line at the top naming which server answered.",
-            "hosted reads the repository. own reads what the site actually ships.",
-            "Ask both what shipped. own answers in one call. hosted has to read through the source files to work it out — same answer, far more digging.",
-            "The answers change as I push. Nothing here is written down twice.",
+            "Every tool call is listed above the answer, so you can see the work.",
+            "Ask about commits: hosted answers. own says it cannot — it has no tool for that, and says so instead of guessing.",
+            "Ask what shipped: both answer. own takes a couple of calls, hosted takes closer to a dozen, opening source files until it can work it out.",
+            "Same answer, very different routes. That is a broad tool against one built for the question.",
+            "The answers change every time I push. Nothing here is written down twice.",
           ],
           hood: [
             "Nothing about these tools is in the agent's code. It asks the server what it can do, at the moment you ask your question.",
-            "GitHub's server offers about forty general tools. Mine offers two, built for the questions this page asks. That is why one answers in a single step and the other takes several.",
-            "The second server is this website. It reads the same file the page you are on reads, so it cannot fall out of date.",
+            "GitHub's server offers around forty general tools. Mine offers two, shaped around the questions this page asks. That gap is what the call counts show.",
+            "My server is this website. It reads the same file the page you are on reads, so it cannot fall out of date.",
             "GitHub's server needs a password. It is stored in Azure, not in this repo, and never reaches your browser.",
-            "In the script version, the agent has to ask permission before touching either server, and I have to type yes. Here that is switched off — nobody is standing by to approve.",
-            "Sending the agent a list of everything the server can do is not free. This tile has its own daily budget for that reason.",
+            "In the script version the agent asks permission before touching either server, and I type yes. Here that is off — nobody is standing by to approve.",
+            "Every question ships the full list of what a server can do to the model, which is not free. Forty tools cost more than two, and this tile has its own daily budget for that reason.",
           ],
         },
       },
@@ -355,10 +356,37 @@ export const modules: Module[] = [
       {
         title: "Vision Chat",
         slug: "vision-chat",
-        status: "planned",
+        status: "live",
         tag: "multimodal · vision",
         poweredBy: "Azure AI Foundry",
-        desc: "Drop in an image and ask about it. A vision-enabled chat agent that describes, reads, and reasons over what it sees.",
+        desc: "Drop in an image and ask about it. It describes what it sees, reads text off the picture, and works things out from it.",
+        preview: 'Try: "Transcribe every word you can see."',
+        guide: {
+          greeting:
+            "Pick one of the pictures below, or drop in your own, then ask me about it. I can only talk about what I can see.",
+          about:
+            "Give it a picture and ask a question about it. It does three things that used to need three different services: it says what is in the picture, it reads any text in the picture, and it works things out from what it sees. Same model as the chat demos here — the only difference is that this one gets a picture along with your question.",
+          tryThis: [
+            "What is in this picture?",
+            "Transcribe every word you can see, then translate it to English.",
+            "Which month fell the most, and by how much?",
+            "Is anything in this picture unusual?",
+          ],
+          expect: [
+            "Nothing happens until you give it a picture. Pick one below or drop your own in.",
+            "A pause of a few seconds before it starts. It reads the whole picture before it says anything.",
+            "The sign is Swedish. Ask it to read and translate and you get both in one answer.",
+            "Ask a follow-up. It still has the picture, so it can look again rather than repeat itself.",
+            "Ask about something that is not there and it will say so instead of inventing it.",
+          ],
+          hood: [
+            "The picture never gets stored. It is sent with your question, used once, and gone.",
+            "Reading a picture and reading text in a picture used to be separate Azure services with separate answers. This is one model and one question.",
+            "Your browser shrinks the picture before sending it. That is for speed and upload size — the cost is the same either way, which was worth measuring rather than assuming.",
+            "The picture is sent again with every follow-up, so it can always look. Cheaper would be to send it once and let it work from memory, but then it could not answer about a detail it had not already mentioned.",
+            "The Azure key stays on the server. Your browser never sees it.",
+          ],
+        },
       },
       {
         title: "Generative Media",
