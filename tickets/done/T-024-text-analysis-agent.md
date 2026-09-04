@@ -1,6 +1,6 @@
 # T-024: Text Analysis Agent (whole tile)
 
-**Status:** open
+**Status:** done
 **Blocked by:** —
 **Blocks:** —
 **Module:** Natural Language · **Slug:** `text-analysis-agent`
@@ -19,7 +19,7 @@ Language, run as a tool inside a Foundry-hosted agent.
 - [x] Env: `TEXT_ANALYSIS_AGENT_NAME=Text-Analysis-Agent-ai-arena` in `.env.local`
       (reuses the existing `PROJECT_ENDPOINT`). Never committed.
 - [x] Cost: no new provisioned/idle-billing resource — Azure Language is pay-per-call.
-- [ ] `README.md` next to `build.py` (what it is, cost model, redeploy) — not written yet.
+- [x] `README.md` next to `build.py` — what it is, why an agent rather than the REST API, the analyse-don't-act hardening, scope change, cost, keyless auth, redeploy.
 
 ## Phase 2 — Wire (Next.js) — DONE
 - [x] `app/api/chat/text-analysis-agent/route.ts` wrapped in `withCostSafety(...)`

@@ -356,10 +356,37 @@ export const modules: Module[] = [
       {
         title: "Vision Chat",
         slug: "vision-chat",
-        status: "planned",
+        status: "live",
         tag: "multimodal · vision",
         poweredBy: "Azure AI Foundry",
-        desc: "Drop in an image and ask about it. A vision-enabled chat agent that describes, reads, and reasons over what it sees.",
+        desc: "Drop in an image and ask about it. It describes what it sees, reads text off the picture, and works things out from it.",
+        preview: 'Try: "Transcribe every word you can see."',
+        guide: {
+          greeting:
+            "Pick one of the pictures below, or drop in your own, then ask me about it. I can only talk about what I can see.",
+          about:
+            "Give it a picture and ask a question about it. It does three things that used to need three different services: it says what is in the picture, it reads any text in the picture, and it works things out from what it sees. Same model as the chat demos here — the only difference is that this one gets a picture along with your question.",
+          tryThis: [
+            "What is in this picture?",
+            "Transcribe every word you can see, then translate it to English.",
+            "Which month fell the most, and by how much?",
+            "Is anything in this picture unusual?",
+          ],
+          expect: [
+            "Nothing happens until you give it a picture. Pick one below or drop your own in.",
+            "A pause of a few seconds before it starts. It reads the whole picture before it says anything.",
+            "The sign is Swedish. Ask it to read and translate and you get both in one answer.",
+            "Ask a follow-up. It still has the picture, so it can look again rather than repeat itself.",
+            "Ask about something that is not there and it will say so instead of inventing it.",
+          ],
+          hood: [
+            "The picture never gets stored. It is sent with your question, used once, and gone.",
+            "Reading a picture and reading text in a picture used to be separate Azure services with separate answers. This is one model and one question.",
+            "Your browser shrinks the picture before sending it. That is for speed and upload size — the cost is the same either way, which was worth measuring rather than assuming.",
+            "The picture is sent again with every follow-up, so it can always look. Cheaper would be to send it once and let it work from memory, but then it could not answer about a detail it had not already mentioned.",
+            "The Azure key stays on the server. Your browser never sees it.",
+          ],
+        },
       },
       {
         title: "Generative Media",

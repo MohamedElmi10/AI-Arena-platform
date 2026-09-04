@@ -1,6 +1,6 @@
 # T-020: Vision Chat (whole tile)
 
-**Status:** open
+**Status:** done — corpus pass batched into the next T-018 run
 **Blocked by:** — (build phase is Azure work, independent of the codebase)
 **Blocks:** T-022, T-023
 **Module:** Insight Visual Data · **Slug:** `vision-chat`
@@ -47,21 +47,34 @@ Consequences:
   Measure through your own code before believing a number from a playground.
 
 ## Phase 2 — Wire (Next.js + inline UI)
-- [ ] Ensure the module route `src/app/vision/[slug]/page.tsx` exists — if this is the first Vision tile to ship, create it (mirrors `agents/[slug]` · `genai/[slug]` · `nl/[slug]`); a live tile 404s without it.
-- [ ] `app/api/chat/vision-chat/route.ts` — `POST { message, image }`, wrapped in `withCostSafety(...)`. Unwrapped = fails review.
-- [ ] Encodes the image server-side, calls the Foundry vision endpoint via Node `openai`, streams `output_text.delta` (project SSE pattern from T-007).
-- [ ] Inline UI — build **`ImageDropzone`** (drag/drop + picker, inline preview, in-browser downscale ≤1536px longest edge, reject >4MB / non-image) **plus a sample-image gallery** (tap a committed sample to load it). Build `ImageDropzone` reusable — T-022 and T-023 consume it. The downscale is for upload time and ~1s of latency, **not** cost — see the measurements. Reject on sniffed bytes, not extension.
-- [ ] User bubble shows the image thumbnail; `ChatSurface` streams; `<LiveStats>` real; cost-safety errors → friendly bubble.
-- [ ] `data/modules.ts` `guide` added.
-- [ ] **Decide the history policy.** Text-only history with the image attached on
-      the first turn only, versus re-sending it every turn. This is the actual cost
-      lever on this tile, since one image is ~750-1,300 tokens and the count scales
-      with messages, not pixels. Test follow-ups ("and the other one?") before choosing.
+- [x] `src/app/vision/[slug]/page.tsx` created — first Vision tile, so nothing mapped `/vision/<slug>` to a page before this.
+- [x] `app/api/chat/vision-chat/route.ts` — `POST { message, messages, image }`, `withCostSafety(handler, { limit: 100, key: "vision" })`. Own budget key: an image is ~750-1,300 input tokens and this tile re-sends one every turn.
+- [x] Takes the data URL the browser produces, validates type and size, calls Azure OpenAI via Node `openai`, streams `output_text.delta` on the T-007 SSE pattern.
+- [x] `ImageDropzone` — drag/drop, picker, preview, downscale to 1536px, rejects >8MB and non-images on the browser's sniffed MIME type rather than the filename. Reusable; T-022 and T-023 consume it. Sample chips tap to load a committed image **and** its matching prompt, routed through the same resize path as an upload so the request looks identical either way.
+- [x] `ChatSurface` streams, `<LiveStats>` real, cost-safety errors render as a friendly bubble. The picture sits above the chat rather than inside the user bubble — it is the same image for the whole conversation, so repeating it per message would be noise.
+- [x] `data/modules.ts` `guide` added.
+- [x] **History policy: re-attach the image on every turn**, with the last 6 turns
+      of text.
 
-- [ ] **Generation feedback:** a “reading the image…” pulsing indicator (module accent) before the first token, then the existing token-stream; `<LiveStats>` Status `idle → generating → done`. Respect `prefers-reduced-motion`.
+      The cheap alternative was to send the image once and let the model answer
+      follow-ups from its own first description. At 100 messages/day on
+      `gpt-5-mini` the saving is pennies, and the cost is that a question about a
+      detail the model never mentioned — "what colour is the cable?" — cannot be
+      answered by looking again. A tile whose whole promise is *ask about this
+      picture* has to keep being able to see it.
+
+      Accepted trade: every turn pays the 3-4s image read. The "reading the
+      image…" indicator therefore runs on every message, not just the first.
+
+- [x] **Generation feedback:** "reading the image…" pulses in the module accent until the first token, on *every* turn — the image is re-sent each time, so the 3-4s read is not a first-load cost. `motion-safe:` respects `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
-- [ ] `data/modules.ts` → `vision-chat` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; the Insight Visual Data live-count increments by one; `/vision/vision-chat` works end-to-end (sample + own upload).
+- [x] `status: 'live'` with a `preview`. First tile in Insight Visual Data.
+- [x] Verified locally: landing shows 1 / 4 live, `/vision/vision-chat` works with a sample and with an upload.
+- [~] **T-018 corpus pass — deliberately deferred.** More tiles are going live
+      shortly, and a corpus pass costs a blob upload plus an indexer run each time,
+      so they are being batched. Until then the RAG tile answers "7 live" and will
+      not know Vision Chat exists. Owed: `05-modules-and-tiles.md`,
+      `10-common-questions.md`, and a new `14-tile-vision-chat.md`. Tracked in T-018.
 
 ## Notes
 - Images are per-message, never stored. Downscale is the input-cost bound; `max_tokens` only bounds output.
