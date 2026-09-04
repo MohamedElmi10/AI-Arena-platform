@@ -172,9 +172,9 @@ export const modules: Module[] = [
         ],
         guide: {
           greeting:
-            "Pick a server above, then ask. I can only answer from whichever one is switched on — I have no idea about the other half.",
+            "Pick a server above, then ask. GitHub's server knows the repository; mine knows this site. Ask both the same question and compare.",
           about:
-            "The agent has no facts about this project. It borrows them, live, from a separate program called a server. Flip the switch and it borrows from a different one: GitHub's, or a small one I wrote that lives inside this website. Ask both the same thing and watch how differently they get there.",
+            "The agent knows nothing about this project. It borrows every fact, live, from a separate program called a server — and the switch above changes which one. GitHub's server covers every repository on GitHub. Mine is small, lives inside this website, and only knows this site. Neither is better; they are built for different jobs, and you can see the difference in how they answer.",
           tryThis: [
             "What were the last three commits?",
             "How many demos are live here, and which ones?",
@@ -182,18 +182,19 @@ export const modules: Module[] = [
             "Which Azure services does this site use?",
           ],
           expect: [
-            "A line at the top naming which server answered.",
-            "hosted reads the repository. own reads what the site actually ships.",
-            "Ask both what shipped. own answers in one call. hosted has to read through the source files to work it out — same answer, far more digging.",
-            "The answers change as I push. Nothing here is written down twice.",
+            "Every tool call is listed above the answer, so you can see the work.",
+            "Ask about commits: hosted answers. own says it cannot — it has no tool for that, and says so instead of guessing.",
+            "Ask what shipped: both answer. own takes a couple of calls, hosted takes closer to a dozen, opening source files until it can work it out.",
+            "Same answer, very different routes. That is a broad tool against one built for the question.",
+            "The answers change every time I push. Nothing here is written down twice.",
           ],
           hood: [
             "Nothing about these tools is in the agent's code. It asks the server what it can do, at the moment you ask your question.",
-            "GitHub's server offers about forty general tools. Mine offers two, built for the questions this page asks. That is why one answers in a single step and the other takes several.",
-            "The second server is this website. It reads the same file the page you are on reads, so it cannot fall out of date.",
+            "GitHub's server offers around forty general tools. Mine offers two, shaped around the questions this page asks. That gap is what the call counts show.",
+            "My server is this website. It reads the same file the page you are on reads, so it cannot fall out of date.",
             "GitHub's server needs a password. It is stored in Azure, not in this repo, and never reaches your browser.",
-            "In the script version, the agent has to ask permission before touching either server, and I have to type yes. Here that is switched off — nobody is standing by to approve.",
-            "Sending the agent a list of everything the server can do is not free. This tile has its own daily budget for that reason.",
+            "In the script version the agent asks permission before touching either server, and I type yes. Here that is off — nobody is standing by to approve.",
+            "Every question ships the full list of what a server can do to the model, which is not free. Forty tools cost more than two, and this tile has its own daily budget for that reason.",
           ],
         },
       },

@@ -14,11 +14,15 @@ worse copy of the first would have reduced the tile to two ways of reading a
 repository.
 
 Asking both halves the same question is where the tile earns its keep. "How many
-demos are live?" takes the own server one call — it has a tool built for exactly
-that. The hosted server gets there too, but by searching the repository and
-reading source files until it can reconstruct the answer: five tool calls instead
-of one. A general-purpose tool and a purpose-built one can return the same
-answer by very different routes, and that difference is visible on screen.
+demos are live?" takes the own server a couple of calls — it has tools built for
+exactly that. The hosted server gets there too, but by searching the repository
+and opening source files until it can reconstruct the answer, closer to a dozen
+calls. Asked about commits the asymmetry reverses and hardens: the own server
+has no such tool and says so rather than guessing.
+
+A general-purpose integration and a purpose-built one can return the same answer
+by very different routes, and every call is listed on screen, so the difference
+is something a visitor sees rather than something the page claims.
 
 Every answer is prefixed with a line naming which server replied, and if the
 model answers from memory without calling a tool at all, the tile says so rather
