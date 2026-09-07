@@ -213,6 +213,32 @@ export const modules: Module[] = [
         tag: "workflow · A2A · sequential",
         poweredBy: "Azure AI Foundry",
         desc: "A Foundry Workflow that orchestrates multiple agents in sequence, with A2A handoffs visualised on a timeline.",
+        model: "gpt-4o",
+        guide: {
+          greeting:
+            "Type a trip — where, how many days, what you're into, and a rough budget — and watch three agents build the plan one after another.",
+          about:
+            "One request, three specialists working in a fixed order. A researcher finds things to do, an itinerary planner arranges them into days, and a budget-and-tips agent prices it and adds local advice. Each agent does one job and hands its output to the next — that is a sequential multi-agent workflow. Same idea as a single chat agent, except the work is split across agents that each see only what they need.",
+          tryThis: [
+            "4 days in Lisbon, love food + history, mid budget",
+            "A weekend in Kyoto for temples and ramen, low budget",
+            "5 days in Rome, art and pasta, no budget limit",
+            "3 winter days in Stockholm, cosy and cheap",
+          ],
+          expect: [
+            "Three cards appear in order — Researcher, then Itinerary Planner, then Budget & Tips — not all at once.",
+            "Each card's output becomes the next card's input. Watch the \"hands off\" arrow between them.",
+            "The final card carries the whole plan: a day-by-day itinerary plus an approximate budget and local tips.",
+            "Type something that is not a trip and the first agent asks for one instead of inventing a plan — the chain stops there.",
+          ],
+          hood: [
+            "It is a Foundry Workflow, not one clever prompt. Three separate agents run in a fixed sequence.",
+            "Handoff is explicit: each agent's output is saved to a variable the next agent reads — no step depends on guessing the last message.",
+            "One run is three model calls, so it costs a few times more than a single-agent tile. This tile has its own daily budget for that reason.",
+            "Attractions come from the model's own knowledge, kept to well-known places — there is no live web search, so treat details as approximate.",
+            "The Azure key stays on the server. Your browser only ever talks to this app's route.",
+          ],
+        },
       },
       {
         title: "Foundry IQ",

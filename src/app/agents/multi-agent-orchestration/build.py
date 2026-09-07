@@ -21,7 +21,7 @@ Framework only when forced — not preemptively (see T-014 notes).
 COST (ADR-0001): one message = 3+ model calls. ~4k tokens for a full run,
 ~600 for a refused run — a garbage input is not free.
 
-ENV (.env.local at repo root — gitignored; repo is public):
+ENV (.env at repo root — gitignored; repo is public):
   PROJECT_ENDPOINT      Foundry project endpoint
   MULTI_AGENT_MODEL     non-reasoning deployment, e.g. gpt-4o
   MULTI_AGENT_WORKFLOW  workflow name, e.g. trip-planner

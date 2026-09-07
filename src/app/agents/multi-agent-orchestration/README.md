@@ -72,13 +72,18 @@ costs roughly 3× a single-agent tile. Measured:
 [Azure OpenAI pricing page](https://azure.microsoft.com/pricing/details/cognitive-services/openai-service/).
 
 Guardrails per [ADR-0001](../../../../docs/adr/0001-cost-safety-posture.md): the
-Next.js route wraps the handler in `withCostSafety(...)`, capping tokens,
-rate-limiting by IP, and honouring the daily budget + kill switch. A multi-agent
-run spends more per message than any other tile — watch the cap.
+Next.js route wraps the handler in `withCostSafety(...)`, which enforces the
+**daily budget cap** (its own `multi-agent` key, 100 runs/day) and the **kill
+switch**. Note the third ADR-0001 layer — the per-request `max_output_tokens`
+cap — does **not** apply here: a Foundry workflow invocation rejects
+`max_output_tokens` (`invalid_payload`, "Not allowed"), because that cap lives on
+each agent's own config, not the workflow call. Per-request output length is
+bounded by the agents' concise instructions instead. A multi-agent run spends
+more per message than any other tile — watch the daily cap.
 
 ## Environment
 
-`build.py` reads three values from `.env.local` at the repo root (gitignored —
+`build.py` reads three values from `.env` at the repo root (gitignored —
 **never committed**; the repo is public):
 
 ```
@@ -108,7 +113,7 @@ Everything here is reproducible from the repo:
 
 1. Create the Foundry project (any region with `gpt-4o`; Sweden Central works).
 2. Deploy `gpt-4o`; name the deployment `gpt-4o`.
-3. Fill in `.env.local` (see above).
+3. Fill in `.env` (see above).
 4. Run `build.py` — this recreates the three agents from their instructions.
 5. Recreate the workflow: in the portal, **Build → Workflows → new workflow →
    YAML tab**, paste [`workflow.yaml`](./workflow.yaml), and save it as
