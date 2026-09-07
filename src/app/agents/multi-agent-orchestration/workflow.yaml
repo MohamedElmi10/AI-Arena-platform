@@ -1,0 +1,41 @@
+kind: workflow
+trigger:
+  kind: OnConversationStart
+  id: trigger_wf
+  actions:
+    - kind: InvokeAzureAgent
+      id: Researcher
+      agent:
+        name: Trip-Researcher
+      description: First agent in sequential workflow
+      conversationId: =System.ConversationId
+      input:
+        messages: =System.LastMessage
+      output:
+        messages: Local.ResearcherOutput
+        autoSend: true
+    - kind: InvokeAzureAgent
+      id: Planner
+      agent:
+        name: Trip-Itinerary-Planner
+      conversationId: =System.ConversationId
+      description: Second agent in sequential workflow
+      input:
+        messages: =Local.ResearcherOutput
+      output:
+        messages: Local.PlannerOutput
+        autoSend: true
+    - kind: InvokeAzureAgent
+      id: Budget
+      agent:
+        name: Trip-Budget-Tips
+      conversationId: =System.ConversationId
+      description: Third agent in sequential workflow
+      input:
+        messages: =Local.PlannerOutput
+      output:
+        messages: Local.BudgetOutput
+        autoSend: true
+id: ""
+name: trip-planner
+description: ""
