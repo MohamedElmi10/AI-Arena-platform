@@ -209,11 +209,12 @@ export const modules: Module[] = [
       {
         title: "Multi-Agent Orchestration",
         slug: "multi-agent-orchestration",
-        status: "planned",
+        status: "live",
         tag: "workflow · A2A · sequential",
         poweredBy: "Azure AI Foundry",
         desc: "A Foundry Workflow that orchestrates multiple agents in sequence, with A2A handoffs visualised on a timeline.",
         model: "gpt-4o",
+        preview: 'Try: "4 days in Lisbon, love food + history, mid budget."',
         guide: {
           greeting:
             "Type a trip — where, how many days, what you're into, and a rough budget — and watch three agents build the plan one after another.",

@@ -16,14 +16,14 @@ Ship the "wow" tile end-to-end: Foundry Workflow + sequential + A2A, several age
 - [x] `README.md` — orchestration shape, each agent's role, **per-run token math** (multiple model calls), redeploy steps.
 
 ## Phase 2 — Wire (Next.js + timeline UI)
-- [ ] `app/api/chat/multi-agent-orchestration/route.ts` — `POST`, wrapped in `withCostSafety(...)`.
-- [ ] Stream **per-step events** (active agent, handoffs, partial outputs) via project SSE pattern.
-- [ ] Playground renders a **timeline** of the run: each agent a step, handoffs between them, final result. Readable over clever.
-- [ ] `data/modules.ts` `guide` added; `<LiveStats>` real (tokens across agents, total latency); cost-safety errors → friendly bubble.
+- [x] `app/api/chat/multi-agent-orchestration/route.ts` — `POST`, wrapped in `withCostSafety(...)`.
+- [x] Stream **per-step events** (active agent, handoffs, partial outputs) via project SSE pattern.
+- [x] Playground renders a **timeline** of the run: each agent a step, handoffs between them, final result. Readable over clever.
+- [x] `data/modules.ts` `guide` added; `<LiveStats>` real (tokens across agents, total latency); cost-safety errors → friendly bubble.
 
 ## Phase 3 — Flip (data)
-- [ ] `data/modules.ts` → `multi-agent-orchestration` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; counts update; `/agents/multi-agent-orchestration` works end-to-end with a real run in the timeline.
+- [x] `data/modules.ts` → `multi-agent-orchestration` → `status: 'live'` (+ `preview`).
+- [x] Landing Live; counts update; `/agents/multi-agent-orchestration` works end-to-end with a real run in the timeline.
 
 ## Notes
 - A multi-agent run spends more per message — watch the ADR-0001 token cap.
