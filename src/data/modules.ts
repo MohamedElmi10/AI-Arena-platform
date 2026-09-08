@@ -462,7 +462,26 @@ export const modules: Module[] = [
         status: "planned",
         tag: "documents · layout · boxes",
         poweredBy: "Azure AI Document Intelligence",
+        model: "prebuilt models",
         desc: "Upload a receipt, invoice, or ID and watch each field get boxed on the page — extraction with exact spatial layout, not just values.",
+        guide: {
+          about:
+            "Pick a document type, give it a receipt, invoice or ID, and it does two things at once: pulls out the fields AND draws a box around each one on the page. Hover a field and its box lights up; hover a box and its field lights up. Values with their exact place on the page — not just a list.",
+          tryThis: ["Receipt", "Invoice", "ID card"],
+          expect: [
+            "Each type runs a different prebuilt model — receipt, invoice, or ID — no training, just pick one.",
+            "Load the sample or drop your own document image, then Extract & box.",
+            "Boxes fade in over the page; hover a field row and watch its box highlight, and the other way round.",
+            "Only fields the model is confident it found come back — a sparse document reads clean, not broken.",
+          ],
+          hood: [
+            "The boxes are polygons in the image's own pixel space; the overlay is an SVG whose viewBox is the page, so they line up at any width without hand-tuned scaling.",
+            "The document is analysed server-side and the key stays there — your browser never holds it.",
+            "Image input only here: a PDF page-renderer is a separate follow-up. The 1536px upload guard is reused from the other vision tiles.",
+            "The field panel is the same ExtractionResult component the Content Understanding tile uses — here it also drives the hover-linking.",
+            "Runs on Document Intelligence's free tier (500 pages/month), with a tight daily cap on top.",
+          ],
+        },
       },
     ],
   },
