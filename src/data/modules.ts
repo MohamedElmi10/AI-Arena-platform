@@ -459,11 +459,12 @@ export const modules: Module[] = [
       {
         title: "Document Intelligence",
         slug: "document-intelligence",
-        status: "planned",
+        status: "live",
         tag: "documents · layout · boxes",
         poweredBy: "Azure AI Document Intelligence",
         model: "prebuilt models",
         desc: "Upload a receipt, invoice, or ID and watch each field get boxed on the page — extraction with exact spatial layout, not just values.",
+        preview: "Try: box every field on an invoice, then hover to link them.",
         guide: {
           about:
             "Pick a document type, give it a receipt, invoice or ID, and it does two things at once: pulls out the fields AND draws a box around each one on the page. Hover a field and its box lights up; hover a box and its field lights up. Values with their exact place on the page — not just a list.",
