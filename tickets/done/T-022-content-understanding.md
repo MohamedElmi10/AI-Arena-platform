@@ -1,6 +1,6 @@
 # T-022: Content Understanding (whole tile)
 
-**Status:** open
+**Status:** done
 **Blocked by:** T-020 (reuses/extends `ImageDropzone`)
 **Blocks:** T-023
 **Module:** Insight Visual Data · **Slug:** `content-understanding`
@@ -24,8 +24,8 @@ Ship the Content Understanding tile end-to-end: **pick a preset field-set + a sa
 
 - [x] **Generation feedback:** the `ExtractionResult` panel shows shimmering skeleton rows while the analyzer polls, then the real fields stagger-fade in. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
-- [ ] `data/modules.ts` → `content-understanding` → `status: 'live'` (+ `preview`).
-- [ ] Landing Live; the Insight Visual Data live-count increments by one; `/vision/content-understanding` works — preset+sample, own upload, canned A/V.
+- [x] `data/modules.ts` → `content-understanding` → `status: 'live'` (+ `preview`).
+- [x] Landing Live; the Insight Visual Data live-count increments by one; `/vision/content-understanding` works — preset+sample, own upload, canned A/V.
 
 ## Notes
 - No free tier — every live call costs a little; keep the caps tight.
