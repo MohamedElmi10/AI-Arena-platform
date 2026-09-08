@@ -16,13 +16,13 @@ Ship the Content Understanding tile end-to-end: **pick a preset field-set + a sa
 - [x] Endpoint / key → `.env.local` — **NOT committed**.
 
 ## Phase 2 — Wire (Next.js + inline UI)
-- [ ] Ensure the module route `src/app/vision/[slug]/page.tsx` exists — if this is the first Vision tile to ship, create it (mirrors `agents/[slug]` · `genai/[slug]` · `nl/[slug]`); a live tile 404s without it.
-- [ ] `app/api/analyze/content-understanding/route.ts` wrapped in `withCostSafety(...)`; uploads the file server-side, polls the analyzer, returns fields. Unwrapped = fails review.
-- [ ] Inline UI — a **preset field-set picker** + **sample gallery** (tap-to-load); **extend `ImageDropzone` → `FileDropzone`** via an `accept` prop (adds PDF/document); build **`ExtractionResult`** (key → value + line-item tables) — build it reusable, T-023 consumes it. Audio/Video show the committed canned results.
+- [x] Ensure the module route `src/app/vision/[slug]/page.tsx` exists — if this is the first Vision tile to ship, create it (mirrors `agents/[slug]` · `genai/[slug]` · `nl/[slug]`); a live tile 404s without it.
+- [x] `app/api/analyze/content-understanding/route.ts` wrapped in `withCostSafety(...)`; uploads the file server-side, polls the analyzer, returns fields. Unwrapped = fails review.
+- [x] Inline UI — a **preset field-set picker** + **sample gallery** (tap-to-load); **extend `ImageDropzone` → `FileDropzone`** via an `accept` prop (adds PDF/document); build **`ExtractionResult`** (key → value + line-item tables) — build it reusable, T-023 consumes it. Audio/Video show the committed canned results.
 - [ ] *Optional / stretch:* a "define your own fields" input — the flashy capability, but presets are the default path; don't gate the demo on it.
-- [ ] Image reuses the 1536px / 4MB guard; documents capped to a single page. `data/modules.ts` `guide` added; cost-safety errors → friendly bubble.
+- [x] Image reuses the 1536px / 4MB guard; documents capped to a single page. `data/modules.ts` `guide` added; cost-safety errors → friendly bubble.
 
-- [ ] **Generation feedback:** the `ExtractionResult` panel shows shimmering skeleton rows while the analyzer polls, then the real fields stagger-fade in. Respect `prefers-reduced-motion`.
+- [x] **Generation feedback:** the `ExtractionResult` panel shows shimmering skeleton rows while the analyzer polls, then the real fields stagger-fade in. Respect `prefers-reduced-motion`.
 ## Phase 3 — Flip (data)
 - [ ] `data/modules.ts` → `content-understanding` → `status: 'live'` (+ `preview`).
 - [ ] Landing Live; the Insight Visual Data live-count increments by one; `/vision/content-understanding` works — preset+sample, own upload, canned A/V.

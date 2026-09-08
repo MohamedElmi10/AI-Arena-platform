@@ -7,6 +7,8 @@ export type StreamStatus = "idle" | "streaming";
 type LiveStatsProps = {
   model: string;
   tokens: number;
+  /** Label for the token stat. Defaults to "Tokens"; extraction tiles pass "Fields". */
+  tokensLabel?: string;
   latency: string;
   status: StreamStatus;
 };
@@ -22,11 +24,11 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
-export function LiveStats({ model, tokens, latency, status }: LiveStatsProps) {
+export function LiveStats({ model, tokens, tokensLabel, latency, status }: LiveStatsProps) {
   return (
     <div className="mb-8 flex flex-wrap gap-3 font-mono text-xs text-neutral-900">
       <Stat label="Model" value={model} />
-      <Stat label="Tokens" value={tokens} />
+      <Stat label={tokensLabel ?? "Tokens"} value={tokens} />
       <Stat label="Latency" value={latency} />
       <Stat
         label="Status"

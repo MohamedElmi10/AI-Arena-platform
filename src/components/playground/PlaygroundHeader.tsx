@@ -13,6 +13,7 @@ type PlaygroundHeaderProps = {
   poweredBy: string;
   model: string;
   tokens: number;
+  tokensLabel?: string;
   latency: string;
   status: StreamStatus;
 };
@@ -24,6 +25,7 @@ export function PlaygroundHeader({
   poweredBy,
   model,
   tokens,
+  tokensLabel,
   latency,
   status,
 }: PlaygroundHeaderProps) {
@@ -70,6 +72,7 @@ export function PlaygroundHeader({
       <LiveStats
         model={model}
         tokens={tokens}
+        tokensLabel={tokensLabel}
         latency={latency}
         status={status}
       />

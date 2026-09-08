@@ -10,9 +10,9 @@ import {
   type ChatMessage,
 } from "@/components/playground/ChatSurface";
 import {
-  ImageDropzone,
+  FileDropzone,
   sampleToDataUrl,
-} from "@/components/playground/ImageDropzone";
+} from "@/components/playground/FileDropzone";
 import type { StreamStatus } from "@/components/playground/LiveStats";
 import { SiteFooter } from "@/components/SiteFooter";
 import { parseSSEFrame, splitSSEFrames } from "@/lib/sse";
@@ -219,7 +219,7 @@ export function VisionPlayground({
           </div>
 
           <section className="order-2 col-span-12 min-w-0 space-y-4 md:col-span-7 md:row-span-2 md:row-start-1">
-            <ImageDropzone
+            <FileDropzone
               value={image}
               onChange={(next) => setImage(next)}
               disabled={status === "streaming"}
@@ -249,7 +249,7 @@ export function VisionPlayground({
                   </button>
                 ))}
               </div>
-            </ImageDropzone>
+            </FileDropzone>
 
             {reading ? (
               <p className="flex items-center gap-2 font-mono text-xs text-[color:var(--accent)] motion-safe:animate-pulse">

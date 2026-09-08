@@ -129,13 +129,15 @@ PRESETS = {
                 "Title": s("Job title / role"),
                 "Company": s("Company or organization name"),
                 "Email": s("Email address"),
+                "Phone": s("Phone number"),
+                "Address": s("Postal / mailing address"),
             },
         ),
     ),
     "invoice": dict(
         live=True,
         base="prebuilt-document",
-        sample="invoice.pdf",
+        sample="invoice.png",
         models=DOC_MODELS,
         schema=ContentFieldSchema(
             name="invoice_schema",
@@ -201,12 +203,12 @@ PRESETS = {
 
 
 def ensure_analyzer(client, analyzer_id, preset):
-    """Create the analyzer from its code definition if it doesn't exist yet.
-    Idempotent — safe to re-run. Returns nothing; raises on real failures."""
+    """(Re)create the analyzer from its code definition. This file is the source
+    of truth, so a schema edit here takes effect on the next run — delete-then-
+    create keeps that simple, and creation is free (only analysis bills)."""
     try:
-        client.get_analyzer(analyzer_id=analyzer_id)
-        print(f"[ok]   {analyzer_id} already exists")
-        return
+        client.delete_analyzer(analyzer_id=analyzer_id)
+        print(f"[replace] {analyzer_id} — recreating with the current schema")
     except ResourceNotFoundError:
         pass
     analyzer = ContentAnalyzer(
@@ -215,11 +217,8 @@ def ensure_analyzer(client, analyzer_id, preset):
         field_schema=preset["schema"],
         models=preset["models"],
     )
-    try:
-        client.begin_create_analyzer(analyzer_id=analyzer_id, resource=analyzer).result()
-        print(f"[new]  {analyzer_id} created (base {preset['base']})")
-    except ResourceExistsError:
-        print(f"[ok]   {analyzer_id} already exists")
+    client.begin_create_analyzer(analyzer_id=analyzer_id, resource=analyzer).result()
+    print(f"[new]  {analyzer_id} created (base {preset['base']})")
 
 
 def to_plain(field):
@@ -258,6 +257,15 @@ def main():
         if not sample.exists():
             print(f"[skip] {analyzer_id}: drop a sample at {sample}")
             continue
+
+        # A/V bills per minute — if we already captured it, leave it alone so
+        # re-runs (e.g. to update a live schema) stay cheap. Delete the JSON to
+        # force a re-capture.
+        if not preset["live"]:
+            cached = CANNED_DIR / f"{analyzer_id}.json"
+            if cached.exists():
+                print(f"[cached] {analyzer_id}: {cached.name} exists — skipping")
+                continue
 
         ensure_analyzer(client, analyzer_id, preset)
 

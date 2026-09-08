@@ -12,7 +12,7 @@ minute.
 
 | Preset | Base analyzer | Fields | How it runs |
 | --- | --- | --- | --- |
-| `business_card` | `prebuilt-document` | Name, Title, Company, Email | live (image) |
+| `business_card` | `prebuilt-document` | Name, Title, Company, Email, Phone, Address | live (image) |
 | `invoice` | `prebuilt-document` | VendorName, InvoiceTotal, DueDate | live (single-page doc) |
 | `call_recording` | `prebuilt-audio` | Summary, Sentiment | canned (audio) |
 | `product_demo` | `prebuilt-video` | Summary, Segments[] | canned (video) |
@@ -69,7 +69,7 @@ on the resource. That AAD path is preferred; keys are test-only per the SDK docs
 Drop the samples, then run:
 
 ```
-samples/business-card.png   samples/invoice.pdf
+samples/business-card.png   samples/invoice.png
 samples/audio.mp3           samples/video.mp4
 ```
 
