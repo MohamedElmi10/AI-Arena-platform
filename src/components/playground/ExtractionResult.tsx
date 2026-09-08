@@ -26,6 +26,10 @@ type ExtractionResultProps = {
   loading?: boolean;
   /** Shown before anything has been analyzed. */
   emptyHint?: string;
+  /** Two-way hover linking (T-023): the raw key of the row to highlight. */
+  activeField?: string | null;
+  /** Fired on top-level row hover enter (key) / leave (null). Enables linking. */
+  onFieldActivate?: (key: string | null) => void;
 };
 
 function isObject(v: ExtractionValue): v is { [key: string]: ExtractionValue } {
@@ -57,7 +61,17 @@ function formatScalar(v: string | number | boolean): string {
 }
 
 /** A table for an array of objects — the line-items case. */
-function FieldTable({ rows }: { rows: { [key: string]: ExtractionValue }[] }) {
+function FieldTable({
+  rows,
+  parentName,
+  activeField,
+  onFieldActivate,
+}: {
+  rows: { [key: string]: ExtractionValue }[];
+  parentName?: string;
+  activeField?: string | null;
+  onFieldActivate?: (key: string | null) => void;
+}) {
   const columns = Array.from(
     rows.reduce<Set<string>>((set, row) => {
       Object.keys(row).forEach((k) => {
@@ -84,22 +98,36 @@ function FieldTable({ rows }: { rows: { [key: string]: ExtractionValue }[] }) {
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
-            <tr key={i} className="border-b border-neutral-100 last:border-0">
-              {columns.map((c) => {
-                const cell = row[c];
-                return (
-                  <td key={c} className="py-1.5 pr-4 align-top text-neutral-800">
-                    {cell === undefined || isEmpty(cell)
-                      ? "—"
-                      : isObject(cell) || Array.isArray(cell)
-                        ? JSON.stringify(cell)
-                        : formatScalar(cell as string | number | boolean)}
-                  </td>
-                );
-              })}
-            </tr>
-          ))}
+          {rows.map((row, i) => {
+            const key = parentName ? `${parentName}#${i}` : null;
+            const interactive = Boolean(onFieldActivate && key);
+            const active = key != null && activeField === key;
+            return (
+              <tr
+                key={i}
+                onMouseEnter={interactive ? () => onFieldActivate?.(key!) : undefined}
+                onMouseLeave={interactive ? () => onFieldActivate?.(null) : undefined}
+                className={cn(
+                  "border-b border-neutral-100 last:border-0",
+                  interactive && "cursor-pointer transition-colors",
+                  active && "bg-[var(--accent-tint)]"
+                )}
+              >
+                {columns.map((c) => {
+                  const cell = row[c];
+                  return (
+                    <td key={c} className="py-1.5 pr-4 align-top text-neutral-800">
+                      {cell === undefined || isEmpty(cell)
+                        ? "—"
+                        : isObject(cell) || Array.isArray(cell)
+                          ? JSON.stringify(cell)
+                          : formatScalar(cell as string | number | boolean)}
+                    </td>
+                  );
+                })}
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -112,11 +140,15 @@ function Field({
   value,
   depth,
   index,
+  activeField,
+  onFieldActivate,
 }: {
   name: string;
   value: ExtractionValue;
   depth: number;
   index: number;
+  activeField?: string | null;
+  onFieldActivate?: (key: string | null) => void;
 }) {
   // Staggered fade-in; motion-safe so prefers-reduced-motion gets no animation.
   const enter =
@@ -136,7 +168,12 @@ function Field({
       return (
         <div className={cn("space-y-1.5", enter)} style={style}>
           {label}
-          <FieldTable rows={objects} />
+          <FieldTable
+            rows={objects}
+            parentName={name}
+            activeField={activeField}
+            onFieldActivate={onFieldActivate}
+          />
         </div>
       );
     }
@@ -192,7 +229,13 @@ function SkeletonRows() {
   );
 }
 
-export function ExtractionResult({ fields, loading, emptyHint }: ExtractionResultProps) {
+export function ExtractionResult({
+  fields,
+  loading,
+  emptyHint,
+  activeField,
+  onFieldActivate,
+}: ExtractionResultProps) {
   const entries = fields
     ? Object.entries(fields).filter(([, v]) => !isEmpty(v))
     : [];
@@ -203,9 +246,39 @@ export function ExtractionResult({ fields, loading, emptyHint }: ExtractionResul
         <SkeletonRows />
       ) : entries.length > 0 ? (
         <div className="space-y-4">
-          {entries.map(([k, v], i) => (
-            <Field key={k} name={k} value={v} depth={0} index={i} />
-          ))}
+          {entries.map(([k, v], i) => {
+            const interactive = Boolean(onFieldActivate);
+            const active = activeField != null && activeField === k;
+            // Item arrays hover-link per row inside the table (keys "<field>#<i>"),
+            // so they skip the whole-row wrapper to avoid a conflicting "<field>" key.
+            const isItemArray = Array.isArray(v) && v.some(isObject);
+            if (interactive && isItemArray) {
+              return (
+                <Field
+                  key={k}
+                  name={k}
+                  value={v}
+                  depth={0}
+                  index={i}
+                  activeField={activeField}
+                  onFieldActivate={onFieldActivate}
+                />
+              );
+            }
+            return (
+              <div
+                key={k}
+                onMouseEnter={interactive ? () => onFieldActivate?.(k) : undefined}
+                onMouseLeave={interactive ? () => onFieldActivate?.(null) : undefined}
+                className={cn(
+                  interactive && "-mx-2 rounded px-2 py-1 transition-colors",
+                  active && "bg-[var(--accent-tint)]"
+                )}
+              >
+                <Field name={k} value={v} depth={0} index={i} />
+              </div>
+            );
+          })}
         </div>
       ) : (
         <p className="font-mono text-xs text-neutral-400">
