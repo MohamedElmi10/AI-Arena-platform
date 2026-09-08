@@ -53,3 +53,7 @@ _fuse_trash/
 # audio produced by the speech tile build.py
 *.wav
 probe_mcp.py
+
+# Content Understanding dev-only A/V samples (reproducible; canned JSON is what ships)
+src/app/vision/content-understanding/samples/*.mp3
+src/app/vision/content-understanding/samples/*.mp4

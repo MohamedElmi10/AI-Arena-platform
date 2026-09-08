@@ -426,10 +426,35 @@ export const modules: Module[] = [
       {
         title: "Content Understanding",
         slug: "content-understanding",
-        status: "planned",
+        status: "live",
         tag: "multimodal · extraction",
         poweredBy: "Azure Content Understanding",
+        model: "gpt-4.1",
         desc: "Pick the fields you want, upload any content, get it back structured. One analyzer across images, documents, audio, and video.",
+        preview: "Try: pull the contact fields off a business card.",
+        guide: {
+          about:
+            "Pick a preset — each one is a small field-set — then give it something to read. A business card and an invoice run live: the same kind of analyzer reads a photo and a document and hands back the fields you asked for. Audio and video use the identical mechanism, but their results are pre-captured, because they bill per minute. One schema, any modality — that is the whole point.",
+          tryThis: [
+            "Business card",
+            "Invoice",
+            "Call recording",
+            "Product demo",
+          ],
+          expect: [
+            "Each preset lists the fields it pulls out. Only those come back — empty ones are hidden, so a sparse result looks clean, not broken.",
+            "Business card and Invoice are live: load the sample or drop your own (image, or a PDF for the invoice), then Extract.",
+            "Call recording and Product demo show a captured result straight away — no upload, no wait.",
+            "The invoice's line items and the video's segments come back as a table and a list — the same panel renders every shape.",
+          ],
+          hood: [
+            "One custom analyzer per preset, each a field-schema on a prebuilt base — the business card and the invoice share the same document base, which is why one mechanism reads both.",
+            "The file is analysed server-side and the credential stays there; your browser never holds a key.",
+            "Audio and video are the expensive modalities, so build.py runs them once, commits the JSON, and the tile replays it — same schema, no per-view cost.",
+            "The result panel is recursive and reused: Document Intelligence (next tile) renders its values through the very same component.",
+            "Content Understanding has no free tier, so this tile keeps a tight daily cap on live calls.",
+          ],
+        },
       },
       {
         title: "Document Intelligence",
