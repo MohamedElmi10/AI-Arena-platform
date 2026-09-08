@@ -9,11 +9,11 @@
 Ship the Content Understanding tile end-to-end: **pick a preset field-set + a sample** (or upload your own), get structured fields back. The teaching point is *one analyzer schema, any modality* — image + single-page document run live; audio + video are pre-analysed samples.
 
 ## Phase 1 — Build (Azure + samples)
-- [ ] Define **preset analyzers / field-sets** in Foundry inside `rg-ai-arena` (e.g. *Business card* → name/title/company/email; *Invoice* → vendor/total/due-date).
+- [x] Define **preset analyzers / field-sets** in Foundry inside `rg-ai-arena` (e.g. *Business card* → name/title/company/email; *Invoice* → vendor/total/due-date).
 - [ ] Committed **sample inputs** for each preset (an image + a one-page document) under the tile folder — tap-to-load in the UI.
-- [ ] `src/app/vision/content-understanding/build.py` — creates/documents the analyzers; runs once over sample **audio + video** to capture their extracted-field JSON, committed as canned results.
-- [ ] `README.md` — cost (**pay-per-call, NO free tier**; image ~$0.004, doc ~$0.006/page; audio $0.36/min, video per-minute → why A/V are canned), recreate steps.
-- [ ] Endpoint / key → `.env.local` — **NOT committed**.
+- [x] `src/app/vision/content-understanding/build.py` — creates/documents the analyzers; runs once over sample **audio + video** to capture their extracted-field JSON, committed as canned results.
+- [x] `README.md` — cost (**pay-per-call, NO free tier**; image ~$0.004, doc ~$0.006/page; audio $0.36/min, video per-minute → why A/V are canned), recreate steps.
+- [x] Endpoint / key → `.env.local` — **NOT committed**.
 
 ## Phase 2 — Wire (Next.js + inline UI)
 - [ ] Ensure the module route `src/app/vision/[slug]/page.tsx` exists — if this is the first Vision tile to ship, create it (mirrors `agents/[slug]` · `genai/[slug]` · `nl/[slug]`); a live tile 404s without it.
