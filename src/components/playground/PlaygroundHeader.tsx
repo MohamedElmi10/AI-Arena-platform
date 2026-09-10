@@ -51,7 +51,7 @@ export function PlaygroundHeader({
         </div>
       </div>
 
-      <div className="mb-6">
+      <div className="mt-10 mb-6">
         <div className="inline-block rounded bg-[var(--accent-pale)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.25em] text-[color:var(--accent-fg)]">
           {chapterLabel}
         </div>

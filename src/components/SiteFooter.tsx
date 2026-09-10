@@ -3,6 +3,10 @@
 export function SiteFooter() {
   return (
     <footer className="mt-20 border-t border-neutral-200 pt-6 pb-10 text-xs leading-relaxed text-neutral-500">
+      <p className="mb-2 max-w-3xl">
+        These demos use AI, which can make mistakes — double-check anything
+        important before relying on it.
+      </p>
       <p className="max-w-3xl">
         Microsoft, Azure, and related product names are trademarks of the
         Microsoft group of companies. AI Arena is an independent portfolio by
