@@ -4,6 +4,7 @@ import { useRef, useState, type CSSProperties } from "react";
 import type { Module, Tile, TileGuide } from "@/data/modules";
 import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
 import { PlaygroundGuide } from "@/components/playground/PlaygroundGuide";
+import { revealInput } from "@/lib/reveal-input";
 import {
   ChatSurface,
   type ChatMessage,
@@ -32,12 +33,22 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
     },
   ]);
   const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const [tokens, setTokens] = useState(0);
   const [latency, setLatency] = useState("—");
   const [status, setStatus] = useState<StreamStatus>("idle");
   // Streaming-mode toggle (e.g. sync/async — T-016). Undefined for tiles that
   // declare no modes, in which case the request sends no `mode`.
   const [mode, setMode] = useState(tile.modes?.[0]?.value);
+
+  // Tap-to-insert: set the input, and if the prompt names a mode, flip the toggle
+  // (e.g. MCP: a commit question -> hosted, a site question -> own).
+  const handleInsert = (prompt: string, promptMode?: string) => {
+    setInput(prompt);
+    if (promptMode && tile.modes?.some((m) => m.value === promptMode)) setMode(promptMode);
+    // Reveal the input (focus + scroll) so the user sees it's filled and ready.
+    revealInput(inputRef.current);
+  };
   const streamingRef = useRef(false);
 
   const accentVars = {
@@ -192,7 +203,7 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
             Desktop: guide stacks in the left column, chat spans both rows on the right. */}
         <div className="grid grid-cols-12 gap-8">
           <div className="order-1 col-span-12 md:col-span-5 md:row-start-1">
-            <PlaygroundGuide guide={guide} onInsert={setInput} part="top" />
+            <PlaygroundGuide guide={guide} onInsert={handleInsert} part="top" />
           </div>
 
           <div className="order-2 col-span-12 md:col-span-7 md:row-span-2 md:row-start-1">
@@ -207,11 +218,12 @@ export function Playground({ module, tile, guide, chapter }: PlaygroundProps) {
               mode={mode}
               onModeChange={setMode}
               accentVars={accentVars}
+              inputRef={inputRef}
             />
           </div>
 
           <div className="order-3 col-span-12 md:col-span-5 md:row-start-2">
-            <PlaygroundGuide guide={guide} onInsert={setInput} part="bottom" />
+            <PlaygroundGuide guide={guide} onInsert={handleInsert} part="bottom" />
           </div>
         </div>
 

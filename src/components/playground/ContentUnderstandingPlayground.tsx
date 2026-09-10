@@ -59,7 +59,7 @@ const PRESETS: Preset[] = [
     label: "Invoice",
     modality: "document",
     live: true,
-    fieldset: ["VendorName", "InvoiceTotal", "DueDate"],
+    fieldset: ["VendorName", "CustomerName", "InvoiceId", "InvoiceDate", "DueDate", "SubTotal", "Tax", "InvoiceTotal", "Items"],
     sample: invoiceSample,
     accept: "document",
   },
@@ -135,6 +135,14 @@ export function ContentUnderstandingPlayground({
     setFields(next.live ? null : next.canned ?? null);
   }
 
+  // A "Try this" prompt is a preset label — jump to that field-set + modality.
+  const insertPreset = (v: string) => {
+    const match = PRESETS.find(
+      (p) => p.label.toLowerCase() === v.toLowerCase()
+    );
+    if (match) selectPreset(match.id);
+  };
+
   async function loadSample() {
     if (!preset.sample) return;
     setFile(await sampleToDataUrl(preset.sample.src));
@@ -195,17 +203,22 @@ export function ContentUnderstandingPlayground({
           />
         </div>
 
-        <div className="grid grid-cols-12 gap-8">
-          <div className="order-1 col-span-12 md:col-span-5 md:row-start-1">
-            <PlaygroundGuide guide={guide} onInsert={(v) => {
-              const match = PRESETS.find(
-                (p) => p.label.toLowerCase() === v.toLowerCase()
-              );
-              if (match) selectPreset(match.id);
-            }} part="top" />
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:items-start">
+          {/* Left column = guide. On mobile the wrapper is `contents`, so its two
+              parts become siblings of <section> and the interactive panel wedges
+              between them (order-1 / 2 / 3). On desktop it's a real block column
+              that sizes to its own content, so a tall result can't stretch it into
+              a gap between "Try this" and "What to expect". */}
+          <div className="contents md:col-span-5 md:block md:space-y-6">
+            <div className="order-1">
+              <PlaygroundGuide guide={guide} onInsert={insertPreset} part="top" />
+            </div>
+            <div className="order-3">
+              <PlaygroundGuide guide={guide} onInsert={insertPreset} part="bottom" />
+            </div>
           </div>
 
-          <section className="order-2 col-span-12 min-w-0 space-y-4 md:col-span-7 md:row-span-2 md:row-start-1">
+          <section className="order-2 min-w-0 space-y-4 md:col-span-7">
             {/* Preset picker — the field-set + modality selector. */}
             <div className="flex flex-wrap gap-2">
               {PRESETS.map((p) => {
@@ -227,7 +240,7 @@ export function ContentUnderstandingPlayground({
                     </span>
                     <span className="font-mono text-[10px] uppercase tracking-wider text-neutral-400">
                       {p.modality}
-                      {p.live ? "" : " · canned"}
+                      {p.live ? "" : " · saved"}
                     </span>
                   </button>
                 );
@@ -300,9 +313,8 @@ export function ContentUnderstandingPlayground({
                   />
                 ) : null}
                 <p className="rounded-md border border-neutral-200 bg-neutral-50 p-3 font-mono text-xs text-neutral-500">
-                  Pre-analysed sample. Audio and video bill per minute, so this
-                  result was captured once by build.py and is replayed here for
-                  free — the same field-schema, a different modality.
+                  Saved result. Audio and video bill per minute, so this one was
+                  run once and is replayed here — same analyzer, different modality.
                 </p>
               </div>
             )}
@@ -323,15 +335,6 @@ export function ContentUnderstandingPlayground({
               }
             />
           </section>
-
-          <div className="order-3 col-span-12 md:col-span-5 md:row-start-2">
-            <PlaygroundGuide guide={guide} onInsert={(v) => {
-              const match = PRESETS.find(
-                (p) => p.label.toLowerCase() === v.toLowerCase()
-              );
-              if (match) selectPreset(match.id);
-            }} part="bottom" />
-          </div>
         </div>
 
         <SiteFooter />

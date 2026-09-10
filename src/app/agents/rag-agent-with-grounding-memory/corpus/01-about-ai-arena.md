@@ -2,8 +2,8 @@
 
 AI Arena is Mohamed Elmi's public AI-portfolio platform. Every "tile" on it is a
 live Azure AI agent or generative-AI demo that a visitor can interact with directly
-in the browser. Mohamed built each tile while studying for the Azure AI
-certification AI-103(Microsoft Certified: Azure AI Apps and Agents Developer Associate), so the platform doubles as proof of the skills that certification covers.
+in the browser. Mohamed built these tiles both while studying for and after earning the Azure AI
+certification AI-103 (Microsoft Certified: Azure AI Apps and Agents Developer Associate), so the platform doubles as proof of the skills that certification covers.
 
 AI Arena is built incrementally, one tile at a time. Each tile is wired up as
 a self-contained slice — a working Azure agent plus the playground that
