@@ -132,6 +132,35 @@ const isUl = (l: string) => /^\s*[-*]\s+/.test(l);
 const isOl = (l: string) => /^\s*\d+\.\s+/.test(l);
 const isH = (l: string) => /^#{1,3}\s+/.test(l);
 
+// Collect consecutive list items of one kind, tolerating blank lines between
+// items (a "loose" list). Without this a blank-line-separated list becomes many
+// one-item <ol> blocks, each restarting at 1 — so agent output like
+// "1. a\n\n1. b\n\n1. c" rendered as 1, 1, 1 instead of 1, 2, 3.
+function collectList(
+  lines: string[],
+  start: number,
+  test: (l: string) => boolean,
+  strip: (l: string) => string
+): { items: string[]; next: number } {
+  const items: string[] = [];
+  let i = start;
+  while (i < lines.length) {
+    if (test(lines[i])) {
+      items.push(strip(lines[i]));
+      i++;
+    } else if (lines[i].trim() === "") {
+      // Skip blank line(s), but only stay in the list if it actually continues.
+      let k = i;
+      while (k < lines.length && lines[k].trim() === "") k++;
+      if (k < lines.length && test(lines[k])) i = k;
+      else break;
+    } else {
+      break;
+    }
+  }
+  return { items, next: i };
+}
+
 export function parseBlocks(src: string): Block[] {
   const lines = src.replace(/\r\n/g, "\n").split("\n");
   const blocks: Block[] = [];
@@ -153,22 +182,20 @@ export function parseBlocks(src: string): Block[] {
     }
 
     if (isUl(line)) {
-      const items: string[] = [];
-      while (i < lines.length && isUl(lines[i])) {
-        items.push(lines[i].replace(/^\s*[-*]\s+/, ""));
-        i++;
-      }
+      const { items, next } = collectList(lines, i, isUl, (l) =>
+        l.replace(/^\s*[-*]\s+/, "")
+      );
       blocks.push({ type: "ul", items });
+      i = next;
       continue;
     }
 
     if (isOl(line)) {
-      const items: string[] = [];
-      while (i < lines.length && isOl(lines[i])) {
-        items.push(lines[i].replace(/^\s*\d+\.\s+/, ""));
-        i++;
-      }
+      const { items, next } = collectList(lines, i, isOl, (l) =>
+        l.replace(/^\s*\d+\.\s+/, "")
+      );
       blocks.push({ type: "ol", items });
+      i = next;
       continue;
     }
 

@@ -147,7 +147,7 @@ export function ChatSurface({
             e.preventDefault();
             onSubmit();
           }}
-          className="flex gap-2 border-t border-neutral-200 bg-neutral-50 p-3"
+          className="flex gap-2 border-t border-neutral-200 bg-neutral-50 px-3 pt-3 pb-2"
         >
           <input
             ref={inputRef}
@@ -166,6 +166,9 @@ export function ChatSurface({
             Send
           </button>
         </form>
+        <p className="bg-neutral-50 px-3 pb-2 text-center text-[11px] text-neutral-400">
+          AI can make mistakes — double-check anything important.
+        </p>
       </div>
 
       <SourceViewer

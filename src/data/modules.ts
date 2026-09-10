@@ -111,9 +111,9 @@ export const modules: Module[] = [
         preview: 'Try: "What time is it, and what is 128 * 47?"',
         guide: {
           greeting:
-            "Ask me something that needs a real answer — the time, some maths — and I'll call a tool to get it. Or tap a suggested prompt.",
+            "I have two functions wired up for this demo: get_current_time and calculate. Ask for the time or some arithmetic and I'll call the right one; anything else and I just answer normally. Or tap a suggested prompt.",
           about:
-            "One step up from the baseline chat agent: this one can call tools. When a question needs a precise answer, the model doesn't guess — it asks the server to run a custom tool, gets the result back, and finishes the reply. Same gpt-5-mini deployment as tile #1, now with function calling.",
+            "One step up from the baseline chat agent: this one can call tools. When a question needs a precise answer, the model doesn't guess — it asks the server to run a function, gets the result back, and finishes the reply. It only has two functions, both custom-built for this demo: get_current_time and calculate. Ask for anything outside those and it just answers on its own — there's no tool behind it. Same gpt-5-mini deployment as tile #1, now with function calling.",
           tryThis: [
             "What time is it right now, and what is 128 * 47?",
             "What's 15% of 340?",
@@ -122,7 +122,7 @@ export const modules: Module[] = [
           expect: [
             "A 🔧 line shows each tool the model called and what it returned.",
             "The final answer uses the tool result, not a guess.",
-            "Ask something with no tool and it just answers directly.",
+            "Ask something outside those two functions and it just answers directly — no tool behind it.",
           ],
           hood: [
             "The AI answers in two steps: it asks for a tool, the server runs it, then the AI replies using the result.",
@@ -145,10 +145,10 @@ export const modules: Module[] = [
             "Ask me about AI Arena or Mohamed — I answer only from a small set of docs, and I cite what I use. Or tap a suggested prompt.",
           about:
             "This agent answers only from a small corpus about AI Arena and Mohamed, stored in an Azure AI Search index. It retrieves the most relevant passages, grounds its answer in them, cites what it used, and remembers the conversation across turns.",
-          tryThis: [
-            "How does AI Arena work?",
+          tryThis: [ 
             "How does this RAG tile actually work?",
             "What's Mohamed's background?",
+            "What is Mohamed working on right now?",
           ],
           expect: [
             "Answers are drawn only from the corpus, with citations.",
@@ -162,7 +162,41 @@ export const modules: Module[] = [
           ],
         },
       },
-      
+         {
+        title: "Multi-Agent Orchestration",
+        slug: "multi-agent-orchestration",
+        status: "live",
+        tag: "workflow · A2A · sequential",
+        poweredBy: "Azure AI Foundry",
+        desc: "A Foundry Workflow that orchestrates multiple agents in sequence, with A2A handoffs visualised on a timeline.",
+        model: "gpt-4o",
+        preview: 'Try: "4 days in Lisbon, love food + history, mid budget."',
+        guide: {
+          greeting:
+            "Type a trip — where, how many days, what you're into, and a rough budget — and watch three agents build the plan one after another.",
+          about:
+            "One request, three specialists working in a fixed order. A researcher finds things to do, an itinerary planner arranges them into days, and a budget-and-tips agent prices it and adds local advice. Each agent does one job and hands its output to the next — that is a sequential multi-agent workflow. Same idea as a single chat agent, except the work is split across agents that each see only what they need.",
+          tryThis: [
+            "4 days in Lisbon, love food + history, mid budget",
+            "A weekend in Kyoto for temples and ramen, low budget",
+            "5 days in Rome, art and pasta, no budget limit",
+            "3 winter days in Stockholm, cosy and cheap",
+          ],
+          expect: [
+            "Three cards appear in order — Researcher, then Itinerary Planner, then Budget & Tips — not all at once.",
+            "Each card's output becomes the next card's input. Watch the \"hands off\" arrow between them.",
+            "The final card carries the whole plan: a day-by-day itinerary plus an approximate budget and local tips.",
+            "Type something that is not a trip and the first agent asks for one instead of inventing a plan — the chain stops there.",
+          ],
+          hood: [
+            "It is a Foundry Workflow, not one clever prompt. Three separate agents run in a fixed sequence.",
+            "Handoff is explicit: each agent's output is saved to a variable the next agent reads — no step depends on guessing the last message.",
+            "One run is three model calls, so it costs a few times more than a single-agent tile. This tile has its own daily budget for that reason.",
+            "Attractions come from the model's own knowledge, kept to well-known places — there is no live web search, so treat details as approximate.",
+            "The Azure key stays on the server. Your browser only ever talks to this app's route.",
+          ],
+        },
+      },
       {
         title: "MCP Agent (Hosted + Own)",
         slug: "mcp-agent-hosted-own",
@@ -203,41 +237,7 @@ export const modules: Module[] = [
           ],
         },
       },
-        {
-        title: "Multi-Agent Orchestration",
-        slug: "multi-agent-orchestration",
-        status: "live",
-        tag: "workflow · A2A · sequential",
-        poweredBy: "Azure AI Foundry",
-        desc: "A Foundry Workflow that orchestrates multiple agents in sequence, with A2A handoffs visualised on a timeline.",
-        model: "gpt-4o",
-        preview: 'Try: "4 days in Lisbon, love food + history, mid budget."',
-        guide: {
-          greeting:
-            "Type a trip — where, how many days, what you're into, and a rough budget — and watch three agents build the plan one after another.",
-          about:
-            "One request, three specialists working in a fixed order. A researcher finds things to do, an itinerary planner arranges them into days, and a budget-and-tips agent prices it and adds local advice. Each agent does one job and hands its output to the next — that is a sequential multi-agent workflow. Same idea as a single chat agent, except the work is split across agents that each see only what they need.",
-          tryThis: [
-            "4 days in Lisbon, love food + history, mid budget",
-            "A weekend in Kyoto for temples and ramen, low budget",
-            "5 days in Rome, art and pasta, no budget limit",
-            "3 winter days in Stockholm, cosy and cheap",
-          ],
-          expect: [
-            "Three cards appear in order — Researcher, then Itinerary Planner, then Budget & Tips — not all at once.",
-            "Each card's output becomes the next card's input. Watch the \"hands off\" arrow between them.",
-            "The final card carries the whole plan: a day-by-day itinerary plus an approximate budget and local tips.",
-            "Type something that is not a trip and the first agent asks for one instead of inventing a plan — the chain stops there.",
-          ],
-          hood: [
-            "It is a Foundry Workflow, not one clever prompt. Three separate agents run in a fixed sequence.",
-            "Handoff is explicit: each agent's output is saved to a variable the next agent reads — no step depends on guessing the last message.",
-            "One run is three model calls, so it costs a few times more than a single-agent tile. This tile has its own daily budget for that reason.",
-            "Attractions come from the model's own knowledge, kept to well-known places — there is no live web search, so treat details as approximate.",
-            "The Azure key stays on the server. Your browser only ever talks to this app's route.",
-          ],
-        },
-      },
+     
       {
         title: "Microsoft Agent Framework Agent",
         slug: "microsoft-agent-framework-agent",
