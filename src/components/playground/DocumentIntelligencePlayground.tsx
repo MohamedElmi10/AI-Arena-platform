@@ -92,6 +92,12 @@ export function DocumentIntelligencePlayground({ module, tile, guide, chapter }:
     setActiveField(null);
   }
 
+  // A "Try this" prompt is a doc-type label — jump to that model + sample.
+  const insertDocType = (v: string) => {
+    const m = DOC_TYPES.find((d) => d.label.toLowerCase() === v.toLowerCase());
+    if (m) selectDocType(m.id);
+  };
+
   async function loadSample() {
     setImage(await sampleToDataUrl(docType.sample.src));
     setResult(null);
@@ -152,19 +158,22 @@ export function DocumentIntelligencePlayground({ module, tile, guide, chapter }:
           />
         </div>
 
-        <div className="grid grid-cols-12 gap-8">
-          <div className="order-1 col-span-12 md:col-span-4 md:row-start-1">
-            <PlaygroundGuide
-              guide={guide}
-              onInsert={(v) => {
-                const m = DOC_TYPES.find((d) => d.label.toLowerCase() === v.toLowerCase());
-                if (m) selectDocType(m.id);
-              }}
-              part="top"
-            />
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-12 md:items-start">
+          {/* Left column = guide. On mobile the wrapper is `contents`, so its two
+              parts become siblings of <section> and the interactive panel wedges
+              between them (order-1 / 2 / 3). On desktop it's a real block column
+              that sizes to its own content, so a tall result can't stretch it into
+              a gap between "Try this" and "What to expect". */}
+          <div className="contents md:col-span-4 md:block md:space-y-6">
+            <div className="order-1">
+              <PlaygroundGuide guide={guide} onInsert={insertDocType} part="top" />
+            </div>
+            <div className="order-3">
+              <PlaygroundGuide guide={guide} onInsert={insertDocType} part="bottom" />
+            </div>
           </div>
 
-          <section className="order-2 col-span-12 min-w-0 space-y-4 md:col-span-8 md:row-span-2 md:row-start-1">
+          <section className="order-2 min-w-0 space-y-4 md:col-span-8">
             {/* Doc-type picker */}
             <div className="flex flex-wrap gap-2">
               {DOC_TYPES.map((d) => {
@@ -257,17 +266,6 @@ export function DocumentIntelligencePlayground({ module, tile, guide, chapter }:
               </p>
             )}
           </section>
-
-          <div className="order-3 col-span-12 md:col-span-4 md:row-start-2">
-            <PlaygroundGuide
-              guide={guide}
-              onInsert={(v) => {
-                const m = DOC_TYPES.find((d) => d.label.toLowerCase() === v.toLowerCase());
-                if (m) selectDocType(m.id);
-              }}
-              part="bottom"
-            />
-          </div>
         </div>
 
         <SiteFooter />

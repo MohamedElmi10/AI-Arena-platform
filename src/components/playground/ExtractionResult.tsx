@@ -165,6 +165,31 @@ function Field({
   if (Array.isArray(value)) {
     const objects = value.filter(isObject);
     if (objects.length > 0) {
+      // If every item has just one field (e.g. video Segments -> Description),
+      // a one-column table is redundant — render a plain list instead.
+      const keys = Array.from(
+        new Set(objects.flatMap((o) => Object.keys(o).filter((k) => !isEmpty(o[k]))))
+      );
+      if (keys.length === 1) {
+        const only = keys[0];
+        return (
+          <div className={cn("space-y-1.5", enter)} style={style}>
+            {label}
+            <ul className="ml-4 max-w-[68ch] list-outside list-disc space-y-1 text-sm leading-relaxed text-neutral-800">
+              {objects.map((o, i) => {
+                const cell = o[only];
+                return (
+                  <li key={i}>
+                    {isObject(cell) || Array.isArray(cell)
+                      ? JSON.stringify(cell)
+                      : formatScalar(cell as string | number | boolean)}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      }
       return (
         <div className={cn("space-y-1.5", enter)} style={style}>
           {label}
@@ -183,7 +208,7 @@ function Field({
     return (
       <div className={cn("space-y-0.5", enter)} style={style}>
         {label}
-        <div className="text-neutral-800">{scalars.map(formatScalar).join(", ")}</div>
+        <div className="max-w-[68ch] leading-relaxed text-neutral-800">{scalars.map(formatScalar).join(", ")}</div>
       </div>
     );
   }
@@ -208,7 +233,7 @@ function Field({
   return (
     <div className={cn("space-y-0.5", enter)} style={style}>
       {label}
-      <div className="text-neutral-900">{formatScalar(value)}</div>
+      <div className="max-w-[68ch] leading-relaxed text-neutral-900">{formatScalar(value)}</div>
     </div>
   );
 }

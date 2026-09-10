@@ -160,7 +160,7 @@ export function FileDropzone({
                 onChange(null);
               }}
               disabled={disabled}
-              className="absolute right-2 top-2 rounded bg-white/90 px-2 py-1 font-mono text-[11px] text-neutral-600 shadow-sm transition hover:bg-white disabled:opacity-50"
+              className="absolute right-2 top-2 rounded-md bg-[var(--accent)] px-3 py-1 font-mono text-xs font-semibold text-white shadow-md ring-1 ring-black/10 transition hover:opacity-90 disabled:opacity-50"
             >
               change
             </button>

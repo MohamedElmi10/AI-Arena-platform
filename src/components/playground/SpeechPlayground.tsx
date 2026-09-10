@@ -355,39 +355,53 @@ export function SpeechPlayground({ module, tile, guide, chapter }: Props) {
                   {clips.after && (
                     <audio controls src={clips.after} className="mt-2 h-8 w-full max-w-sm" />
                   )}
-                  {nearMiss.length > 0 ? (
-                    <p className="mt-3 text-xs text-neutral-600">
-                      Capitals matter — the list is case sensitive, so{" "}
-                      <span className="font-mono">{nearMiss[0].toLowerCase()}</span>{" "}
-                      isn&apos;t corrected. Try{" "}
-                      <button
-                        onClick={() => setText(nearMiss[0])}
-                        className="font-mono font-medium text-[color:var(--accent)] underline underline-offset-2"
-                      >
-                        {nearMiss[0]}
-                      </button>
-                      .
-                    </p>
-                  ) : (
-                    <p className="mt-3 text-xs text-neutral-500">
-                      {text.trim()
+                </div>
+              )}
+
+              {/* Trained-word chips — always shown, so you can switch words after
+                  picking one (the comparison view used to hide them). */}
+              <div className="mt-3">
+                {nearMiss.length > 0 && !comparable ? (
+                  <p className="text-xs text-neutral-600">
+                    Capitals matter — the list is case sensitive, so{" "}
+                    <span className="font-mono">{nearMiss[0].toLowerCase()}</span>{" "}
+                    isn&apos;t corrected. Try{" "}
+                    <button
+                      onClick={() => setText(nearMiss[0])}
+                      className="font-mono font-medium text-[color:var(--accent)] underline underline-offset-2"
+                    >
+                      {nearMiss[0]}
+                    </button>
+                    .
+                  </p>
+                ) : (
+                  <p className="text-xs text-neutral-500">
+                    {comparable
+                      ? "Or try another:"
+                      : text.trim()
                         ? "None of these words are on the list, so both versions would sound the same. Try one of these:"
                         : "Words this voice has been taught:"}
-                    </p>
-                  )}
-                  <div className="mt-2 flex flex-wrap gap-1.5">
-                    {TRAINED_WORDS.map((word) => (
+                  </p>
+                )}
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {TRAINED_WORDS.map((word) => {
+                    const active = taught.includes(word);
+                    return (
                       <button
                         key={word}
                         onClick={() => setText(word)}
-                        className="rounded-full border border-neutral-300 px-2.5 py-1 font-mono text-xs text-neutral-700 hover:border-[var(--accent)] hover:text-[color:var(--accent)]"
+                        className={
+                          active
+                            ? "rounded-full border border-[var(--accent)] bg-[var(--accent-tint)] px-2.5 py-1 font-mono text-xs font-medium text-[color:var(--accent)]"
+                            : "rounded-full border border-neutral-300 px-2.5 py-1 font-mono text-xs text-neutral-700 hover:border-[var(--accent)] hover:text-[color:var(--accent)]"
+                        }
                       >
                         {word}
                       </button>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
 
               <div className="mt-2 text-right font-mono text-xs text-neutral-400">
                 {text.length}/{MAX_CHARS}

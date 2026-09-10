@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type Ref } from "react";
 import { cn } from "@/lib/utils";
 import type { Source } from "@/lib/sse";
 import { Markdown } from "./Markdown";
@@ -27,6 +27,8 @@ type ChatSurfaceProps = {
   onModeChange?: (value: string) => void;
   /** Accent CSS vars — forwarded to the portaled SourceViewer modal. */
   accentVars?: CSSProperties;
+  /** Ref to the text input, so tap-to-insert can focus + scroll it into view. */
+  inputRef?: Ref<HTMLInputElement>;
 };
 
 export function ChatSurface({
@@ -40,6 +42,7 @@ export function ChatSurface({
   mode,
   onModeChange,
   accentVars,
+  inputRef,
 }: ChatSurfaceProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   // Which cited source (if any) is open in the viewer modal.
@@ -53,7 +56,7 @@ export function ChatSurface({
 
   return (
     <div className="col-span-12 md:col-span-7">
-      <div className="flex h-[560px] flex-col rounded-md border-2 border-[var(--accent)] bg-white">
+      <div className="flex h-[560px] flex-col overflow-hidden rounded-md border-2 border-[var(--accent)] bg-white">
         <div className="flex items-center justify-between border-b border-neutral-200 bg-[var(--accent-tint)] px-4 py-2 font-mono text-xs">
           <span className="text-[color:var(--accent-fg)]">chat · {title}</span>
           <div className="flex items-center gap-3">
@@ -147,6 +150,7 @@ export function ChatSurface({
           className="flex gap-2 border-t border-neutral-200 bg-neutral-50 p-3"
         >
           <input
+            ref={inputRef}
             type="text"
             value={input}
             onChange={(e) => onInputChange(e.target.value)}

@@ -8,7 +8,7 @@ import type { TileGuide } from "@/data/modules";
 // both parts stack in the left column. `part` omitted renders everything.
 type PlaygroundGuideProps = {
   guide: TileGuide;
-  onInsert: (prompt: string) => void;
+  onInsert: (prompt: string, mode?: string) => void;
   part?: "top" | "bottom";
 };
 
@@ -36,18 +36,27 @@ export function PlaygroundGuide({ guide, onInsert, part }: PlaygroundGuideProps)
           </div>
 
           <div>
-            <SectionLabel>Try this — tap to insert</SectionLabel>
-            <div className="space-y-1.5">
-              {guide.tryThis.map((prompt) => (
+            <SectionLabel>Try this ↓</SectionLabel>
+            <div className="space-y-2">
+              {guide.tryThis.map((item) => {
+                const text = typeof item === "string" ? item : item.text;
+                const mode = typeof item === "string" ? undefined : item.mode;
+                return (
                 <button
-                  key={prompt}
+                  key={text}
                   type="button"
-                  onClick={() => onInsert(prompt)}
-                  className="w-full rounded border border-neutral-200 px-3 py-2 text-left font-display text-sm italic text-neutral-700 transition hover:translate-x-[3px] hover:bg-[var(--accent-tint)]"
+                  onClick={() => onInsert(text, mode)}
+                  className="group flex w-full items-center gap-3 rounded-md border border-[var(--accent)]/30 bg-[var(--accent-tint)] px-3 py-2.5 text-left transition hover:-translate-y-[1px] hover:border-[var(--accent)] hover:shadow-sm"
                 >
-                  &ldquo;{prompt}&rdquo;
+                  <span className="flex-1 font-display text-sm italic leading-snug text-neutral-700 group-hover:text-neutral-900">
+                    &ldquo;{text}&rdquo;
+                  </span>
+                  <span className="shrink-0 rounded bg-[var(--accent)] px-1.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-white opacity-0 transition group-hover:opacity-100">
+                    try →
+                  </span>
                 </button>
-              ))}
+                );
+              })}
             </div>
           </div>
         </>

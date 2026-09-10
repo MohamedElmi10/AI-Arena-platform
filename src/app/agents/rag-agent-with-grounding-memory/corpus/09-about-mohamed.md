@@ -1,11 +1,11 @@
 # About Mohamed
 
 Mohamed Elmi is a software engineer moving from front-end development into AI
-engineering. His front-end background is in React, Next.js, and MongoDB. He is
+engineering. His front-end background is mainly in React, Next.js. He is
 currently focused full-time on that transition and holds the Microsoft Certified:
 Azure AI Apps and Agents Developer Associate certification (exam AI-103).
 
-AI Arena is the vehicle he uses to learn Azure by building. Rather than studying
+AI Arena is the vehicle he uses to learn Azure by building. Rather than just studying
 the certification material in the abstract, he wires up one live Azure AI agent
 or generative-AI demo at a time — each a tile an interested visitor can actually play
 with — so every skill on the certification path has a working artifact behind
@@ -22,10 +22,12 @@ cost-safety posture, and clean, data-driven front-end architecture.
 Mohamed Elmi is based in Stockholm, Sweden.
 
 Mohamed has about  six months of professional experience as a front-end
-developer intern, working with React, Next.js, and MongoDB. Over roughly the
+developer intern, working with React, Typescript, Tailwind CSS and Ant Design, focusing on type safety, user experience and code quality. Over roughly the
 past year he has also built his own projects end to end — some front-end only,
-others spanning back-end and databases, and several focused on AI development.
-AI Arena is one of these: a Next.js front end wrapping live Azure AI agents.
+others spanning back-end and databases, and AI development.
+
+Alongside AI Arena, Mohamed is building GeoFlow — a side project he develops on his own but with real ambition. It is a web platform for the Swedish geotechnical-consulting market, built to streamline and automate how these firms work and to shorten the time it takes them to deliver a MUR (Markteknisk undersökningsrapport), the formal report a consultancy hands to clients like Trafikverket and municipalities. GeoFlow ingests field survey data, lets field technicians, geotechnicians and project leads collaborate in one project, reads industry-standard rig and lab files, extracts lab-report tables with Azure Document Intelligence, and plots survey points on a map — built with Next.js, React, TypeScript, MongoDB and the ArcGIS SDK. What makes it more than a data tool is a deliberate stance on responsibility: every figure is bound to its source data and can't be silently overwritten, each section is marked by where it came from (derived, AI-suggested, or written by an engineer).
+
 
 Before moving into AI engineering, he worked as Frontend Intern at Diya Interactive from
 2024 to 2025, where he developed Responsive and modern interface experience. A project

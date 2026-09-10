@@ -4,12 +4,17 @@
 
 export type TileStatus = "live" | "planned";
 
+/** A tap-to-insert prompt. A bare string, or an object that also flips the
+ *  tile's mode toggle (e.g. the MCP tile: a commit question -> the hosted
+ *  server, a site question -> the own server). */
+export type TryPrompt = string | { text: string; mode?: string };
+
 /** The instructional panel shown inside a tile's playground. */
 export type TileGuide = {
   /** One paragraph: what this demo is. */
   about: string;
   /** Tap-to-insert example prompts. */
-  tryThis: string[];
+  tryThis: TryPrompt[];
   /** What the visitor should watch for. */
   expect: string[];
   /** "Under the hood" implementation notes. */
@@ -176,10 +181,10 @@ export const modules: Module[] = [
           about:
             "The agent knows nothing about this project. It borrows every fact, live, from a separate program called a server — and the switch above changes which one. GitHub's server covers every repository on GitHub. Mine is small, lives inside this website, and only knows this site. Neither is better; they are built for different jobs, and you can see the difference in how they answer.",
           tryThis: [
-            "What were the last three commits?",
-            "How many demos are live here, and which ones?",
-            "What is still planned?",
-            "Which Azure services does this site use?",
+            { text: "What were the last three commits?", mode: "hosted" },
+            { text: "How many demos are live here, and which ones?", mode: "own" },
+            { text: "What is still planned?", mode: "own" },
+            { text: "Which Azure services does this site use?", mode: "own" },
           ],
           expect: [
             "Every tool call is listed above the answer, so you can see the work.",
@@ -198,15 +203,7 @@ export const modules: Module[] = [
           ],
         },
       },
-      {
-        title: "Microsoft Agent Framework Agent",
-        slug: "microsoft-agent-framework-agent",
-        status: "planned",
-        tag: "MAF",
-        poweredBy: "Azure AI Foundry",
-        desc: "The same agent built with Microsoft Agent Framework instead of Foundry-native, so the pattern differences are visible.",
-      },
-      {
+        {
         title: "Multi-Agent Orchestration",
         slug: "multi-agent-orchestration",
         status: "live",
@@ -241,6 +238,15 @@ export const modules: Module[] = [
           ],
         },
       },
+      {
+        title: "Microsoft Agent Framework Agent",
+        slug: "microsoft-agent-framework-agent",
+        status: "planned",
+        tag: "MAF",
+        poweredBy: "Azure AI Foundry",
+        desc: "The same agent built with Microsoft Agent Framework instead of Foundry-native, so the pattern differences are visible.",
+      },
+    
       {
         title: "Foundry IQ",
         slug: "foundry-iq",
@@ -415,26 +421,18 @@ export const modules: Module[] = [
           ],
         },
       },
-      {
-        title: "Generative Media",
-        slug: "generative-media",
-        status: "planned",
-        tag: "image · video · toggle",
-        poweredBy: "Azure AI Foundry",
-        desc: "Generate an image or a short video from a text prompt. Toggle between Foundry's image and video models.",
-      },
-      {
+       {
         title: "Content Understanding",
         slug: "content-understanding",
         status: "live",
         tag: "multimodal · extraction",
         poweredBy: "Azure Content Understanding",
         model: "gpt-4.1",
-        desc: "Pick the fields you want, upload any content, get it back structured. One analyzer across images, documents, audio, and video.",
+        desc: "Upload any content, get structured fields back — one analyzer across images, documents, audio and video.",
         preview: "Try: pull the contact fields off a business card.",
         guide: {
           about:
-            "Pick a preset — each one is a small field-set — then give it something to read. A business card and an invoice run live: the same kind of analyzer reads a photo and a document and hands back the fields you asked for. Audio and video use the identical mechanism, but their results are pre-captured, because they bill per minute. One schema, any modality — that is the whole point.",
+            "One analyzer, any modality. Business card (image) and invoice (document) run live — the same analyzer reads both and returns the fields it's given. Audio and video use the identical mechanism but are pre-captured, since they bill per minute.",
           tryThis: [
             "Business card",
             "Invoice",
@@ -442,21 +440,20 @@ export const modules: Module[] = [
             "Product demo",
           ],
           expect: [
-            "Each preset lists the fields it pulls out. Only those come back — empty ones are hidden, so a sparse result looks clean, not broken.",
-            "Business card and Invoice are live: load the sample or drop your own (image, or a PDF for the invoice), then Extract.",
-            "Call recording and Product demo show a captured result straight away — no upload, no wait.",
-            "The invoice's line items and the video's segments come back as a table and a list — the same panel renders every shape.",
+            "Each preset gives the AI a set list of fields to look for, and it returns only the ones the document actually has — a card with no phone number just won't show a phone line.",
+            "Business card and Invoice run live — load the sample or drop your own (invoice takes a PDF too), then Extract.",
+            "Call recording and Product demo show a saved result instantly — no upload.",
+            "Some results are groups, not single values — an invoice's rows of line items come back as a table, and a video's scene-by-scene segments as a list.",
           ],
           hood: [
-            "One custom analyzer per preset, each a field-schema on a prebuilt base — the business card and the invoice share the same document base, which is why one mechanism reads both.",
-            "The file is analysed server-side and the credential stays there; your browser never holds a key.",
-            "Audio and video are the expensive modalities, so build.py runs them once, commits the JSON, and the tile replays it — same schema, no per-view cost.",
-            "The result panel is recursive and reused: Document Intelligence (next tile) renders its values through the very same component.",
-            "Content Understanding has no free tier, so this tile keeps a tight daily cap on live calls.",
+            "One custom analyzer per preset — a field-schema on a prebuilt base. Business card and invoice share the document base.",
+            "Analysed server-side; the key never reaches the browser.",
+            "Audio and video run once in build.py; the result is replayed, so no per-view cost.",
+           
           ],
         },
       },
-      {
+        {
         title: "Document Intelligence",
         slug: "document-intelligence",
         status: "live",
@@ -484,6 +481,15 @@ export const modules: Module[] = [
           ],
         },
       },
+      {
+        title: "Generative Media",
+        slug: "generative-media",
+        status: "planned",
+        tag: "image · video · toggle",
+        poweredBy: "Azure AI Foundry",
+        desc: "Generate an image or a short video from a text prompt. Toggle between Foundry's image and video models.",
+      },
+    
     ],
   },
 ];

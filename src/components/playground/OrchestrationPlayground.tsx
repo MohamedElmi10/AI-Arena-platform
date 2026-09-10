@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import type { Module, Tile, TileGuide } from "@/data/modules";
 import { PlaygroundHeader } from "@/components/playground/PlaygroundHeader";
 import { PlaygroundGuide } from "@/components/playground/PlaygroundGuide";
+import { revealInput } from "@/lib/reveal-input";
 import { Markdown } from "@/components/playground/Markdown";
 import type { StreamStatus } from "@/components/playground/LiveStats";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -52,6 +53,7 @@ export function OrchestrationPlayground({
 }: OrchestrationPlaygroundProps) {
   const [steps, setSteps] = useState<Step[]>([]);
   const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
   const [tokens, setTokens] = useState(0);
   const [latency, setLatency] = useState("—");
   const [status, setStatus] = useState<StreamStatus>("idle");
@@ -141,12 +143,20 @@ export function OrchestrationPlayground({
     });
   }
 
+  // Tap-to-insert: fill the field, then reveal it (focus + scroll) so the user
+  // sees it's ready — critical on phones where the field can be off-screen.
+  const insertPrompt = (v: string) => {
+    setInput(v);
+    revealInput(inputRef.current);
+  };
+
   async function runStream() {
     const text = input.trim();
     if (!text || streamingRef.current) return;
 
     streamingRef.current = true;
-    setInput("");
+    // Keep the query in the field — this is a one-shot plan, not a chat, so the
+    // prompt should stay visible (and editable) for a tweak-and-rerun.
     setStatus("streaming");
     setTokens(0);
     setLatency("—");
@@ -258,8 +268,8 @@ export function OrchestrationPlayground({
               drift with the streamed content. Sticky + a single column keeps the
               guide put while the timeline scrolls past it. */}
           <aside className="order-1 col-span-12 space-y-8 md:col-span-5 md:sticky md:top-6">
-            <PlaygroundGuide guide={guide} onInsert={setInput} part="top" />
-            <PlaygroundGuide guide={guide} onInsert={setInput} part="bottom" />
+            <PlaygroundGuide guide={guide} onInsert={insertPrompt} part="top" />
+            <PlaygroundGuide guide={guide} onInsert={insertPrompt} part="bottom" />
           </aside>
 
           <section className="order-2 col-span-12 min-w-0 space-y-4 md:col-span-7">
@@ -271,6 +281,7 @@ export function OrchestrationPlayground({
               className="flex flex-wrap gap-2"
             >
               <input
+                ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 disabled={busy}

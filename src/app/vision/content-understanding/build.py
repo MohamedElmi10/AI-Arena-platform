@@ -108,6 +108,13 @@ def s(desc, method=GenerationMethod.EXTRACT):
     )
 
 
+def n(desc):
+    """A number field (extracted)."""
+    return ContentFieldDefinition(
+        type=ContentFieldType.NUMBER, method=GenerationMethod.EXTRACT, description=desc
+    )
+
+
 # --- Analyzer definitions (this file is their source of truth) --------------
 # base analyzer -> which prebuilt pipeline reads the file; field_schema -> what
 # we pull out. models is REQUIRED for field_schema on the document base.
@@ -143,16 +150,34 @@ PRESETS = {
             name="invoice_schema",
             description="Key fields from a single-page invoice.",
             fields={
-                "VendorName": s("Name of the vendor / supplier"),
-                "InvoiceTotal": ContentFieldDefinition(
-                    type=ContentFieldType.NUMBER,
+                "VendorName": s("Name of the vendor / supplier issuing the invoice"),
+                "CustomerName": s("Name of the customer / bill-to party"),
+                "InvoiceId": s("Invoice number or ID"),
+                "InvoiceDate": ContentFieldDefinition(
+                    type=ContentFieldType.DATE,
                     method=GenerationMethod.EXTRACT,
-                    description="Grand total amount due",
+                    description="Date the invoice was issued",
                 ),
                 "DueDate": ContentFieldDefinition(
                     type=ContentFieldType.DATE,
                     method=GenerationMethod.EXTRACT,
                     description="Payment due date",
+                ),
+                "SubTotal": n("Subtotal before tax"),
+                "Tax": n("Tax amount"),
+                "InvoiceTotal": n("Grand total amount due"),
+                "Items": ContentFieldDefinition(
+                    type=ContentFieldType.ARRAY,
+                    description="Line items on the invoice",
+                    item_definition=ContentFieldDefinition(
+                        type=ContentFieldType.OBJECT,
+                        properties={
+                            "Description": s("What the line item is"),
+                            "Quantity": n("Quantity"),
+                            "UnitPrice": n("Price per unit"),
+                            "Amount": n("Line total"),
+                        },
+                    ),
                 ),
             },
         ),
