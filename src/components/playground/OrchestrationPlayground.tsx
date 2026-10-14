@@ -63,7 +63,6 @@ export function OrchestrationPlayground({
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const endRef = useRef<HTMLDivElement>(null);
   const stickRef = useRef(true); // follow the stream unless the user scrolls up
-  const lastScrollRef = useRef(0);
 
   const accentVars = {
     "--accent": module.color.accent,
@@ -91,7 +90,7 @@ export function OrchestrationPlayground({
     function onScroll() {
       stickRef.current =
         window.innerHeight + window.scrollY >=
-        document.documentElement.scrollHeight - 140;
+        document.documentElement.scrollHeight - 320;
     }
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -99,10 +98,9 @@ export function OrchestrationPlayground({
 
   function followNewContent() {
     if (!stickRef.current) return;
-    const now = performance.now();
-    if (now - lastScrollRef.current < 450) return; // slow, calm pace
-    lastScrollRef.current = now;
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    // Instant, not smooth: a smooth animation lags behind fast streaming, never
+    // reaches the growing bottom, and the stale position switches follow off.
+    window.scrollTo(0, document.documentElement.scrollHeight);
   }
 
     function upsertStep(s: {
