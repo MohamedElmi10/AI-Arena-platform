@@ -137,6 +137,15 @@ const handler: CostSafetyHandler = async (req) => {
               );
             }
           } else if (event.type === "response.output_text.delta") {
+            // Text can arrive before any workflow_action node — e.g. when the
+            // first agent replies with a clarification instead of running the
+            // chain. Without a step it would be dropped, so open a fallback card.
+            if (!currentStep) {
+              currentStep = "response";
+              controller.enqueue(
+                sse({ step: { id: currentStep, agent: "Response", status: "in_progress" } })
+              );
+            }
             controller.enqueue(
               sse({ delta: event.delta, step: currentStep })
             );
