@@ -166,6 +166,7 @@ export function OrchestrationPlayground({
     const start = performance.now();
     let firstDelta = true;
     let deltaCount = 0;
+    let produced = false;
 
     try {
       const res = await fetch(`/api/chat/${tile.slug}`, {
@@ -211,11 +212,13 @@ export function OrchestrationPlayground({
               setLatency(`${Math.round(performance.now() - start)}ms`);
               firstDelta = false;
             }
+            produced = true;
             deltaCount += 1;
             setTokens(deltaCount); // live tick; reconciled on done
             appendDelta(event.step, event.delta);
             followNewContent();
           } else if ("step" in event) {
+            produced = true;
             upsertStep(event.step);
             followNewContent();
           } else if ("error" in event) {
@@ -229,6 +232,16 @@ export function OrchestrationPlayground({
             );
           }
         }
+      }
+
+      // The workflow finished but emitted nothing we could show — never leave
+      // the panel silently blank.
+      if (!produced) {
+        setErrorMsg(
+          (prev) =>
+            prev ??
+            "The workflow didn't return anything. Try a clearer trip, e.g. \"3 days in Kyoto, low budget\"."
+        );
       }
     } catch (err) {
       console.error("[multi-agent] stream failed:", err);
