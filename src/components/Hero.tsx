@@ -20,7 +20,7 @@ export function Hero() {
       </h1>
 
       <p className="mt-4 max-w-3xl font-display text-2xl italic text-neutral-700">
-        Azure AI Engineer — Microsoft AI-103 certified. A working showcase of the
+        Azure AI Developer — Microsoft AI-103 certified. A working showcase of the
         skills behind the credential.
       </p>
 
